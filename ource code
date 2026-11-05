@@ -1,0 +1,41 @@
+ cap_nhat_truy_van/CAP_NHAT_TRUY_VAN.bat            |   47 [31m-[m
+ cap_nhat_truy_van/HOAN_TAC_TRUY_VAN.bat            |   47 [31m-[m
+ cap_nhat_truy_van/HUONG_DAN.md                     |    9 [31m-[m
+ cap_nhat_truy_van/manifest.json                    |   65 [31m-[m
+ .../backend/app/modules/kg_query/entity_lookup.py  |  170 [31m--[m
+ .../backend/tests/test_query_review_fixes.py       |   85 [31m-[m
+ .../frontend/src/components/chat/ChatContainer.tsx |  142 [31m--[m
+ .../src/components/chat/KGQueryDetails.tsx         |  128 [31m--[m
+ .../frontend/src/components/chat/MessageBubble.tsx |  132 [31m--[m
+ .../frontend/src/components/chat/MessageList.tsx   |   56 [31m-[m
+ .../frontend/src/components/chat/kg-query.css      |   27 [31m-[m
+ .../payload/frontend/src/types/index.ts            |  158 [31m--[m
+ .../payload/frontend/tests/kg-empty-panel.test.tsx |   87 [31m-[m
+ cap_nhat_truy_van/update_code.py                   |  135 [31m--[m
+ kiem_tra_truy_van/HUONG_DAN_TEST.md                |   85 [31m-[m
+ kiem_tra_truy_van/SELF_TEST_RESULTS.txt            |  193 [31m---[m
+ kiem_tra_truy_van/TEST_BACKEND_DANG_CHAY.bat       |   50 [31m-[m
+ kiem_tra_truy_van/TEST_CLASSIFIER_CPU.bat          |   50 [31m-[m
+ kiem_tra_truy_van/TEST_NHANH.bat                   |   50 [31m-[m
+ kiem_tra_truy_van/TEST_TAT_CA_TRUY_VAN.bat         |   50 [31m-[m
+ .../20261105-103831/cda1d1-query-logs.zip          |  Bin [31m11917[m -> [32m0[m bytes
+ .../20261105-103831/cda1d1/catalog.json            | 1712 [31m--------------------[m
+ .../20261105-103831/cda1d1/environment.json        |   18 [31m-[m
+ .../20261105-103831/cda1d1/summary.json            |   16 [31m-[m
+ .../20261105-103831/cda1d1/summary.txt             |    6 [31m-[m
+ .../20261105-103946/9c47ff-query-logs.zip          |  Bin [31m11917[m -> [32m0[m bytes
+ .../20261105-103946/9c47ff/catalog.json            | 1712 [31m--------------------[m
+ .../20261105-103946/9c47ff/environment.json        |   18 [31m-[m
+ .../20261105-103946/9c47ff/summary.json            |   16 [31m-[m
+ .../20261105-103946/9c47ff/summary.txt             |    6 [31m-[m
+ .../20261105-104202/036b6f-query-logs.zip          |  Bin [31m71988[m -> [32m0[m bytes
+ .../20261105-104202/036b6f/catalog.json            | 1712 [31m--------------------[m
+ .../036b6f/diagnostic-assistant.sqlite3            |  Bin [31m45056[m -> [32m0[m bytes
+ .../20261105-104202/036b6f/environment.json        |   18 [31m-[m
+ .../20261105-104202/036b6f/live-catalog.json       | 1618 [31m------------------[m
+ .../20261105-104202/036b6f/requests.jsonl          |  182 [31m---[m
+ .../20261105-104202/036b6f/summary.json            |   52 [31m-[m
+ .../20261105-104202/036b6f/summary.txt             |   33 [31m-[m
+ kiem_tra_truy_van/test_harness.py                  |  112 [31m--[m
+ kiem_tra_truy_van/test_queries.py                  |  310 [31m----[m
+ 40 files changed, 9307 deletions(-)
