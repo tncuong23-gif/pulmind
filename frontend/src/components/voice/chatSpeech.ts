@@ -27,6 +27,9 @@ export function chatSpeech(markdown: string): string {
       .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
       .replace(/<?https?:\/\/[^\s>]+>?/g, "")
       .replace(/(\*\*|__|`)(.+?)\1/g, "$2")
+      .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+      .replace(/ {2,}/g, " ")
+      .replace(/\s+([,.;:!?])/g, "$1")
       .trim();
     if (text) prose.push(/[.!?…:]$/.test(text) ? text : text + ".");
   }
