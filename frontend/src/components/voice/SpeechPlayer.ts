@@ -41,6 +41,7 @@ function bufferMs(value: string | undefined, fallback: number) {
 /** Fetch at most two sentences ahead of the playback head; schedule on the audio clock. */
 export class SpeechPlayer {
   private context: AudioContext;
+  private ownsContext: boolean;
   private controller = new AbortController();
   private nextTime = 0;
   private sources = new Set<AudioBufferSourceNode>();
@@ -57,8 +58,9 @@ export class SpeechPlayer {
   private mode: "smooth" | "stream";
   private metrics: PlaybackMetrics = { audioSeconds: 0, underruns: 0, gapMs: 0, peakQueuedSeconds: 0 };
   constructor(private onStart: () => void, private onError: (error: unknown) => void,
-    options: { startBufferMs?: number; rebufferMs?: number; mode?: "smooth" | "stream" } = {}) {
-    this.context = new AudioContext();
+    options: { startBufferMs?: number; rebufferMs?: number; mode?: "smooth" | "stream"; context?: AudioContext } = {}) {
+    this.ownsContext = !options.context;
+    this.context = options.context ?? new AudioContext();
     this.mode = options.mode ?? (import.meta.env.VITE_VOICE_PLAYBACK_MODE === "stream" ? "stream" : "smooth");
     this.startBuffer = bufferMs(String(options.startBufferMs ?? import.meta.env.VITE_VOICE_START_BUFFER_MS ?? 1000), 1000)/1000;
     this.rebuffer = bufferMs(String(options.rebufferMs ?? import.meta.env.VITE_VOICE_REBUFFER_MS ?? 800), 800)/1000;
@@ -170,6 +172,6 @@ export class SpeechPlayer {
     for (const job of this.jobs) { job.buffers = []; job.seconds = 0; }
     for (const source of this.sources) { source.onended = null; try { source.stop(); } catch { /* already ended */ } source.disconnect(); }
     this.sources.clear();
-    if (this.context.state !== "closed") void this.context.close().catch(() => {});
+    if (this.ownsContext && this.context.state !== "closed") void this.context.close().catch(() => {});
   }
 }

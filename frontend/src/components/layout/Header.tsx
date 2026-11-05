@@ -14,7 +14,6 @@ export function Header({ onMenu }: { onMenu: () => void }) {
       </button>
       <div className="header-title">
         <h1>{vi.title}</h1>
-        <p>{vi.subtitle}</p>
       </div>
       <div className="header-actions">
         <button

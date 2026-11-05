@@ -2,10 +2,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
   Database,
-  Info,
   Plus,
   Settings,
-  ShieldCheck,
 } from "lucide-react";
 import { BrandMark } from "../common/BrandMark";
 import { ConversationList } from "../conversations/ConversationList";
@@ -49,15 +47,6 @@ export function Sidebar({ onNavigate }: { onNavigate: () => void }) {
           {vi.settings}
           <ChevronRight size={16} />
         </Link>
-        <div className="workspace-label">
-          <span className="workspace-avatar">
-            <ShieldCheck size={18} />
-          </span>
-          <div>
-            Không gian làm việc<small>{vi.brandSubtitle}</small>
-          </div>
-          <Info size={15} />
-        </div>
       </div>
     </div>
   );

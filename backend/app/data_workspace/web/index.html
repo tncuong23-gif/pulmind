@@ -2,15 +2,15 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#008b8b"><title>Quản lý dữ liệu · Medical AI</title>
-  <link rel="icon" href="/data-assets/logo.png"><link rel="stylesheet" href="/data-assets/style.css">
+  <meta name="theme-color" content="#f8faf9"><title>Quản lý dữ liệu · PulmoGraph AI</title>
+  <link rel="icon" href="/data-assets/pulmograph.svg"><link rel="stylesheet" href="/data-assets/style.css">
   <script src="/data-assets/app.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#workspace">Đến nội dung chính</a>
 <div class="shell" id="shell">
   <aside class="navigation" id="navigation">
-    <a class="brand" href="#overview" aria-label="Medical AI · Tổng quan"><img src="/data-assets/logo.png" alt="" width="42" height="42"><span>Medical AI<small>QUẢN LÝ DỮ LIỆU</small></span></a>
+    <a class="brand" href="#overview" aria-label="PulmoGraph AI · Tổng quan"><img src="/data-assets/pulmograph.svg" alt="" width="39" height="39"><span>PulmoGraph <b class="brand-ai">AI</b><small>QUẢN LÝ DỮ LIỆU</small></span></a>
     <p class="nav-label">KHÔNG GIAN DỮ LIỆU</p>
     <nav id="primaryNav" aria-label="Quản lý dữ liệu">
       <a href="#overview" data-group="overview" title="Tổng quan"><i aria-hidden="true">◫</i><span>Tổng quan<small>Kết nối & hoạt động</small></span></a>
@@ -19,15 +19,15 @@
       <a href="#context/import" data-group="context" title="Context & Patient"><i aria-hidden="true">◎</i><span>Context & Patient<small>Lịch sử & dữ kiện bệnh nhân</small></span></a>
       <a href="#reports" data-group="reports" title="Lịch sử & báo cáo"><i aria-hidden="true">↻</i><span>Lịch sử & báo cáo<small>Theo dõi các lượt nạp</small></span></a>
     </nav>
-    <div class="sidebar-bottom"><div class="side-note"><span class="dot"></span><strong>Cùng một nơi,<br>đủ ngữ cảnh.</strong><p>Từ tài liệu nguồn đến tri thức phục vụ hội thoại.</p></div><a id="backToChat" href="/" class="back-link"><span aria-hidden="true">←</span><span>Trang dịch vụ</span></a></div>
+    <div class="sidebar-bottom"><a id="backToChat" href="/" class="back-link"><span aria-hidden="true">←</span><span>Trang dịch vụ</span></a></div>
   </aside>
   <button id="navBackdrop" class="nav-backdrop" hidden type="button" aria-label="Đóng điều hướng"></button>
   <main id="workspace" tabindex="-1">
-    <header class="topbar"><button id="toggleNav" type="button" class="icon-button" aria-label="Ẩn hoặc hiện điều hướng" aria-controls="navigation" aria-expanded="true">☰</button><div class="page-heading"><span>MEDICAL AI / DỮ LIỆU</span><h1 id="pageTitle">Tổng quan dữ liệu</h1></div><button id="refresh" type="button" class="quiet-button">↻ <span>Làm mới</span></button></header>
+    <header class="topbar"><button id="toggleNav" type="button" class="icon-button" aria-label="Ẩn hoặc hiện điều hướng" aria-controls="navigation" aria-expanded="true">☰</button><div class="page-heading"><span>PULMOGRAPH AI / DỮ LIỆU</span><h1 id="pageTitle">Tổng quan dữ liệu</h1></div><button id="refresh" type="button" class="quiet-button">↻ <span>Làm mới</span></button></header>
     <nav id="subnav" class="subnav" hidden aria-label="Chức năng dữ liệu"></nav>
     <div id="feedback" class="feedback" role="alert" hidden></div>
     <section id="overview" class="native-page">
-      <div class="hero"><div><span class="eyebrow">KHO TRI THỨC Y KHOA</span><h2>Dữ liệu rõ nguồn.<br><em>Thao tác trong một nơi.</em></h2><p>Nạp, kiểm tra và tra cứu dữ liệu cho các thành phần của Medical AI.</p></div><div class="hero-art" aria-hidden="true"><span>RAG <b>▤</b></span><span>KG <b>◇</b></span><span>CONTEXT <b>◎</b></span></div></div>
+      <div class="hero"><div><span class="eyebrow">KHO TRI THỨC Y KHOA</span><h2><em>Quản lý dữ liệu</em> PulmoGraph AI</h2><p>Nhập tài liệu RAG, quản lý đồ thị tri thức và tra cứu dữ liệu ngữ cảnh bệnh nhân.</p></div><div class="hero-art" aria-hidden="true"><span>RAG <b>▤</b></span><span>KG <b>◇</b></span><span>CONTEXT <b>◎</b></span></div></div>
       <div class="section-heading"><h2>Các nguồn dữ liệu</h2><span id="checkedAt">Đang kiểm tra kết nối…</span></div>
       <div id="moduleCards" class="module-cards" aria-live="polite"><div class="empty">Đang đọc thông tin các nguồn dữ liệu…</div></div>
       <div class="section-heading recent-heading"><h2>Hoạt động gần đây</h2><a href="#reports">Xem tất cả →</a></div>

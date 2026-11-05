@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import * as Menu from "@radix-ui/react-dropdown-menu";
-import { ArrowUp, AudioLines, FileText, ImageIcon, Plus, ShieldCheck } from "lucide-react";
+import { ArrowUp, AudioLines, FileText, ImageIcon, Plus, ShieldCheck, Square, X } from "lucide-react";
 import type { Attachment, SelectedRecord } from "../../types";
 import { useAttachments } from "../../hooks/useAttachments";
 import { acceptedFiles, MAX_ATTACHMENTS } from "../../config/uploads";
@@ -8,6 +8,8 @@ import { AttachmentList } from "../attachments/AttachmentPreview";
 import { ErrorState } from "../common/ErrorState";
 import { vi } from "../../i18n/vi";
 import { USE_MOCK_API } from "../../api/client";
+import { useDictation } from "../voice/useDictation";
+import "./composer-voice.css";
 export function ChatInput({
   draft,
   sessionKey,
@@ -16,7 +18,9 @@ export function ChatInput({
   onSendRecords,
   busy,
   onView,
-  onVoiceStart,
+  stopReading,
+  speechControls,
+  speechError,
 }: {
   draft: string;
   sessionKey?: string;
@@ -25,11 +29,26 @@ export function ChatInput({
   onSendRecords: (records: SelectedRecord[], text?: string) => void;
   busy: boolean;
   onView: (attachment: Attachment) => void;
-  onVoiceStart: () => void;
+  stopReading: () => void;
+  speechControls?: ReactNode;
+  speechError?: string;
 }) {
   const files = useAttachments();
   useEffect(() => { files.reset(); }, [sessionKey, files.reset]);
   const input = useRef<HTMLTextAreaElement>(null);
+  const selection = useRef({ start: 0, end: 0, draft: "" });
+  const insertSpeech = (text: string) => {
+    const { start, end, draft: original } = selection.current;
+    const before = original.slice(0, start);
+    const after = original.slice(end);
+    const prefix = before && !/\s$/.test(before) ? " " : "";
+    const suffix = after && !/^\s/.test(after) ? " " : "";
+    const remaining = Math.max(0, 10000 - before.length - after.length - prefix.length - suffix.length);
+    return remaining ? before + prefix + text.slice(0, remaining) + suffix + after : original;
+  };
+  const voice = useDictation(sessionKey, text => setDraft(insertSpeech(text)));
+  const dictating = voice.phase !== "idle";
+  const visibleDraft = dictating && voice.preview ? insertSpeech(voice.preview) : draft;
   const recordPicker = useRef<HTMLInputElement>(null);
   const xrayPicker = useRef<HTMLInputElement>(null);
   const recordMode = files.attachments.some((a) => a.type === "medical_record");
@@ -37,7 +56,7 @@ export function ChatInput({
   // Tệp đính kèm tự kích hoạt phân tích Clinical IE; văn bản không có tệp là chat thông thường.
   const clinical = files.attachments.length > 0;
   const disabled =
-    busy ||
+    busy || dictating ||
     files.busy ||
     files.hasErrors ||
     (!draft.trim() && !files.attachments.length);
@@ -46,7 +65,7 @@ export function ChatInput({
       input.current.style.height = "auto";
       input.current.style.height = `${Math.min(160, input.current.scrollHeight)}px`;
     }
-  }, [draft]);
+  }, [visibleDraft]);
   useEffect(() => {
     if (draft) input.current?.focus();
   }, [draft]);
@@ -57,7 +76,7 @@ export function ChatInput({
     setDraft("");
     if (input.current) input.current.style.height = "auto";
   };
-  const limit = busy || files.attachments.length >= MAX_ATTACHMENTS;
+  const limit = dictating || busy || files.attachments.length >= MAX_ATTACHMENTS;
   return (
     <footer className="composer-area">
       <form
@@ -82,7 +101,8 @@ export function ChatInput({
         <textarea
           ref={input}
           id="chat-question"
-          value={draft}
+          value={visibleDraft}
+          readOnly={dictating}
           onChange={(e) => setDraft(e.target.value)}
           disabled={recordMode || busy || files.busy || files.hasErrors}
           placeholder={recordMode ? "Bấm Gửi để phân tích bệnh án..." : imageMode ? "Có thể thêm văn bản bệnh án để phân tích kết hợp..." : vi.placeholder}
@@ -99,6 +119,16 @@ export function ChatInput({
             }
           }}
         />
+        {dictating && <div className="composer-voice-status" role="status">
+          <span aria-hidden="true" className={voice.phase === "recording" ? "voice-status-dot recording" : "voice-status-dot"} />
+          {voice.phase === "recording" ? "Đang nghe · Bản nhận dạng tạm" : voice.phase === "opening" ? "Đang mở mic…" : "Đang hoàn tất nhận dạng…"}
+        </div>}
+        {speechError && <ErrorState message={speechError} />}
+        {voice.error && <ErrorState message={voice.error} onRetry={voice.canRetry && !busy && !clinical ? () => {
+          selection.current = { start: input.current?.selectionStart ?? draft.length, end: input.current?.selectionEnd ?? draft.length, draft };
+          stopReading();
+          voice.retry();
+        } : undefined} />}
         <div className="composer-actions">
           <div className="attachment-actions">
             <Menu.Root>
@@ -155,15 +185,23 @@ export function ChatInput({
             </button>
             <button
               type="button"
-              className="attachment-button composer-voice-button"
-              aria-label="Trò chuyện bằng giọng nói"
-              title="Trò chuyện bằng giọng nói"
-              disabled={busy || files.busy || files.attachments.length > 0 || USE_MOCK_API}
-              onClick={onVoiceStart}
+              className={`attachment-button composer-voice-button composer-voice-control${voice.phase === "recording" ? " is-recording" : ""}`}
+              aria-label={voice.phase === "recording" ? "Dừng ghi âm" : "Trò chuyện bằng giọng nói"}
+              title={voice.phase === "recording" ? "Dừng ghi âm" : "Ghi âm câu hỏi"}
+              disabled={voice.phase !== "recording" && (dictating || busy || files.busy || files.attachments.length > 0 || USE_MOCK_API)}
+              onClick={() => {
+                if (voice.phase === "recording") { voice.stop(); return; }
+                selection.current = { start: input.current?.selectionStart ?? draft.length, end: input.current?.selectionEnd ?? draft.length, draft };
+                stopReading();
+                void voice.start();
+              }}
             >
-              <AudioLines size={17} />
-              <span className="composer-voice-label">Giọng nói</span>
+              {voice.phase === "recording" ? <Square size={17} aria-hidden="true" /> : <AudioLines size={17} aria-hidden="true" />}
+              <span className="composer-voice-label">{voice.phase === "recording" ? "Dừng ghi âm" : "Giọng nói"}</span>
             </button>
+            {dictating && <button type="button" className="attachment-button composer-voice-control"
+              aria-label="Hủy ghi âm" title="Hủy ghi âm" onClick={voice.cancel}><X aria-hidden="true" /></button>}
+            {speechControls}
           </div>
           <div className="send-actions">
             <span className="enter-hint">

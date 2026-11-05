@@ -185,7 +185,21 @@ def create_router(frontend_origins=()):
 
     @router.get("/data-assets/{filename}", include_in_schema=False)
     async def asset(
-        filename: Literal["app.js", "style.css", "embed.js", "embed.css", "logo.png"],
+        filename: Literal[
+            "app.js",
+            "style.css",
+            "embed.js",
+            "embed.css",
+            "logo.png",
+            "pulmograph.svg",
+            "fonts.css",
+            "be-vietnam-pro-vietnamese-400-normal.woff2",
+            "be-vietnam-pro-latin-ext-400-normal.woff2",
+            "be-vietnam-pro-latin-400-normal.woff2",
+            "be-vietnam-pro-vietnamese-600-normal.woff2",
+            "be-vietnam-pro-latin-ext-600-normal.woff2",
+            "be-vietnam-pro-latin-600-normal.woff2",
+        ],
     ):
         return FileResponse(WEB / filename, headers={"Cache-Control": "no-cache"})
 

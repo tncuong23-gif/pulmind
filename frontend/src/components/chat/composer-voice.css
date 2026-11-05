@@ -1,0 +1,37 @@
+.chat-composer .attachment-actions {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.chat-composer .composer-voice-control[aria-pressed="true"],
+.chat-composer .composer-voice-control.is-recording {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.composer-voice-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.voice-status-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.voice-status-dot.recording {
+  background: var(--error);
+}
+
+@media (max-width: 600px) {
+  .chat-composer .composer-voice-control > span {
+    display: none;
+  }
+}
