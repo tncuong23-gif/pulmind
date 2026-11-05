@@ -1,0 +1,25 @@
+Baseline: verified-full version 7 (review recovery).
+
+KG_GLOBAL_GUIDE_VI.md
+KG_GLOBAL_PATCH_FILES.txt
+KG_GLOBAL_TEST_REPORT.md
+backend/app/data_workspace/web/app.js
+backend/app/data_workspace/web/index.html
+backend/app/kg_global/__init__.py
+backend/app/kg_global/api.py
+backend/app/kg_global/publish.py
+backend/app/kg_global/query.py
+backend/app/kg_global/store.py
+backend/app/kg_global/web/app.js
+backend/app/kg_global/web/index.html
+backend/app/main.py
+backend/app/modules/kg_import/manual_merge.py
+backend/app/modules/kg_import/service.py
+backend/app/modules/kg_query/cypher.py
+backend/app/modules/kg_query/models.py
+backend/app/modules/kg_query/retrieval_api.py
+backend/app/modules/kg_query/service.py
+backend/app/modules/kg_query/web_app.py
+backend/tests/kg_global_ui.cjs
+backend/tests/test_kg_global.py
+backend/tests/upstream/kg/test_duplicate_review.py

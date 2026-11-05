@@ -1,0 +1,47 @@
+﻿MEDICAL AI — DỰ ÁN ĐẦY ĐỦ KÈM BỘ CHẠY WINDOWS
+
+BẮT ĐẦU
+1. Giải nén toàn bộ ZIP vào một thư mục, ví dụ D:\MedicalAI.
+2. Mở thư mục medical-ai-integrated và nhấp đúp RUN.bat.
+3. Lần đầu RUN tự cài thư viện backend/frontend. Chờ cài xong; frontend
+   tự mở trình duyệt. Các lần sau RUN bỏ qua cài đặt đã thành công.
+   Giữ các cửa sổ dịch vụ mở, chờ backend báo Application startup complete.
+
+ĐIỀU KIỆN
+- Cần Python 3.12 kèm Python Launcher và Node.js 22 trở lên kèm npm.
+  Nếu thiếu, file BAT sẽ báo và đưa địa chỉ tải. Không cần gõ lệnh terminal.
+- Cần Internet để cài thư viện và tải các model chưa có cache.
+- Neo4j, MongoDB, Qdrant và Ollama là dịch vụ ngoài, phải đang chạy
+  và khớp cấu hình backend/.env. ZIP không chứa dữ liệu CSDL ngoài.
+- Không tự thay mật khẩu, URI hoặc .env. Khi chuyển sang máy khác,
+  có thể phải điều chỉnh cấu hình và chuyển dữ liệu từ máy cũ.
+
+CÁC THÀNH PHẦN BỔ SUNG
+- INSTALL_ALL.bat: cài backend/frontend, Clinical IE và giọng nói.
+  Có thể tải nhiều GB. Không tự cài CSDL hoặc tải model Ollama.
+- INSTALL_CLINICAL.bat: chỉ cài Clinical IE trong môi trường riêng.
+- INSTALL_VOICE.bat: cài STT và môi trường VieNeu riêng theo script gốc.
+- RUN.bat / START_ALL.bat: mở backend/frontend và các môi trường
+  Clinical/VieNeu nếu đã cài; mở cửa sổ không đồng nghĩa model sẵn sàng.
+- START.bat: chỉ backend/frontend. Các START_* chạy riêng từng dịch vụ.
+- INSTALL.bat: cài lại thư viện chính nếu cần sửa môi trường.
+
+MODEL CLINICAL IE
+Tài liệu CLINICAL_MULTIMODAL_UPDATE_VI.md của bản gốc ghi nhận thiếu hai
+trọng số NLP. Bộ này giữ nguyên tài sản model đã có, không thay bằng model
+khác và không giả lập kết quả. Bộ cài gốc kiểm tra checksum; mã 2 nghĩa là
+model còn thiếu hoặc sai. Cần bổ sung đúng file trước khi dùng các luồng
+phụ thuộc model. Không thể bảo đảm toàn bộ tính năng hoạt động chỉ bằng ZIP.
+
+VẬN HÀNH
+- Trình duyệt: http://127.0.0.1:5173; API: http://127.0.0.1:8100.
+- Dừng bằng Ctrl+C trong từng cửa sổ. Không mở RUN nhiều lần đồng thời.
+- Nhật ký cài đặt chính: logs/install-backend.log, install-frontend.log.
+- Không cần quyền Administrator để chạy ứng dụng.
+- Môi trường Python được cài trên máy của bạn; không đóng gói venv hay
+  node_modules để dùng xuyên máy. Giữ nguyên các file có sẵn trong ZIP gốc.
+
+PHẠM VI KIỂM TRA
+Đã kiểm tra toàn vẹn ZIP, đối chiếu nội dung từng file gốc sau đóng gói,
+nhãn điều hướng BAT, định dạng CRLF và lệnh gọi theo dự án.
+Chưa chạy trực tiếp Windows, CSDL thật hoặc suy luận model trên máy bạn.

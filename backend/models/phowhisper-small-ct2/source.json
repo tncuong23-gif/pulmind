@@ -1,0 +1,5 @@
+{
+  "source": "vinai/PhoWhisper-small",
+  "revision": "a86b604c346caf7148c37512eafe783a16420adb",
+  "quantization": "int8"
+}

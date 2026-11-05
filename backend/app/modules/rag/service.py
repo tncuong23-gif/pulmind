@@ -19,6 +19,14 @@ class Service:
         normalized=data.model_dump()
         fingerprint=digest({'input':normalized,'encoder':self.encoder.fingerprint,'chunking':chunking})
         with self.lock:
+            metadata=getattr(data.document,'metadata',{}) or {}
+            origins=set(metadata.get('import_provenance',{}).get('source_document_ids') or [data.document.document_id])
+            for other in self.store.documents():
+                if other['document_id']==data.document.document_id:continue
+                source=self.store.source(other['active_revision']) or {}
+                othermeta=source.get('document',{}).get('metadata',{})
+                otherids=set(othermeta.get('import_provenance',{}).get('source_document_ids') or [other['document_id']])
+                if origins & otherids:raise ValueError('SOURCE_OVERLAP: RAG đã có nguồn này trong '+other['document_id'])
             old=self.store.get(data.document.document_id)
             if old and old['fingerprint']==fingerprint and not force:
                 warnings=list(report['warnings'])

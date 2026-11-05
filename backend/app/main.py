@@ -91,6 +91,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Medical AI Assistant Backend", version="1.0.0", lifespan=lifespan)
 app.include_router(create_import_router())
+from .direct_import.api import create_router as create_global_router, LegacyImportGuard
+app.include_router(create_global_router())
+app.add_middleware(LegacyImportGuard)
 from .clinical_routes import create_router as create_clinical_router
 app.include_router(create_clinical_router(settings))
 app.include_router(create_data_router(settings.cors_origins))

@@ -3,7 +3,7 @@
   const $ = id => document.getElementById(id);
   const module = new URLSearchParams(location.search).get('module') === 'context' ? 'context' : 'kg';
   const base = `/api/v1/imports/${module}`;
-  const labels = {pending:'Chờ xử lý',running:'Đang xử lý',completed:'Hoàn tất',skipped:'Đã có',failed:'Lỗi',partial:'Ghi một phần',needs_review:'Cần duyệt',queued:'Đã xếp lượt',interrupted:'Bị gián đoạn'};
+  const labels = {pending:'Chờ xử lý',running:'Đang xử lý',completed:'Hoàn tất',skipped:'Đã có',failed:'Lỗi',partial:'Ghi một phần',needs_review:'Cần duyệt bổ sung',queued:'Đã xếp lượt',interrupted:'Bị gián đoạn'};
   const modes = {validate:'Kiểm tra',preview:'Xem trước',commit:'Nạp dữ liệu',retry:'Thử lại',index:'Đồng bộ chỉ mục'};
   let files = [], job = null, busy = false, page = 0, timer = null;
   const selected = new Set();
@@ -31,7 +31,7 @@
     $('retry').hidden = !canRetry;
     $('retry').disabled = !!working || !$('confirm').checked;
     $('repreview').hidden = !job || !terminal(job.status) || job.mode === 'index';
-    $('repreview').disabled = !!working;
+    $('repreview').disabled = !!working || (job?.mode !== 'preview' && !job?.items?.some(row=>!row.upload_error && ['failed','partial','needs_review'].includes(row.status)));
     $('selectAll').disabled = !canCommit || !job.items.some(eligible);
     const candidates = job?.items.filter(eligible) || [];
     $('selectAll').checked = candidates.length > 0 && candidates.every(row => selected.has(row.filename));
@@ -95,7 +95,7 @@
       const detail=elem('td',row.error || (row.candidate_count?`${row.candidate_count} thực thể cần duyệt`:''));
       if(row.statistics)detail.append(elem('small',JSON.stringify(row.statistics)));
       if(module==='kg' && row.review_status){
-        status.append(elem('span',({reviewed:'Đã duyệt',needs_review:'Cần duyệt',unreviewed:'Chưa đánh dấu duyệt'})[row.review_status],`status review-${row.review_status}`));
+        status.append(elem('span',({reviewed:'Đã duyệt',needs_review:'Cần duyệt bổ sung',unreviewed:'Chưa đánh dấu duyệt'})[row.review_status],`status review-${row.review_status}`));
         if(row.reviewed_at)status.append(elem('small',new Date(row.reviewed_at).toLocaleString('vi-VN')));
       }
       if(row.elapsed_seconds!==undefined)detail.append(elem('small',`Thời gian xử lý: ${row.elapsed_seconds.toFixed(1)} giây`));
@@ -106,6 +106,11 @@
       if(job.mode==='preview'&&job.status==='completed'&&['completed','needs_review'].includes(row.status)) {
         const button=elem('button',module==='context'?'Xem dữ kiện':'Xem / duyệt','text-button');button.type='button';
         button.addEventListener('click',()=>run(()=>review(row)));reviewCell.append(button);
+      }
+      if(module==='kg' && terminal(job.status) && job.mode!=='preview' &&
+         (row.status==='needs_review' || (row.error||'').includes('ENTITY_LINK_REVIEW_REQUIRED'))) {
+        const button=elem('button','Duyệt bổ sung file này','text-button');button.type='button';
+        button.addEventListener('click',()=>run(()=>launch({mode:'preview',source:'files',files:[row.filename]})));reviewCell.append(button);
       }
       tr.append(selectCell,name,status,detail,reviewCell);$('rows').append(tr);
     }
@@ -152,6 +157,14 @@
       if(data.review_status==='reviewed')$('reviewBody').append(elem('p',`Đã duyệt · ${new Date(data.reviewed_at).toLocaleString('vi-VN')}`,'review-receipt'));
       const candidates=data.plan.entity_candidates||{}, choices={}, entries=Object.entries(candidates);
       const names=Object.fromEntries(data.entities.map(e=>[e.id,e.canonical_name]));
+      const mergeEntities=[...data.entities,...Object.values(candidates).flat().map(c=>({id:c.entity_id,canonical_name:c.canonical_name,type:c.entity_type}))];
+      const mergeButton=elem('button','Gộp cùng khái niệm…');mergeButton.type='button';
+      const launchMerge=(selectedIds=[])=>window.openConceptMerge({entities:mergeEntities,selectedIds,
+        request:body=>post(`/jobs/${currentJob}/items/${row.position}/merge`,body),
+        onApplied:async()=>{ $('reviewDialog').close(); job=await api(`/jobs/${currentJob}`);render(); }});
+      mergeButton.onclick=()=>launchMerge();
+      $('reviewBody').append(mergeButton);
+
       const actions=elem('div',undefined,'actions review-actions'), count=elem('span','', 'muted');
       const save=elem('button','Lưu duyệt tài liệu');save.type='button';save.dataset.action='save-review';
       const keepAll=elem('button','Giữ lại tất cả thực thể','secondary');keepAll.type='button';keepAll.dataset.action='keep-all';
@@ -166,9 +179,9 @@
           const box=elem('div',undefined,'candidate'),label=elem('label',`${names[eid]||eid} (${eid})`),select=elem('select');
           select.id=`choice-${eid}`;label.htmlFor=select.id;select.disabled=saving;
           select.append(new Option('Chọn cách xử lý…',''),new Option('Giữ là thực thể riêng','new'));
-          for(const c of options){if(c.link_allowed===false){box.append(elem('p',`Khác loại: ${c.canonical_name} (${c.entity_type}). Sửa loại trong JSON nếu cùng khái niệm; chỉ giữ riêng khi khác khái niệm.`));continue;}select.append(new Option(`${c.canonical_name} · ${c.entity_id} · điểm ${c.score}`,c.entity_id));}
+          for(const c of options){select.append(new Option(`Gộp với ${c.canonical_name} · ${c.entity_type || ""} · chọn loại sau gộp`, `merge:${c.entity_id}`));if(c.link_allowed===false){box.append(elem('p',`Đầu vào: ${c.incoming_type || "chưa rõ"} → ứng viên: ${c.canonical_name} (${c.entity_type}) · ${c.entity_id}. Chọn “Gộp với…” nếu cùng khái niệm; chỉ giữ riêng khi khác khái niệm.`));continue;}select.append(new Option(`${c.canonical_name} · ${c.entity_id} · điểm ${c.score}`,c.entity_id));}
           select.value=choices[eid]||'';
-          select.addEventListener('change',()=>{if(select.value)choices[eid]=select.value;else delete choices[eid];updateCount();});
+          select.addEventListener('change',()=>{if(select.value.startsWith('merge:')){const candidate=select.value.slice(6);select.value='';launchMerge([eid,candidate]);return;}if(select.value)choices[eid]=select.value;else delete choices[eid];updateCount();});
           box.append(label,select);candidateList.append(box);
         }
         const pages=Math.max(1,Math.ceil(entries.length/100));
@@ -222,7 +235,7 @@
   $('commit').addEventListener('click',()=>run(()=>launch({mode:'commit',previous_job_id:job.job_id,confirmed:$('confirm').checked,files:[...selected]})));
   $('retry').addEventListener('click',()=>run(()=>launch({mode:'retry',previous_job_id:job.job_id,confirmed:$('confirm').checked})));
   $('refresh').addEventListener('click',()=>run(refresh));
-  $('repreview').addEventListener('click',()=>run(()=>launch({mode:'preview',source:'files',files:job.items.filter(row=>!row.upload_error).map(row=>row.filename)})));
+  $('repreview').addEventListener('click',()=>run(()=>launch({mode:'preview',source:'files',files:job.items.filter(row=>!row.upload_error && (job.mode==='preview' || ['failed','partial','needs_review'].includes(row.status))).map(row=>row.filename)})));
   $('prevPage').addEventListener('click',()=>{page--;render();});$('nextPage').addEventListener('click',()=>{page++;render();});
   $('closeReview').addEventListener('click',()=>$('reviewDialog').close());
   window.addEventListener('beforeunload',()=>clearTimeout(timer));

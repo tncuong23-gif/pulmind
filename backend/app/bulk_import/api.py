@@ -135,4 +135,11 @@ def create_router():
         except Exception as exc:
             fail(exc)
 
+    @router.post('/api/v1/imports/{module}/jobs/{job_id}/items/{position}/merge')
+    async def merge_concepts(module: Module, job_id: str, position: int, body: dict, request: Request):
+        try:
+            if position < 0: raise IndexError(position)
+            return await manager(request,module).merge_concepts(job_id,position,body)
+        except Exception as exc: fail(exc)
+
     return router

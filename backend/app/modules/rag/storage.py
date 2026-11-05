@@ -2,7 +2,7 @@
 import json,sqlite3
 from pathlib import Path
 COLLECTIONS={'chunk':'medical_rag_chunks','proposition':'medical_rag_propositions'}
-FILTER_FIELDS=['document_id','section_id','language','document_type','entity_ids','relation_ids','sentence_ids','evidence_sentence_ids','proposition_id']
+FILTER_FIELDS=['document_id','section_id','language','document_type','entity_ids','relation_ids','sentence_ids','evidence_sentence_ids','proposition_id','source_document_ids','publication_year','last_updated_year']
 def matches(row,filters):
     return all(value in row.get(key,[]) if isinstance(row.get(key),list) else row.get(key)==value for key,value in filters.items() if value is not None)
 class DemoStore:
@@ -82,7 +82,7 @@ class LiveStore:
             info=self.q.get_collection(name);vp=info.config.params.vectors
             if not isinstance(vp,m.VectorParams) or vp.size!=encoder.dimension or vp.distance!=m.Distance.COSINE:
                 raise ValueError(f'Collection {name}: sai cấu hình vector; dùng collection mới.')
-            for field in ['revision','document_id','language','document_type']+fields:
+            for field in ['revision','document_id','language','document_type','source_document_ids']+fields:
                 if field not in info.payload_schema:self.q.create_payload_index(name,field_name=field,field_schema=m.PayloadSchemaType.KEYWORD,wait=True)
     def documents(self):return list(self.db.rag_documents.find({},{'_id':0}).sort('document_id',1))
     def get(self,doc_id):return self.db.rag_documents.find_one({'document_id':doc_id},{'_id':0})

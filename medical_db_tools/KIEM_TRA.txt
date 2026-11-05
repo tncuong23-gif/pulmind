@@ -1,0 +1,17 @@
+KIỂM TRA BẢN CHỈ CÀI CSDL
+
+10 kiểm tra tự động đã đạt:
+1. Cài mới chỉ tải và khởi động Neo4j, MongoDB, Qdrant.
+2. Tiếp tục trạng thái dở trước bước Ollama, giữ mã/mật khẩu/cổng/image.
+3. Nhận trạng thái cũ có cả image Ollama, vẫn chỉ chạy ba CSDL.
+4. Giữ cấu hình AI, UTF-8 BOM và sao lưu nguyên văn .env cũ.
+5. Cài lại/khởi động lại không đổi định danh hoặc tạo sao lưu thừa.
+6. Dịch vụ CSDL lỗi thì không cập nhật .env hoặc báo hoàn tất.
+7. START khi SETUP chưa hoàn tất hướng dẫn chạy SETUP.
+8. Nhắc nếu .env còn trỏ cổng Ollama Docker cũ, không tự đổi URL.
+9. Không kiểm tra tài nguyên/cổng Ollama từ trạng thái cũ.
+10. Các BAT dùng CRLF hợp lệ và đường dẫn gọi launch.bat đúng.
+
+Kiểm tra cú pháp Python đã đạt. Thao tác Docker và phản hồi dịch vụ được
+mô phỏng; chưa kiểm thử thực tế Windows, WSL hay Docker Desktop.
+Không khẳng định Ollama Windows hoặc model trên máy người dùng đã sẵn sàng.

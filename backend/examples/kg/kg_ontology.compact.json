@@ -1,0 +1,1347 @@
+{
+  "_comment": "Adapted from user-supplied v7.1; Document, EvidenceSource, ClinicalStudy, ClinicalGuideline must never be nodes. Source/authority/citation/version go in provenance. This is NOT clinically approved.",
+  "entity_types": [
+    "Disease",
+    "DiseaseSubtype",
+    "Syndrome",
+    "ClinicalCondition",
+    "Complication",
+    "Exacerbation",
+    "DiseaseStage",
+    "Severity",
+    "Outcome",
+    "Symptom",
+    "ClinicalSign",
+    "LaboratoryFinding",
+    "ImagingFinding",
+    "PathologyFinding",
+    "ClinicalFinding",
+    "Biomarker",
+    "PhysiologicalParameter",
+    "DiagnosticCriterion",
+    "ClinicalScore",
+    "RiskFactor",
+    "PrognosticFactor",
+    "PathophysiologicalMechanism",
+    "AnatomicalStructure",
+    "Organ",
+    "Pathogen",
+    "Gene",
+    "GeneVariant",
+    "DrugResistanceProfile",
+    "TransmissionRoute",
+    "Specimen",
+    "LaboratoryTest",
+    "Imaging",
+    "FunctionalTest",
+    "ClinicalAssessment",
+    "Medication",
+    "ActiveIngredient",
+    "DrugClass",
+    "Treatment",
+    "TreatmentRegimen",
+    "Procedure",
+    "Rehabilitation",
+    "RespiratorySupport",
+    "Vaccine",
+    "PreventiveMeasure",
+    "InfectionControlMeasure",
+    "TreatmentStep",
+    "PatientGroup",
+    "HealthcareSetting",
+    "Recommendation",
+    "TreatmentGoal",
+    "AdverseEvent",
+    "EpidemiologicalMeasure",
+    "TreatmentCondition"
+  ],
+  "relation_types": {
+    "IS_A": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "Pathogen",
+        "DrugClass"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "Pathogen",
+        "DrugClass"
+      ],
+      "description": "Quan hệ phân loại cùng họ khái niệm; yêu cầu cùng semantic family, không dùng thay quan hệ nguyên nhân."
+    },
+    "PART_OF": {
+      "domain": [
+        "AnatomicalStructure",
+        "Organ"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ],
+      "description": "Cấu trúc A là bộ phận của B (hệ cơ quan → cơ quan → cấu trúc; dùng thuộc tính level của AnatomicalStructure)."
+    },
+    "LOCATED_IN": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Complication",
+        "ClinicalFinding",
+        "ImagingFinding",
+        "PathologyFinding"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ],
+      "description": "Bệnh hoặc tổn thương nằm tại cấu trúc/cơ quan."
+    },
+    "AFFECTS": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen",
+        "Treatment",
+        "Complication"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ],
+      "description": "Tác động lên cơ quan/cấu trúc; không đồng nghĩa vị trí giải phẫu."
+    },
+    "CAUSES": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Pathogen",
+        "Medication",
+        "RiskFactor",
+        "PathophysiologicalMechanism"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition",
+        "Complication",
+        "Symptom",
+        "ClinicalSign",
+        "ClinicalFinding"
+      ],
+      "description": "A trực tiếp gây B; cần chứng cứ nhân quả, không suy ra từ tương quan. RiskFactor làm domain chỉ khi nguồn nêu rõ nhân quả (ví dụ phơi nhiễm silic gây bụi phổi silic)."
+    },
+    "CAUSED_BY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "Pathogen"
+      ],
+      "description": "Bệnh có căn nguyên vi sinh được nêu rõ."
+    },
+    "RISK_FACTOR_FOR": {
+      "domain": [
+        "RiskFactor",
+        "Disease",
+        "ClinicalCondition",
+        "PatientGroup"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication"
+      ],
+      "description": "Yếu tố làm tăng nguy cơ (gồm cả phơi nhiễm); không khẳng định là nguyên nhân trực tiếp."
+    },
+    "HAS_SYMPTOM": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "range": [
+        "Symptom"
+      ],
+      "description": "Bệnh/hội chứng có triệu chứng chủ quan."
+    },
+    "HAS_CLINICAL_SIGN": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "range": [
+        "ClinicalSign"
+      ],
+      "description": "Bệnh có dấu hiệu khám lâm sàng khách quan."
+    },
+    "HAS_LABORATORY_FINDING": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "LaboratoryFinding"
+      ],
+      "description": "Bệnh liên quan đến kết quả xét nghiệm được định danh."
+    },
+    "HAS_IMAGING_FINDING": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "ImagingFinding"
+      ],
+      "description": "Bệnh có phát hiện hình ảnh học."
+    },
+    "HAS_PATHOLOGY_FINDING": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "PathologyFinding"
+      ],
+      "description": "Bệnh có phát hiện mô bệnh học/giải phẫu bệnh."
+    },
+    "HAS_FINDING": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Exacerbation"
+      ],
+      "range": [
+        "ClinicalFinding"
+      ],
+      "description": "Phát hiện chưa được phân loại; ưu tiên quan hệ finding cụ thể khi đủ bằng chứng."
+    },
+    "HAS_COMPLICATION": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Treatment",
+        "Procedure"
+      ],
+      "range": [
+        "Complication",
+        "Disease",
+        "ClinicalCondition"
+      ],
+      "description": "Bệnh/điều trị có biến chứng được ghi nhận."
+    },
+    "HAS_COMORBIDITY": {
+      "domain": [
+        "Disease",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition"
+      ],
+      "description": "Bệnh đồng mắc; không kết luận nhân quả."
+    },
+    "HAS_SEVERITY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Exacerbation"
+      ],
+      "range": [
+        "Severity"
+      ],
+      "description": "Mức độ nặng của tình trạng."
+    },
+    "HAS_STAGE": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "DiseaseStage"
+      ],
+      "description": "Giai đoạn bệnh theo hệ thống phân giai đoạn."
+    },
+    "HAS_OUTCOME": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "Outcome"
+      ],
+      "description": "Kết cục bệnh hoặc đáp ứng/kết quả điều trị, không đồng nghĩa điều trị đã thực hiện trên bệnh nhân."
+    },
+    "HAS_MECHANISM": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication"
+      ],
+      "range": [
+        "PathophysiologicalMechanism"
+      ],
+      "description": "Cơ chế sinh lý bệnh được tài liệu mô tả."
+    },
+    "DIFFERENTIAL_DIAGNOSIS_OF": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "description": "A là chẩn đoán phân biệt cần cân nhắc của B, không đồng nghĩa hoặc phân nhóm."
+    },
+    "DIAGNOSED_BY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest",
+        "ClinicalAssessment",
+        "Procedure"
+      ],
+      "description": "Kỹ thuật được dùng để hỗ trợ chẩn đoán; không tự đảm bảo xác nhận."
+    },
+    "HAS_DIAGNOSTIC_CRITERION": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "DiagnosticCriterion"
+      ],
+      "description": "Bệnh có tiêu chuẩn chẩn đoán cụ thể theo nguồn (bao gồm quy tắc lâm sàng)."
+    },
+    "PRODUCES_FINDING": {
+      "domain": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest",
+        "ClinicalAssessment"
+      ],
+      "range": [
+        "ClinicalFinding",
+        "LaboratoryFinding",
+        "ImagingFinding",
+        "PathologyFinding",
+        "ClinicalSign"
+      ],
+      "description": "Thử nghiệm hoặc đánh giá tạo ra phát hiện."
+    },
+    "MEASURES": {
+      "domain": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest",
+        "ClinicalAssessment"
+      ],
+      "range": [
+        "Biomarker",
+        "PhysiologicalParameter"
+      ],
+      "description": "Phép thử đo đại lượng hay dấu ấn."
+    },
+    "INDICATES": {
+      "domain": [
+        "Symptom",
+        "ClinicalSign",
+        "LaboratoryFinding",
+        "ImagingFinding",
+        "PathologyFinding",
+        "ClinicalFinding",
+        "Biomarker"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication",
+        "Severity"
+      ],
+      "description": "Dấu hiệu/phát hiện gợi ý chẩn đoán hoặc mức độ; chỉ có giá trị khi có bằng chứng."
+    },
+    "ASSESSED_BY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Exacerbation",
+        "Severity"
+      ],
+      "range": [
+        "ClinicalScore",
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "LaboratoryTest",
+        "Imaging"
+      ],
+      "description": "Tình trạng hoặc mức độ được lượng giá bởi thang điểm/kỹ thuật."
+    },
+    "USES_SPECIMEN": {
+      "domain": [
+        "LaboratoryTest"
+      ],
+      "range": [
+        "Specimen"
+      ],
+      "description": "Xét nghiệm sử dụng loại bệnh phẩm."
+    },
+    "MONITORED_BY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest",
+        "ClinicalAssessment",
+        "PhysiologicalParameter"
+      ],
+      "description": "Bệnh/điều trị được theo dõi bằng xét nghiệm, thang đo hoặc thông số; kế hoạch theo dõi (tần suất, thời điểm) lưu thành thuộc tính cạnh.",
+      "edge_properties": [
+        "frequency",
+        "timing",
+        "purpose",
+        "source_evidence"
+      ]
+    },
+    "HAS_BIOMARKER": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "Biomarker"
+      ],
+      "description": "Bệnh liên quan dấu ấn sinh học; không tự khẳng định đặc hiệu chẩn đoán."
+    },
+    "TREATS": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "TreatmentRegimen",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication",
+        "Symptom"
+      ],
+      "description": "Thuốc/can thiệp có tác dụng điều trị bệnh hoặc triệu chứng theo y văn, KHÔNG chứng minh đã cấp cho người bệnh."
+    },
+    "INDICATED_FOR": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "TreatmentRegimen",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "PatientGroup",
+        "TreatmentCondition"
+      ],
+      "description": "Chỉ định điều trị phù hợp tình trạng/nhóm; khác với hiệu quả đã chứng minh hoặc thực tế sử dụng."
+    },
+    "CONTRAINDICATED_IN": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "TreatmentRegimen",
+        "Procedure",
+        "RespiratorySupport"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition",
+        "PatientGroup",
+        "TreatmentCondition"
+      ],
+      "description": "Chống chỉ định trong bệnh, tình trạng hoặc nhóm đối tượng xác định."
+    },
+    "REQUIRES_CAUTION_IN": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "Procedure"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition",
+        "PatientGroup"
+      ],
+      "description": "Cần thận trọng, khác chống chỉ định tuyệt đối."
+    },
+    "NOT_RECOMMENDED_FOR": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "TreatmentRegimen",
+        "Procedure"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition",
+        "PatientGroup"
+      ],
+      "description": "Không được khuyến cáo theo nguồn/phiên bản; khác chống chỉ định."
+    },
+    "PREVENTS": {
+      "domain": [
+        "Vaccine",
+        "PreventiveMeasure",
+        "InfectionControlMeasure",
+        "Medication",
+        "Treatment"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication"
+      ],
+      "description": "Can thiệp dự phòng bệnh hoặc biến chứng trong ngữ cảnh bằng chứng cụ thể."
+    },
+    "HAS_ACTIVE_INGREDIENT": {
+      "domain": [
+        "Medication"
+      ],
+      "range": [
+        "ActiveIngredient"
+      ],
+      "description": "Chế phẩm chứa hoạt chất xác định (thuốc phối hợp biểu diễn bằng nhiều cạnh, đặt is_combination=true trên Medication)."
+    },
+    "BELONGS_TO_DRUG_CLASS": {
+      "domain": [
+        "Medication",
+        "ActiveIngredient"
+      ],
+      "range": [
+        "DrugClass"
+      ],
+      "description": "Thuốc hoặc hoạt chất thuộc nhóm dược lý."
+    },
+    "INTERACTS_WITH": {
+      "domain": [
+        "Medication",
+        "DrugClass"
+      ],
+      "range": [
+        "Medication",
+        "DrugClass"
+      ],
+      "description": "Tương tác thuốc; cần lưu severity, direction, evidence và mechanism nếu có."
+    },
+    "HAS_ADVERSE_EFFECT": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment",
+        "TreatmentRegimen",
+        "Procedure"
+      ],
+      "range": [
+        "AdverseEvent"
+      ],
+      "description": "Nguy cơ tác dụng bất lợi đã được mô tả, không hàm ý đã xảy ra ở bệnh nhân."
+    },
+    "CAUSES_ADVERSE_EVENT": {
+      "domain": [
+        "Medication"
+      ],
+      "range": [
+        "AdverseEvent"
+      ],
+      "description": "Thuốc gây biến cố bất lợi với mức xác thực nhân quả phù hợp nguồn."
+    },
+    "HAS_REGIMEN": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "TreatmentRegimen"
+      ],
+      "description": "Bệnh có phác đồ điều trị có căn cứ."
+    },
+    "HAS_REGIMEN_COMPONENT": {
+      "domain": [
+        "TreatmentRegimen",
+        "TreatmentStep"
+      ],
+      "range": [
+        "Medication",
+        "DrugClass",
+        "Treatment"
+      ],
+      "description": "Phác đồ/bậc điều trị gồm can thiệp hoặc thuốc; liều, đường dùng, tần suất, thời gian gắn trên cạnh.",
+      "edge_properties": [
+        "dose",
+        "route",
+        "frequency",
+        "duration",
+        "source_evidence"
+      ]
+    },
+    "HAS_TREATMENT_STEP": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "TreatmentStep"
+      ],
+      "description": "Điều trị có các bậc/bước xác định."
+    },
+    "FOLLOWED_BY": {
+      "domain": [
+        "TreatmentStep",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "TreatmentStep",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "description": "Trình tự điều trị; cần có điều kiện/bối cảnh để xác định nhánh."
+    },
+    "RESISTANT_TO": {
+      "domain": [
+        "Pathogen",
+        "DrugResistanceProfile"
+      ],
+      "range": [
+        "Medication",
+        "ActiveIngredient",
+        "DrugClass"
+      ],
+      "description": "Vi sinh vật hoặc hồ sơ kháng thuốc kháng với thuốc/nhóm thuốc."
+    },
+    "HAS_DRUG_RESISTANCE": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen"
+      ],
+      "range": [
+        "DrugResistanceProfile"
+      ],
+      "description": "Tình trạng kháng thuốc của bệnh/tác nhân, phải xác định từ nguồn xét nghiệm."
+    },
+    "TRANSMITTED_VIA": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen"
+      ],
+      "range": [
+        "TransmissionRoute"
+      ],
+      "description": "Đường lây của bệnh truyền nhiễm/tác nhân."
+    },
+    "REQUIRES_ISOLATION": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "InfectionControlMeasure",
+        "HealthcareSetting"
+      ],
+      "description": "Yêu cầu cách ly theo hướng dẫn và bối cảnh cụ thể."
+    },
+    "REQUIRES_HOSPITALIZATION": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "Complication",
+        "PatientGroup"
+      ],
+      "range": [
+        "HealthcareSetting"
+      ],
+      "description": "Chỉ định nhập viện theo độ nặng/tiêu chuẩn, không đồng nghĩa thực tế đã nhập viện."
+    },
+    "SCREENED_BY": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition",
+        "PatientGroup"
+      ],
+      "range": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest",
+        "ClinicalAssessment"
+      ],
+      "description": "Đối tượng được sàng lọc bằng phương pháp, không đánh đồng chẩn đoán."
+    },
+    "HAS_MUTATION_IN": {
+      "domain": [
+        "Pathogen",
+        "DrugResistanceProfile"
+      ],
+      "range": [
+        "Gene",
+        "GeneVariant"
+      ],
+      "description": "Tác nhân/hồ sơ kháng thuốc liên quan đột biến gen/bằng chứng biến thể."
+    },
+    "CONFERS_RESISTANCE_TO": {
+      "domain": [
+        "GeneVariant",
+        "Gene",
+        "DrugResistanceProfile"
+      ],
+      "range": [
+        "Medication",
+        "ActiveIngredient",
+        "DrugClass"
+      ],
+      "description": "Biến thể/gen/hồ sơ làm kháng thuốc theo bằng chứng sinh học."
+    },
+    "HAS_RECOMMENDATION": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "Recommendation"
+      ],
+      "description": "Chủ đề/hướng dẫn có khuyến nghị có ngữ cảnh."
+    },
+    "RECOMMENDS_INTERVENTION": {
+      "domain": [
+        "Recommendation"
+      ],
+      "range": [
+        "Treatment",
+        "TreatmentRegimen",
+        "Medication",
+        "DrugClass",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport",
+        "PreventiveMeasure",
+        "InfectionControlMeasure"
+      ],
+      "description": "Khuyến nghị đề xuất can thiệp; không phải treatment event."
+    },
+    "FOR_PATIENT_GROUP": {
+      "domain": [
+        "Recommendation",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "PatientGroup"
+      ],
+      "description": "Chỉ định/khuyến nghị áp dụng cho nhóm bệnh nhân."
+    },
+    "HAS_CONDITION": {
+      "domain": [
+        "Recommendation",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "TreatmentCondition",
+        "DiagnosticCriterion"
+      ],
+      "description": "Điều kiện áp dụng khuyến nghị/phác đồ."
+    },
+    "TARGETS": {
+      "domain": [
+        "Medication",
+        "DrugClass",
+        "Treatment"
+      ],
+      "range": [
+        "Biomarker",
+        "PathophysiologicalMechanism",
+        "Pathogen"
+      ],
+      "description": "Điều trị nhắm vào đích sinh học, cơ chế hoặc tác nhân."
+    },
+    "HAS_TREATMENT_GOAL": {
+      "domain": [
+        "Disease",
+        "Treatment",
+        "TreatmentRegimen",
+        "Rehabilitation"
+      ],
+      "range": [
+        "TreatmentGoal"
+      ],
+      "description": "Mục tiêu điều trị/phục hồi cần xác định rõ."
+    },
+    "HAS_THRESHOLD": {
+      "domain": [
+        "DiagnosticCriterion",
+        "ClinicalScore"
+      ],
+      "range": [
+        "PhysiologicalParameter",
+        "Biomarker"
+      ],
+      "description": "Tiêu chuẩn/thang điểm có ngưỡng đo định lượng trên một thông số hoặc dấu ấn; giá trị, đơn vị, dấu so sánh lưu trên cạnh (thay cho node Measurement).",
+      "edge_properties": [
+        "value",
+        "unit",
+        "comparator",
+        "reference_range",
+        "specimen",
+        "source_evidence"
+      ]
+    },
+    "PREDICTS": {
+      "domain": [
+        "ClinicalScore",
+        "Biomarker",
+        "PrognosticFactor"
+      ],
+      "range": [
+        "Disease",
+        "ClinicalCondition",
+        "Outcome",
+        "Severity"
+      ],
+      "description": "Điểm/dấu ấn/yếu tố dự báo tình trạng, không khẳng định nguyên nhân."
+    },
+    "HAS_PROGNOSTIC_FACTOR": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "PrognosticFactor"
+      ],
+      "description": "Bệnh liên quan yếu tố tiên lượng có nguồn chứng cứ."
+    },
+    "HAS_EPIDEMIOLOGICAL_MEASURE": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "ClinicalCondition"
+      ],
+      "range": [
+        "EpidemiologicalMeasure"
+      ],
+      "description": "Chỉ số dịch tễ phải có quần thể, thời gian, địa bàn, đơn vị và nguồn."
+    },
+    "HAS_TREATMENT_COMPONENT": {
+      "domain": [
+        "Treatment",
+        "TreatmentRegimen",
+        "RespiratorySupport"
+      ],
+      "range": [
+        "Treatment",
+        "Medication",
+        "Procedure",
+        "RespiratorySupport",
+        "Rehabilitation"
+      ],
+      "description": "Can thiệp/phác đồ có các thành phần can thiệp; không đồng nhất với chỉ định hoặc đã dùng.",
+      "edge_properties": [
+        "dose",
+        "route",
+        "frequency",
+        "duration",
+        "source_evidence"
+      ]
+    },
+    "USES_MEDICATION": {
+      "domain": [
+        "TreatmentRegimen",
+        "Treatment",
+        "Procedure"
+      ],
+      "range": [
+        "Medication",
+        "DrugClass"
+      ],
+      "description": "Phác đồ hoặc can thiệp sử dụng thuốc, với liều/ngữ cảnh bổ sung trên cạnh.",
+      "edge_properties": [
+        "dose",
+        "route",
+        "frequency",
+        "duration",
+        "source_evidence"
+      ]
+    },
+    "APPLIED_IN": {
+      "domain": [
+        "InfectionControlMeasure",
+        "PreventiveMeasure"
+      ],
+      "range": [
+        "HealthcareSetting"
+      ],
+      "description": "Biện pháp được ứng dụng ở môi trường chăm sóc y tế."
+    },
+    "REDUCES_TRANSMISSION": {
+      "domain": [
+        "InfectionControlMeasure",
+        "PreventiveMeasure"
+      ],
+      "range": [
+        "Disease",
+        "Pathogen",
+        "TransmissionRoute"
+      ],
+      "description": "Biện pháp làm giảm lây truyền theo bằng chứng và điều kiện."
+    },
+    "DETECTS": {
+      "domain": [
+        "LaboratoryTest",
+        "Imaging",
+        "FunctionalTest"
+      ],
+      "range": [
+        "Disease",
+        "Pathogen",
+        "Biomarker"
+      ],
+      "description": "Kỹ thuật phát hiện bệnh, tác nhân hoặc dấu ấn; cần mô tả độ tin cậy và giới hạn."
+    }
+  },
+  "schema_version": "7.1B-reviewed-clinical-only",
+  "ontology_version": "7.1B REVIEWED — 53 entity types, 67 relations; no Document/ClinicalGuideline",
+  "metadata": {
+    "derived_from": "7.1-compact-final-candidate",
+    "status": "STRUCTURALLY_VALIDATED_HISTORICAL_ASSERTIONS_NOT_CLINICALLY_CERTIFIED",
+    "prepared_on": "2026-11-05",
+    "independent_expert_review": "NOT_PERFORMED",
+    "conformance_disclaimer": "Adapted to local KG JSON import schema using concepts from references; no formal SNOMED CT, FHIR, WHO ICD, OBO or SHACL compliance claimed",
+    "entity_type_count": 53,
+    "relation_type_count": 67,
+    "previous_entity_type_count": 74,
+    "compatibility": {
+      "backward_compatible": false,
+      "existing_KG_triples_must_not_be_relabelled_without_review": true,
+      "canonical_IDS_must_be_preserved": true,
+      "migration_mapping_file": "kg_ontology_compact_migration.json (cần cập nhật theo mục migration_mapping bên dưới)"
+    },
+    "change_log": [
+      "v7.0 -> v7.1: removed 10 entity types whose content is better stored as edge/node properties or in the provenance store.",
+      "Merged 10 further types into a parent/sibling type with a discriminating attribute (see migration_mapping).",
+      "Removed relations HAS_DOSE, HAS_ROUTE, HAS_FREQUENCY, HAS_DURATION, HAS_COHORT, USES_DEVICE; dose/route/frequency/duration moved to edge_properties.",
+      "HAS_THRESHOLD range changed to PhysiologicalParameter and Biomarker (Measurement removed); threshold value/unit on the edge.",
+      "Parent types with children are no longer listed together in domain/range: Pathogen kept alone (pathogen_kind), DiagnosticTest dropped in favour of its three subtypes, ClinicalFinding kept only for HAS_FINDING.",
+      "No corpus migration, no inferred clinical facts, no changes to patient data.",
+      "7.1A: remove ClinicalGuideline, 3 dependent relation types and all source titles as graph nodes; source recommendations remain provenance records."
+    ],
+    "kept_but_optional_review": {
+      "ClinicalCondition": "dễ thành 'thùng rác'; chỉ dùng cho trạng thái không phải bệnh, nạp mới phải review",
+      "EpidemiologicalMeasure": "chưa từng trích xuất dịch tễ; bỏ nếu QA không hỏi về tỷ lệ mắc",
+      "Gene / GeneVariant / DrugResistanceProfile": "chỉ cần nếu giữ phạm vi lao kháng thuốc",
+      "Specimen": "có thể chuyển thành thuộc tính của LaboratoryTest",
+      "PrognosticFactor / Severity / DiseaseStage": "có thể gộp thành thuộc tính nếu ít dữ liệu"
+    },
+    "types_not_referenced_by_any_relation": [],
+    "corpus_migration_policy": "immutable original, source-qualified provenance, no inferred dosing or clinical threshold data, quarantine uncertain claims.",
+    "previous_version": "7.1A-compact-clinical-only",
+    "change_log_v71B": [
+      "DIAGNOSED_BY range now permits Procedure for documented diagnostic endoscopy and biopsy",
+      "Preserve all migrated edge properties and original provenance under semantic re-review",
+      "Clearly separate source metadata, long clauses and ungrounded dosing from MAIN"
+    ]
+  },
+  "migration_mapping": {
+    "removed_entity_types": {
+      "Document": "bỏ -> thuộc tính source_ref (provenance ở MongoDB)",
+      "EvidenceSource": "bỏ -> thuộc tính source_evidence",
+      "ClinicalStudy": "bỏ (cùng quan hệ HAS_COHORT)",
+      "Dose": "bỏ -> thuộc tính cạnh 'dose'",
+      "Route": "bỏ -> thuộc tính cạnh 'route'",
+      "Duration": "bỏ -> thuộc tính cạnh 'duration'",
+      "Frequency": "bỏ -> thuộc tính cạnh 'frequency'",
+      "Measurement": "bỏ -> thuộc tính cạnh của HAS_THRESHOLD (value, unit, comparator)",
+      "TreatmentMonitoring": "bỏ -> dùng MONITORED_BY (thuộc tính cạnh frequency/timing)",
+      "Device": "bỏ cùng quan hệ USES_DEVICE; thiết bị mô tả trong Treatment/RespiratorySupport",
+      "ClinicalGuideline": "REMOVE; preserve guideline title, issuing body and version in provenance/source_ref; no node."
+    },
+    "merged_entity_types": {
+      "Exposure": "RiskFactor (thuộc tính kind='exposure')",
+      "Surgery": "Procedure (thuộc tính kind='surgery')",
+      "DrugCombination": "Medication (thuộc tính is_combination=true)",
+      "OrganSystem": "AnatomicalStructure (thuộc tính level='organ_system')",
+      "ClinicalRule": "DiagnosticCriterion (thuộc tính kind='clinical_rule')",
+      "Bacterium": "Pathogen (thuộc tính pathogen_kind='bacterium')",
+      "Virus": "Pathogen (thuộc tính pathogen_kind='virus')",
+      "Fungus": "Pathogen (thuộc tính pathogen_kind='fungus')",
+      "Parasite": "Pathogen (thuộc tính pathogen_kind='parasite')",
+      "DiagnosticTest": "LaboratoryTest | Imaging | FunctionalTest (chọn theo bản chất; không dùng loại cha)"
+    },
+    "removed_relation_types": {
+      "HAS_DOSE": "-> thuộc tính cạnh dose",
+      "HAS_ROUTE": "-> thuộc tính cạnh route",
+      "HAS_FREQUENCY": "-> thuộc tính cạnh frequency",
+      "HAS_DURATION": "-> thuộc tính cạnh duration",
+      "HAS_COHORT": "bỏ cùng ClinicalStudy",
+      "USES_DEVICE": "bỏ cùng Device",
+      "RECOMMENDS": "REMOVE as graph edge; preserve source relation with proposition and evidence as provenance claim; no source node.",
+      "COVERS_TOPIC": "REMOVE as graph edge; preserve source relation with proposition and evidence as provenance claim; no source node.",
+      "SPECIFIES_CRITERION": "REMOVE as graph edge; preserve source relation with proposition and evidence as provenance claim; no source node."
+    },
+    "rules": [
+      "Chạy dry run trước; chỉ áp dụng mapping tự động khi endpoint hợp lệ theo domain/range mới.",
+      "Node bị gộp: gán nhãn mới và ghi thuộc tính phân biệt (kind/level/pathogen_kind...).",
+      "Cạnh HAS_DOSE/HAS_ROUTE/HAS_FREQUENCY/HAS_DURATION: gộp giá trị vào thuộc tính của cạnh phác đồ tương ứng, giữ source_evidence.",
+      "Giữ nguyên canonical ID; không gán lại nhãn nếu chưa review nguồn."
+    ]
+  },
+  "corpus_coverage": {
+    "previous_release_claims": {
+      "basis": "71 Markdown source docs and 93 migrated KG JSON units",
+      "kg_json_files": 93,
+      "entities": 4961,
+      "relations": 4812,
+      "technical_validation_errors": 0,
+      "status": "TECHNICAL_PASS",
+      "source_markdown_documents_audited": 71,
+      "expert_clinical_review": "NOT_PERFORMED",
+      "new_epidemiology_extraction": "NOT_PERFORMED"
+    },
+    "compact_version_validated_against_corpus": true,
+    "migration_performed": true,
+    "technical_validation_errors_on_compact_schema": 0,
+    "new_release_corpus_counts": "See reports/complete_migration_summary.json; technical validation only"
+  },
+  "validation_policy": {
+    "canonical_entity_types_only": true,
+    "reject_unknown_entity_types": true,
+    "reject_unknown_relation_types": true,
+    "enforce_relation_domain_range": true,
+    "source_evidence_required": true,
+    "causal_risk_association_requires_review": true,
+    "indication_vs_treatment_event_strict": true,
+    "new_ingestion_ClinicalCondition_requires_review": true,
+    "epidemiology_context_required": true,
+    "migration_requires_dry_run": true,
+    "edge_properties_validated_per_relation": true,
+    "reject_source_title_entities": true,
+    "reject_long_or_clause_label": true,
+    "max_entity_name_whitespace_tokens": 10
+  },
+  "semantic_governance": {
+    "reference_alignment_mode": "principles and analogies, not exact-equivalence claims or licensed SNOMED terminology reuse",
+    "data_layers": {
+      "knowledge_graph": "general reference medical facts only; not actual patient history",
+      "patient_graph": "confirmed patient-specific assertions in a separate store/context",
+      "provenance": "document/author/year/section/sentence/proposition/evidence/guideline/version in source database or provenance JSON; NEVER graph nodes.",
+      "epidemiology": "requires population, period, geography and measure unit before promoting to graph",
+      "source_refs": [
+        "S3",
+        "S5",
+        "S9",
+        "S13"
+      ]
+    },
+    "evidence_sources": {
+      "S1": {
+        "title": "SNOMED CT — Clinical finding and disorder",
+        "organization": "SNOMED International",
+        "url": "https://docs.snomed.org/snomed-ct-specifications/snomed-ct-editorial-guide/readme/authoring/domain-specific-modeling/clinical-finding-and-disorder",
+        "supports": "Disease/disorder khác clinical finding; phân biệt observable entity và quan sát."
+      },
+      "S2": {
+        "title": "SNOMED CT — Clinical finding defining attributes",
+        "organization": "SNOMED International",
+        "url": "https://docs.snomed.org/snomed-ct-specifications/snomed-ct-editorial-guide/readme/authoring/domain-specific-modeling/clinical-finding-and-disorder/clinical-finding-defining-attributes",
+        "supports": "Due-to dành cho quan hệ nhân quả trực tiếp; associated-with cho liên quan/yếu tố nguy cơ."
+      },
+      "S3": {
+        "title": "FHIR R5 — Condition",
+        "organization": "HL7",
+        "url": "https://hl7.org/fhir/R5/condition.html",
+        "supports": "Condition là đối tượng lâm sàng và có verification status, category, stage và evidence riêng."
+      },
+      "S4": {
+        "title": "FHIR R5 — MedicationRequest",
+        "organization": "HL7",
+        "url": "https://hl7.org/fhir/R5/medicationrequest.html",
+        "supports": "Intent và reason/indication của yêu cầu điều trị khác event đã diễn ra."
+      },
+      "S5": {
+        "title": "FHIR R5 — PlanDefinition",
+        "organization": "HL7",
+        "url": "https://hl7.org/fhir/R5/plandefinition.html",
+        "supports": "Recommendation/guideline/action definition không phải hành động đã diễn ra."
+      },
+      "S6": {
+        "title": "FHIR R5 — ActivityDefinition",
+        "organization": "HL7",
+        "url": "https://hl7.org/fhir/R5/activitydefinition.html",
+        "supports": "Hoạt động định nghĩa khác yêu cầu thực hiện/đã thực hiện."
+      },
+      "S7": {
+        "title": "WHO — Tuberculosis definitions",
+        "organization": "WHO",
+        "url": "https://tbksp.who.int/en/node/2790",
+        "supports": "Lao ngoài phổi gồm lao màng phổi, hạch và các cơ quan ngoài phổi."
+      },
+      "S9": {
+        "title": "WHO GHO — TB incidence per 100,000",
+        "organization": "WHO",
+        "url": "https://www.who.int/data/gho/indicator-metadata-registry/imr-details/3160",
+        "supports": "Incidence phụ thuộc time period, quần thể, đơn vị (100.000 người/năm)."
+      },
+      "S10": {
+        "title": "OBO Foundry — Principle 7 Relations",
+        "organization": "OBO Foundry",
+        "url": "https://obofoundry.org/principles/fp-007-relations.html",
+        "supports": "Tái sử dụng quan hệ, tránh đồng nghĩa và thận trọng domain/range."
+      },
+      "S11": {
+        "title": "OBO RO — Causal relations",
+        "organization": "OBO Relation Ontology",
+        "url": "https://oborel.github.io/obo-relations/causal-relations/",
+        "supports": "Causal influence, direction và temporality là semantics khác nhau."
+      },
+      "S12": {
+        "title": "W3C — SKOS reference",
+        "organization": "W3C",
+        "url": "https://www.w3.org/TR/skos-reference/",
+        "supports": "Exact mapping khác close mapping và OWL class equivalence."
+      },
+      "S13": {
+        "title": "W3C — SHACL recommendation",
+        "organization": "W3C",
+        "url": "https://www.w3.org/TR/shacl/",
+        "supports": "Validation shapes có thể kiểm soát ràng buộc graph và báo lỗi minh bạch."
+      }
+    },
+    "core_rules": {
+      "Patient data": "Patient identity, care episodes, and actual treatment administrations stay in separate patient/encounter data.",
+      "causality": "CAUSES requires direct causal evidence; RISK_FACTOR_FOR represents increased likelihood, not causality.",
+      "diagnosis": "DIAGNOSED_BY is not the same as SCREENED_BY; both differ from a test result.",
+      "treatment": "TREATS is general therapeutic effect; INDICATED_FOR is eligibility; RECOMMENDS is guideline advice; none mean administered.",
+      "adverse": "HAS_ADVERSE_EFFECT (possible) differs from CAUSES_ADVERSE_EVENT (attributed causality).",
+      "classification": "IS_A only for genuine type/subtype and same semantic family, never as generic association.",
+      "provenance": "Every extracted fact should retain evidence reference, document/version, confidence/context and review status.",
+      "dosing": "Dose/route/frequency/duration are properties of the regimen/component edge, never standalone nodes.",
+      "relation_rewrites": "Only safe alias mappings can be applied automatically, and only after endpoint validation; review mappings require manual adjudication."
+    }
+  },
+  "entity_hierarchy_policy": {
+    "type_vs_instance": "Named diseases, individual pathogens, drugs, scores and values are instances, not bespoke schema type names.",
+    "DiseaseSubtype": {
+      "parent": "Disease"
+    },
+    "Symptom": {
+      "parent": "ClinicalFinding"
+    },
+    "ClinicalSign": {
+      "parent": "ClinicalFinding"
+    },
+    "LaboratoryFinding": {
+      "parent": "ClinicalFinding"
+    },
+    "ImagingFinding": {
+      "parent": "ClinicalFinding"
+    },
+    "PathologyFinding": {
+      "parent": "ClinicalFinding"
+    },
+    "TreatmentRegimen": {
+      "parent": "Treatment"
+    },
+    "RespiratorySupport": {
+      "parent": "Treatment"
+    },
+    "Rehabilitation": {
+      "parent": "Treatment"
+    },
+    "usage_rule": "Neo4j does not infer inheritance: use the most specific type at ingestion. Parent types appear in domain/range only where listed explicitly (ClinicalFinding in HAS_FINDING/INDICATES/CAUSES, Treatment in TREATS and others)."
+  },
+  "entity_attribute_schemas": {
+    "common_properties": {
+      "recommended_fields": [
+        "canonical_id",
+        "name_vi",
+        "name_en",
+        "aliases",
+        "source_ref",
+        "confidence",
+        "review_status"
+      ]
+    },
+    "Pathogen": {
+      "required": [
+        "pathogen_kind"
+      ],
+      "pathogen_kind_enum": [
+        "bacterium",
+        "virus",
+        "fungus",
+        "parasite"
+      ]
+    },
+    "RiskFactor": {
+      "recommended_fields": [
+        "kind"
+      ],
+      "kind_enum": [
+        "risk_factor",
+        "exposure"
+      ]
+    },
+    "Procedure": {
+      "recommended_fields": [
+        "kind"
+      ],
+      "kind_enum": [
+        "procedure",
+        "surgery"
+      ]
+    },
+    "Medication": {
+      "recommended_fields": [
+        "is_combination",
+        "brand_names"
+      ]
+    },
+    "AnatomicalStructure": {
+      "recommended_fields": [
+        "level"
+      ],
+      "level_enum": [
+        "organ_system",
+        "structure",
+        "region"
+      ]
+    },
+    "DiagnosticCriterion": {
+      "recommended_fields": [
+        "kind",
+        "source_evidence"
+      ],
+      "kind_enum": [
+        "criterion",
+        "clinical_rule"
+      ]
+    },
+    "EpidemiologicalMeasure": {
+      "required_for_new_verified_instances": [
+        "measure_kind",
+        "value_text",
+        "unit",
+        "population",
+        "period",
+        "geography",
+        "source_evidence"
+      ],
+      "measure_kind_enum": [
+        "incidence",
+        "prevalence",
+        "mortality_rate",
+        "case_fatality"
+      ],
+      "recommended_optional": [
+        "numerator",
+        "denominator",
+        "per_population",
+        "uncertainty_interval",
+        "age_group",
+        "sex",
+        "estimation_method"
+      ],
+      "quality_gates": [
+        "avoid mixing incidence with prevalence",
+        "no region/time-free epidemiological assertions",
+        "normalize per-100000 carefully"
+      ],
+      "source_refs": [
+        "S9"
+      ]
+    },
+    "TreatmentCondition": {
+      "recommended_fields": [
+        "condition_kind",
+        "polarity",
+        "population",
+        "severity",
+        "source_evidence"
+      ]
+    },
+    "DrugResistanceProfile": {
+      "recommended_fields": [
+        "pathogen",
+        "drug",
+        "status",
+        "test_method",
+        "specimen",
+        "source_evidence"
+      ]
+    },
+    "TreatmentStep": {
+      "recommended_fields": [
+        "step_order",
+        "track",
+        "phase",
+        "eligibility",
+        "source_evidence"
+      ]
+    }
+  }
+}

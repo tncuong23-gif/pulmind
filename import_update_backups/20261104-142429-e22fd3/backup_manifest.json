@@ -1,0 +1,38 @@
+{
+  "created_files": [
+    "backend\\app\\direct_import\\__init__.py",
+    "backend\\app\\direct_import\\api.py",
+    "backend\\app\\direct_import\\package.py",
+    "backend\\app\\direct_import\\service.py",
+    "backend\\app\\direct_import\\store.py",
+    "backend\\app\\direct_import\\web\\app.js",
+    "backend\\app\\direct_import\\web\\index.html",
+    "backend\\examples\\kg\\kg_ontology.compact.json",
+    "backend\\tests\\test_direct_import.py"
+  ],
+  "updated_files": [
+    "backend\\app\\data_workspace\\api.py",
+    "backend\\app\\data_workspace\\web\\app.js",
+    "backend\\app\\direct_import\\__init__.py",
+    "backend\\app\\direct_import\\api.py",
+    "backend\\app\\direct_import\\package.py",
+    "backend\\app\\direct_import\\service.py",
+    "backend\\app\\direct_import\\store.py",
+    "backend\\app\\direct_import\\web\\app.js",
+    "backend\\app\\direct_import\\web\\index.html",
+    "backend\\app\\kg_global\\publish.py",
+    "backend\\app\\kg_global\\query.py",
+    "backend\\app\\kg_global\\store.py",
+    "backend\\app\\main.py",
+    "backend\\app\\modules\\kg_import\\factory.py",
+    "backend\\app\\modules\\kg_query\\service.py",
+    "backend\\app\\modules\\kg_query\\web\\index.html",
+    "backend\\app\\modules\\rag\\core.py",
+    "backend\\app\\modules\\rag\\service.py",
+    "backend\\app\\modules\\rag\\storage.py",
+    "backend\\app\\services\\evidence.py",
+    "backend\\examples\\kg\\kg_ontology.compact.json",
+    "backend\\tests\\test_direct_import.py",
+    "backend\\.env"
+  ]
+}

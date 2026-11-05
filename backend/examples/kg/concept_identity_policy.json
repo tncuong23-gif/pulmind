@@ -1,0 +1,1386 @@
+{
+  "version": "v687-concept-role-1",
+  "groups": [
+    {
+      "canonical_id": "ENT_9ebece0b-373e-56ff-89f1-1955b03698de",
+      "canonical_name": "Bệnh phổi tắc nghẽn mạn tính",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_9ebece0b-373e-56ff-89f1-1955b03698de",
+          "type": "Disease",
+          "canonical_name": "Bệnh phổi tắc nghẽn mạn tính"
+        },
+        {
+          "id": "ENT_536c9a95-6a11-5c3c-b82b-f4a8d91cda59",
+          "type": "RiskFactor",
+          "canonical_name": "Bệnh phổi tắc nghẽn mạn tính"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_82284253-f643-58c9-9e42-540678ad2f2e",
+      "canonical_name": "Đợt cấp COPD",
+      "canonical_type": "Exacerbation",
+      "members": [
+        {
+          "id": "ENT_82284253-f643-58c9-9e42-540678ad2f2e",
+          "type": "Exacerbation",
+          "canonical_name": "Đợt cấp COPD"
+        },
+        {
+          "id": "ENT_8c26cc1d-d67c-5c88-960d-d2b9c2af2b0c",
+          "type": "Complication",
+          "canonical_name": "Đợt cấp COPD"
+        },
+        {
+          "id": "ENT_cb0f6a8d-374f-5f8d-afbf-a91ae595f0c1",
+          "type": "DiseaseSubtype",
+          "canonical_name": "Đợt cấp COPD"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_bed98d71-10a6-515c-8d24-181a2aa2e24e",
+      "canonical_name": "Hen phế quản",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_611739ea-683a-57fb-a1cf-e91680edf0f2",
+          "type": "RiskFactor",
+          "canonical_name": "Hen phế quản"
+        },
+        {
+          "id": "ENT_bed98d71-10a6-515c-8d24-181a2aa2e24e",
+          "type": "Disease",
+          "canonical_name": "Hen phế quản"
+        },
+        {
+          "id": "ENT_af17eb2e8b8f59fc",
+          "type": "Etiology",
+          "canonical_name": "Hen phế quản"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_143608e7-ec34-586c-b355-334f32a47f6e",
+      "canonical_name": "Thiếu hụt alpha-1 antitrypsin",
+      "canonical_type": "GeneticFactor",
+      "members": [
+        {
+          "id": "ENT_143608e7-ec34-586c-b355-334f32a47f6e",
+          "type": "GeneticFactor",
+          "canonical_name": "Thiếu hụt alpha-1 antitrypsin"
+        },
+        {
+          "id": "ENT_8c7fb6d5-e96f-53df-b3a2-7be23948ce2c",
+          "type": "RiskFactor",
+          "canonical_name": "Thiếu hụt alpha-1 antitrypsin"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_65569d02-a176-54ac-a9c9-8c45ef05f6da",
+      "canonical_name": "Giãn phế quản",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_65569d02-a176-54ac-a9c9-8c45ef05f6da",
+          "type": "Disease",
+          "canonical_name": "Giãn phế quản"
+        },
+        {
+          "id": "ENT_86da51ba20c75d1f",
+          "type": "Etiology",
+          "canonical_name": "Giãn phế quản"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_602b8796-5d3a-5f03-8ac2-61e94cea9099",
+      "canonical_name": "Lao phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_602b8796-5d3a-5f03-8ac2-61e94cea9099",
+          "type": "Disease",
+          "canonical_name": "Lao phổi"
+        },
+        {
+          "id": "ENT_50b4d3c5-989f-57c2-83d9-602771fa35aa",
+          "type": "DiseaseSubtype",
+          "canonical_name": "Lao phổi"
+        },
+        {
+          "id": "ENT_8f758ffdee2b58d1",
+          "type": "RiskFactor",
+          "canonical_name": "Lao phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_a2501e0a-11f5-50d3-9672-d107e3193301",
+      "canonical_name": "Tiêu chảy",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_2cfcb8a9-b271-59b4-b4f5-d7a0e7abcda0",
+          "type": "AdverseEffect",
+          "canonical_name": "Tiêu chảy"
+        },
+        {
+          "id": "ENT_a2501e0a-11f5-50d3-9672-d107e3193301",
+          "type": "Symptom",
+          "canonical_name": "Tiêu chảy"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_43f55df5-0b4d-584a-a1aa-627444a1099b",
+      "canonical_name": "Buồn nôn",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_741e6ee0-229e-5b08-8bbf-fb65cd717d42",
+          "type": "AdverseEffect",
+          "canonical_name": "Buồn nôn"
+        },
+        {
+          "id": "ENT_43f55df5-0b4d-584a-a1aa-627444a1099b",
+          "type": "Symptom",
+          "canonical_name": "Buồn nôn"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_c3baf328-0f1f-5967-aaf1-8b643aff8d2a",
+      "canonical_name": "Sụt cân",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_f12ebdde-b676-5590-a28d-f615f36ea7b8",
+          "type": "AdverseEffect",
+          "canonical_name": "Sụt cân"
+        },
+        {
+          "id": "ENT_c3baf328-0f1f-5967-aaf1-8b643aff8d2a",
+          "type": "Symptom",
+          "canonical_name": "Sụt cân"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3da4d9f0-d0eb-5378-aa07-c3d20a4d2f22",
+      "canonical_name": "Đau bụng",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_0cd258e2-013f-5fd0-abf4-ebad352bc860",
+          "type": "AdverseEffect",
+          "canonical_name": "Đau bụng"
+        },
+        {
+          "id": "ENT_3da4d9f0-d0eb-5378-aa07-c3d20a4d2f22",
+          "type": "Symptom",
+          "canonical_name": "Đau bụng"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0710ce87-9182-54bf-87dd-c8e2f0b41f84",
+      "canonical_name": "Đau đầu",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_2747ed78-ca37-5ada-9bed-0b6032bee854",
+          "type": "AdverseEffect",
+          "canonical_name": "Đau đầu"
+        },
+        {
+          "id": "ENT_0710ce87-9182-54bf-87dd-c8e2f0b41f84",
+          "type": "Symptom",
+          "canonical_name": "Đau đầu"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_45ee1192-a70b-5ad3-aff1-a965a34cb2d2",
+      "canonical_name": "Bệnh tim mạch",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_45ee1192-a70b-5ad3-aff1-a965a34cb2d2",
+          "type": "Disease",
+          "canonical_name": "Bệnh tim mạch"
+        },
+        {
+          "id": "ENT_405de925-1443-5fc7-8170-f677421a329c",
+          "type": "RiskFactor",
+          "canonical_name": "Bệnh tim mạch"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_9d396d51-2d2d-5025-ae05-3a427b25d539",
+      "canonical_name": "Ung thư phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_9d396d51-2d2d-5025-ae05-3a427b25d539",
+          "type": "Disease",
+          "canonical_name": "Ung thư phổi"
+        },
+        {
+          "id": "ENT_383170d952a95e24",
+          "type": "Etiology",
+          "canonical_name": "Ung thư phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_41e9252e-4c58-56c3-8018-cd0a862f12ab",
+      "canonical_name": "Viêm phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_ad6472be-aff5-53ce-ba6e-7a26621d7554",
+          "type": "AdverseEffect",
+          "canonical_name": "Viêm phổi"
+        },
+        {
+          "id": "ENT_41e9252e-4c58-56c3-8018-cd0a862f12ab",
+          "type": "Disease",
+          "canonical_name": "Viêm phổi"
+        },
+        {
+          "id": "ENT_db3c1b36-cb71-53f4-90bb-e2ebf953fcb8",
+          "type": "RiskFactor",
+          "canonical_name": "Viêm phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0d7026c1-9199-5fa2-be3e-ac499dc361d2",
+      "canonical_name": "Thông khí không xâm lấn",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_0d7026c1-9199-5fa2-be3e-ac499dc361d2",
+          "type": "MechanicalVentilation",
+          "canonical_name": "Thông khí không xâm lấn"
+        },
+        {
+          "id": "ENT_065f46fd-1885-58fa-b8d6-f5030784d9de",
+          "type": "RespiratorySupport",
+          "canonical_name": "Thông khí không xâm lấn"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_2d4ef692-732a-5643-ba28-1cd642b35d8f",
+      "canonical_name": "ARDS",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_bdcc1e12-7093-5ecb-a96b-1a24f3003d8b",
+          "type": "Complication",
+          "canonical_name": "ARDS"
+        },
+        {
+          "id": "ENT_2d4ef692-732a-5643-ba28-1cd642b35d8f",
+          "type": "Disease",
+          "canonical_name": "ARDS"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_d9826c1c-ae4a-5d60-a62d-b80cf4f6b99e",
+      "canonical_name": "Nhiễm khuẩn huyết",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_1f2cb558-0644-5198-861f-ab4836128674",
+          "type": "Complication",
+          "canonical_name": "Nhiễm khuẩn huyết"
+        },
+        {
+          "id": "ENT_d9826c1c-ae4a-5d60-a62d-b80cf4f6b99e",
+          "type": "Disease",
+          "canonical_name": "Nhiễm khuẩn huyết"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3daa9440-d090-5a1e-9cd0-5048ea26ac49",
+      "canonical_name": "Viêm cơ tim",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_e838c2ff-cb2b-5000-8580-f6927d8ea71f",
+          "type": "Complication",
+          "canonical_name": "Viêm cơ tim"
+        },
+        {
+          "id": "ENT_3daa9440-d090-5a1e-9cd0-5048ea26ac49",
+          "type": "Disease",
+          "canonical_name": "Viêm cơ tim"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_27e1ce61-d965-59ec-b938-5287e0394cd0",
+      "canonical_name": "Suy tim",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_c89dc57b-390a-5405-a8c8-0f7423de45d2",
+          "type": "Complication",
+          "canonical_name": "Suy tim"
+        },
+        {
+          "id": "ENT_27e1ce61-d965-59ec-b938-5287e0394cd0",
+          "type": "Disease",
+          "canonical_name": "Suy tim"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_8f26f2e9-af43-53f3-b9a6-157fc1a0633b",
+      "canonical_name": "Nhồi máu não",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_4eb45a7a-0656-5bd5-9ef3-aa82540eb5b2",
+          "type": "Complication",
+          "canonical_name": "Nhồi máu não"
+        },
+        {
+          "id": "ENT_8f26f2e9-af43-53f3-b9a6-157fc1a0633b",
+          "type": "Disease",
+          "canonical_name": "Nhồi máu não"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_7d7d53f8-7d39-5c66-9b27-779ab6a52f3c",
+      "canonical_name": "Thở oxy",
+      "canonical_type": "OxygenTherapy",
+      "members": [
+        {
+          "id": "ENT_7d7d53f8-7d39-5c66-9b27-779ab6a52f3c",
+          "type": "OxygenTherapy",
+          "canonical_name": "Thở oxy"
+        },
+        {
+          "id": "ENT_4bdbcf0c-33ee-5631-8894-d9cf133b00fe",
+          "type": "Treatment",
+          "canonical_name": "Thở oxy"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_14af8db0-4a73-567e-9729-59ca62993803",
+      "canonical_name": "CPAP",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_14af8db0-4a73-567e-9729-59ca62993803",
+          "type": "MechanicalVentilation",
+          "canonical_name": "CPAP"
+        },
+        {
+          "id": "ENT_bd6c3da4-69b3-59ae-b95d-26ecec1e42e4",
+          "type": "Treatment",
+          "canonical_name": "CPAP"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_f64de736-b572-57aa-b517-1e6949926e04",
+      "canonical_name": "HFNC",
+      "canonical_type": "OxygenTherapy",
+      "members": [
+        {
+          "id": "ENT_4b8ff504-2d90-5836-ad70-ed56bff1c146",
+          "type": "RespiratorySupport",
+          "canonical_name": "HFNC"
+        },
+        {
+          "id": "ENT_f64de736-b572-57aa-b517-1e6949926e04",
+          "type": "OxygenTherapy",
+          "canonical_name": "HFNC"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_40b2a0fb-3cb4-5b90-b085-1c175ba71da6",
+      "canonical_name": "Thở máy xâm nhập",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_40b2a0fb-3cb4-5b90-b085-1c175ba71da6",
+          "type": "MechanicalVentilation",
+          "canonical_name": "Thở máy xâm nhập"
+        },
+        {
+          "id": "ENT_e6a1dc29-ce13-5d52-80dd-8b849a3328c9",
+          "type": "Treatment",
+          "canonical_name": "Thở máy xâm nhập"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_8e661e79-df43-5d3a-8038-52fd66eebb19",
+      "canonical_name": "Phục hồi chức năng",
+      "canonical_type": "Rehabilitation",
+      "members": [
+        {
+          "id": "ENT_8e661e79-df43-5d3a-8038-52fd66eebb19",
+          "type": "Rehabilitation",
+          "canonical_name": "Phục hồi chức năng"
+        },
+        {
+          "id": "ENT_9492c98dc45b5f51",
+          "type": "Treatment",
+          "canonical_name": "Phục hồi chức năng"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0b015f57-efac-519f-98d9-229c62d6d871",
+      "canonical_name": "Ung thư",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_97eef9b4-8921-5c07-94d1-df9ebac4080e",
+          "type": "RiskFactor",
+          "canonical_name": "Ung thư"
+        },
+        {
+          "id": "ENT_0b015f57-efac-519f-98d9-229c62d6d871",
+          "type": "Disease",
+          "canonical_name": "Ung thư"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_8d1b7f3d-8dc3-5344-997f-74fbc3469535",
+      "canonical_name": "Đái tháo đường",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_bf9b2338-69ca-5a84-a864-d6394c2978c1",
+          "type": "RiskFactor",
+          "canonical_name": "Đái tháo đường"
+        },
+        {
+          "id": "ENT_8d1b7f3d-8dc3-5344-997f-74fbc3469535",
+          "type": "Disease",
+          "canonical_name": "Đái tháo đường"
+        },
+        {
+          "id": "ENT_701ef028-e085-5a46-b19d-bcfe415e6ddd",
+          "type": "Comorbidity",
+          "canonical_name": "Đái tháo đường"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_65702a49-5341-59ee-ac82-80a516bf4e0e",
+      "canonical_name": "Bệnh lao",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_52f1682e-1a2c-5ec1-be86-e9f6bee822d0",
+          "type": "RiskFactor",
+          "canonical_name": "Bệnh lao"
+        },
+        {
+          "id": "ENT_65702a49-5341-59ee-ac82-80a516bf4e0e",
+          "type": "Disease",
+          "canonical_name": "Bệnh lao"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_68e0e782-9e47-55a9-b12f-80240ce4bedd",
+      "canonical_name": "Béo phì",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_ac8ddaeb-9247-59f7-abe7-0ab3928aa3e3",
+          "type": "RiskFactor",
+          "canonical_name": "Béo phì"
+        },
+        {
+          "id": "ENT_68e0e782-9e47-55a9-b12f-80240ce4bedd",
+          "type": "Disease",
+          "canonical_name": "Béo phì"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_ffde5861-5c3a-566b-8300-a0eee80f4bca",
+      "canonical_name": "Loạn nhịp tim",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_7aaf6bcb-e60b-571f-bb29-bbac2725d731",
+          "type": "Complication",
+          "canonical_name": "Loạn nhịp tim"
+        },
+        {
+          "id": "ENT_ffde5861-5c3a-566b-8300-a0eee80f4bca",
+          "type": "Disease",
+          "canonical_name": "Loạn nhịp tim"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_9a17e197-0e35-5d70-b97e-33b8d28c85ed",
+      "canonical_name": "Bệnh cơ tim",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_ca5cec86-afd7-595d-8a27-f94208374edd",
+          "type": "Complication",
+          "canonical_name": "Bệnh cơ tim"
+        },
+        {
+          "id": "ENT_9a17e197-0e35-5d70-b97e-33b8d28c85ed",
+          "type": "Disease",
+          "canonical_name": "Bệnh cơ tim"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_a06d56f7-1287-542a-b6f6-589413e1d416",
+      "canonical_name": "Thuyên tắc huyết khối",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_465bd4f1-16fe-5c7a-8ffd-720629040802",
+          "type": "Complication",
+          "canonical_name": "Thuyên tắc huyết khối"
+        },
+        {
+          "id": "ENT_a06d56f7-1287-542a-b6f6-589413e1d416",
+          "type": "Disease",
+          "canonical_name": "Thuyên tắc huyết khối"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_27290e13-53ac-5adb-a8fe-fbfc45bc140b",
+      "canonical_name": "Tắc mạch phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_36c809a8-0f4a-568b-982c-4fc680f4e62b",
+          "type": "Complication",
+          "canonical_name": "Tắc mạch phổi"
+        },
+        {
+          "id": "ENT_27290e13-53ac-5adb-a8fe-fbfc45bc140b",
+          "type": "Disease",
+          "canonical_name": "Tắc mạch phổi"
+        },
+        {
+          "id": "ENT_0719ad6c2f5b5205",
+          "type": "Etiology",
+          "canonical_name": "Tắc mạch phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3cad2b04-de8f-5a14-8fb7-85a2fcd97a88",
+      "canonical_name": "Hội chứng Guillain-Barré",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_48ac1362-46b8-558b-ba60-c2d039d172fb",
+          "type": "Complication",
+          "canonical_name": "Hội chứng Guillain-Barré"
+        },
+        {
+          "id": "ENT_3cad2b04-de8f-5a14-8fb7-85a2fcd97a88",
+          "type": "Disease",
+          "canonical_name": "Hội chứng Guillain-Barré"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_65b98a89-3abb-542d-aaaf-2e6ad0a0d8ad",
+      "canonical_name": "Suy hô hấp cấp",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_65b98a89-3abb-542d-aaaf-2e6ad0a0d8ad",
+          "type": "Disease",
+          "canonical_name": "Suy hô hấp cấp"
+        },
+        {
+          "id": "ENT_253e7d1f-f30a-5b2d-98f8-9c62548b0de7",
+          "type": "Complication",
+          "canonical_name": "Suy hô hấp cấp"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_df3e3b82-1e75-541a-902d-e766038f94f4",
+      "canonical_name": "Bệnh thận mạn",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_075434f7-11c3-52c2-a7da-a25ebccdb34b",
+          "type": "RiskFactor",
+          "canonical_name": "Bệnh thận mạn"
+        },
+        {
+          "id": "ENT_df3e3b82-1e75-541a-902d-e766038f94f4",
+          "type": "Disease",
+          "canonical_name": "Bệnh thận mạn"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_c328c056-c5b1-560e-8755-bb55a0df2b42",
+      "canonical_name": "Mycobacterium tuberculosis",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_c328c056-c5b1-560e-8755-bb55a0df2b42",
+          "type": "Bacterium",
+          "canonical_name": "Mycobacterium tuberculosis"
+        },
+        {
+          "id": "ENT_36398cd3-8e79-5586-888a-d0a5f8c293fa",
+          "type": "Pathogen",
+          "canonical_name": "Mycobacterium tuberculosis"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_dc94bbaf-1a57-5c22-adb1-84324237189e",
+      "canonical_name": "Suy thận cấp",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_2c4926a1-dcb9-533f-bc01-2f0a3aec540b",
+          "type": "AdverseDrugReaction",
+          "canonical_name": "Suy thận cấp"
+        },
+        {
+          "id": "ENT_8d07305a-32bb-5326-992a-dee612316e8b",
+          "type": "AdverseEvent",
+          "canonical_name": "Suy thận cấp"
+        },
+        {
+          "id": "ENT_dc94bbaf-1a57-5c22-adb1-84324237189e",
+          "type": "Disease",
+          "canonical_name": "Suy thận cấp"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_732d56fd-7479-55d8-8aa6-b94516149e6e",
+      "canonical_name": "Đau khớp",
+      "canonical_type": "Symptom",
+      "members": [
+        {
+          "id": "ENT_732d56fd-7479-55d8-8aa6-b94516149e6e",
+          "type": "Symptom",
+          "canonical_name": "Đau khớp"
+        },
+        {
+          "id": "ENT_8869b14f-0a8e-5ff2-a5f8-1b7a145704a9",
+          "type": "AdverseEvent",
+          "canonical_name": "Đau khớp"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_31788e2e-91ea-52fe-8b2d-989d8a94e09d",
+      "canonical_name": "Tràn khí màng phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_663f0da6-68ed-54da-8450-d3a7bd04f86d",
+          "type": "Complication",
+          "canonical_name": "Tràn khí màng phổi"
+        },
+        {
+          "id": "ENT_31788e2e-91ea-52fe-8b2d-989d8a94e09d",
+          "type": "Disease",
+          "canonical_name": "Tràn khí màng phổi"
+        },
+        {
+          "id": "ENT_ba976aee-523c-5562-b745-f2881aabf1f1",
+          "type": "RiskFactor",
+          "canonical_name": "Tràn khí màng phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_493fecdd533b5928",
+      "canonical_name": "Xẹp phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_338b6865-2269-5d3b-8184-28be847ac35d",
+          "type": "Complication",
+          "canonical_name": "Xẹp phổi"
+        },
+        {
+          "id": "ENT_493fecdd533b5928",
+          "type": "Disease",
+          "canonical_name": "Xẹp phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_e2cef7ae-f6fa-51b3-87b6-943ff352efca",
+      "canonical_name": "Sinh thiết hạch",
+      "canonical_type": "Biopsy",
+      "members": [
+        {
+          "id": "ENT_87229cfb-8fd2-5f0b-892d-2340ac9ee86b",
+          "type": "DiagnosticProcedure",
+          "canonical_name": "Sinh thiết hạch"
+        },
+        {
+          "id": "ENT_e2cef7ae-f6fa-51b3-87b6-943ff352efca",
+          "type": "Biopsy",
+          "canonical_name": "Sinh thiết hạch"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_f0e9db5b-ae2c-5315-a6dd-73fd908b0907",
+      "canonical_name": "Hẹp hai lá",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_f0e9db5b-ae2c-5315-a6dd-73fd908b0907",
+          "type": "Disease",
+          "canonical_name": "Hẹp hai lá"
+        },
+        {
+          "id": "ENT_d367bc31-27bc-5c86-a475-a4a033a3c709",
+          "type": "RiskFactor",
+          "canonical_name": "Hẹp hai lá"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_dc435bd5-c893-5dd2-a428-7c43e07de296",
+      "canonical_name": "Oxy liệu pháp",
+      "canonical_type": "OxygenTherapy",
+      "members": [
+        {
+          "id": "ENT_dc435bd5-c893-5dd2-a428-7c43e07de296",
+          "type": "OxygenTherapy",
+          "canonical_name": "Oxy liệu pháp"
+        },
+        {
+          "id": "ENT_89351e59-85d8-5edf-95e3-03b132365846",
+          "type": "Treatment",
+          "canonical_name": "Oxy liệu pháp"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_9baf4219-54e9-5649-81c8-b4f8584da5c3",
+      "canonical_name": "Thông khí xâm nhập",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_9baf4219-54e9-5649-81c8-b4f8584da5c3",
+          "type": "MechanicalVentilation",
+          "canonical_name": "Thông khí xâm nhập"
+        },
+        {
+          "id": "ENT_79bb4cbe-6218-50a9-b39b-8cf445b6449c",
+          "type": "Treatment",
+          "canonical_name": "Thông khí xâm nhập"
+        },
+        {
+          "id": "ENT_ac91b9193a825d11",
+          "type": "RespiratorySupport",
+          "canonical_name": "Thông khí xâm nhập"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_ea576299-7286-583d-8548-1891fc88f654",
+      "canonical_name": "Thông khí không xâm nhập",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_ea576299-7286-583d-8548-1891fc88f654",
+          "type": "MechanicalVentilation",
+          "canonical_name": "Thông khí không xâm nhập"
+        },
+        {
+          "id": "ENT_ba6b4b9b-1188-517c-b5d3-9b232645a574",
+          "type": "Treatment",
+          "canonical_name": "Thông khí không xâm nhập"
+        },
+        {
+          "id": "ENT_da1b40989787528e",
+          "type": "RespiratorySupport",
+          "canonical_name": "Thông khí không xâm nhập"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_e2609d37-3510-51d5-86bd-3ec1c6f4c4f7",
+      "canonical_name": "Tràn khí trung thất",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_03b2ae0f-fa5a-5e18-9744-dc5fc755ebba",
+          "type": "Complication",
+          "canonical_name": "Tràn khí trung thất"
+        },
+        {
+          "id": "ENT_e2609d37-3510-51d5-86bd-3ec1c6f4c4f7",
+          "type": "Disease",
+          "canonical_name": "Tràn khí trung thất"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_436d3c78-f8d2-5496-91a9-60f73e87da07",
+      "canonical_name": "Xơ phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_75c23f184d915b13",
+          "type": "Complication",
+          "canonical_name": "Xơ phổi"
+        },
+        {
+          "id": "ENT_436d3c78-f8d2-5496-91a9-60f73e87da07",
+          "type": "Disease",
+          "canonical_name": "Xơ phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_161da8079d6e5fe9",
+      "canonical_name": "Pseudomonas aeruginosa",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_161da8079d6e5fe9",
+          "type": "Bacterium",
+          "canonical_name": "Pseudomonas aeruginosa"
+        },
+        {
+          "id": "ENT_80884bbc-d505-58a7-aa00-92f12fa216f9",
+          "type": "Pathogen",
+          "canonical_name": "Pseudomonas aeruginosa"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_70236ae2c82d5fea",
+      "canonical_name": "Staphylococcus aureus",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_70236ae2c82d5fea",
+          "type": "Bacterium",
+          "canonical_name": "Staphylococcus aureus"
+        },
+        {
+          "id": "ENT_cb10b773-9e95-5149-b184-89778c25dc3e",
+          "type": "Pathogen",
+          "canonical_name": "Staphylococcus aureus"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_8a4ea922-19ee-5486-aba5-187ff1087fd7",
+      "canonical_name": "Đột Quỵ Thiếu Máu Não",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_8a4ea922-19ee-5486-aba5-187ff1087fd7",
+          "type": "Disease",
+          "canonical_name": "Đột Quỵ Thiếu Máu Não"
+        },
+        {
+          "id": "ENT_11867db8-f99e-5320-a717-50d5b8877061",
+          "type": "Complication",
+          "canonical_name": "Đột quỵ thiếu máu não"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_41cb5983-adf0-509d-a239-57ae19aed12e",
+      "canonical_name": "Suy thận",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_b60d2132-35b2-56af-96d3-b79af7567529",
+          "type": "Complication",
+          "canonical_name": "Suy thận"
+        },
+        {
+          "id": "ENT_41cb5983-adf0-509d-a239-57ae19aed12e",
+          "type": "Disease",
+          "canonical_name": "Suy thận"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_6bf053ea-1072-5cf0-9046-4f497736dc45",
+      "canonical_name": "Xuất huyết não",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_36c7de2c-2f05-50f3-9918-e77f16be1a00",
+          "type": "Complication",
+          "canonical_name": "Xuất huyết não"
+        },
+        {
+          "id": "ENT_6bf053ea-1072-5cf0-9046-4f497736dc45",
+          "type": "Disease",
+          "canonical_name": "Xuất huyết não"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_56f3edb2-4b1d-5e90-9429-9c9333fbbb68",
+      "canonical_name": "Phù phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_cea0e061-e6b4-547b-81a3-0c29e05c54e3",
+          "type": "Complication",
+          "canonical_name": "Phù phổi"
+        },
+        {
+          "id": "ENT_56f3edb2-4b1d-5e90-9429-9c9333fbbb68",
+          "type": "Disease",
+          "canonical_name": "Phù phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_17d1d5e3-6cfd-5850-9ef2-e349a604f92c",
+      "canonical_name": "NCPAP",
+      "canonical_type": "MechanicalVentilation",
+      "members": [
+        {
+          "id": "ENT_17d1d5e3-6cfd-5850-9ef2-e349a604f92c",
+          "type": "MechanicalVentilation",
+          "canonical_name": "NCPAP"
+        },
+        {
+          "id": "ENT_2af3a12a-a441-545c-b510-35432a3cc443",
+          "type": "Treatment",
+          "canonical_name": "NCPAP"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_082a38eed44a5a57",
+      "canonical_name": "Haemophilus influenzae",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_03018d32-afc8-5b21-a062-82e681f8551f",
+          "type": "Pathogen",
+          "canonical_name": "Haemophilus influenzae"
+        },
+        {
+          "id": "ENT_082a38eed44a5a57",
+          "type": "Bacterium",
+          "canonical_name": "Haemophilus influenzae"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_43773c3e183d5023",
+      "canonical_name": "Streptococcus pneumoniae",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_4eb8fc0a-1c35-5097-bd57-c576c09eeca7",
+          "type": "Pathogen",
+          "canonical_name": "Streptococcus pneumoniae"
+        },
+        {
+          "id": "ENT_43773c3e183d5023",
+          "type": "Bacterium",
+          "canonical_name": "Streptococcus pneumoniae"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_6818cf0e11705abb",
+      "canonical_name": "Moraxella catarrhalis",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_8031614c-e8b2-5fb8-b367-d5c1f89f49ab",
+          "type": "Pathogen",
+          "canonical_name": "Moraxella catarrhalis"
+        },
+        {
+          "id": "ENT_6818cf0e11705abb",
+          "type": "Bacterium",
+          "canonical_name": "Moraxella catarrhalis"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_8c0a0e5a-2c89-540a-b080-c6f24fd32e7d",
+      "canonical_name": "Viêm tụy cấp",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_8c0a0e5a-2c89-540a-b080-c6f24fd32e7d",
+          "type": "Disease",
+          "canonical_name": "Viêm tụy cấp"
+        },
+        {
+          "id": "ENT_a57f2133417c59c4",
+          "type": "Etiology",
+          "canonical_name": "Viêm tụy cấp"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0d2342b4-6c31-5348-a02f-a9b17674fc02",
+      "canonical_name": "Hen suyễn",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_0d2342b4-6c31-5348-a02f-a9b17674fc02",
+          "type": "Disease",
+          "canonical_name": "Hen suyễn"
+        },
+        {
+          "id": "ENT_e1668539-5436-5e7c-b84d-8f8f498c9f17",
+          "type": "RiskFactor",
+          "canonical_name": "Hen suyễn"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3c38d641b6125cd1",
+      "canonical_name": "Áp xe phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_3c38d641b6125cd1",
+          "type": "Disease",
+          "canonical_name": "Áp xe phổi"
+        },
+        {
+          "id": "ENT_3bde5443e6d75d5c",
+          "type": "Etiology",
+          "canonical_name": "Áp xe phổi"
+        },
+        {
+          "id": "ENT_582c35ff90095226",
+          "type": "Complication",
+          "canonical_name": "Áp xe phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_21fc4f296d025c1a",
+      "canonical_name": "Klebsiella pneumoniae",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_c63fb68f-2801-5b16-a48a-06c2c2390176",
+          "type": "Pathogen",
+          "canonical_name": "Klebsiella pneumoniae"
+        },
+        {
+          "id": "ENT_21fc4f296d025c1a",
+          "type": "Bacterium",
+          "canonical_name": "Klebsiella pneumoniae"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_2cf22c47-f038-5884-8672-f26fe0650253",
+      "canonical_name": "Giun chỉ",
+      "canonical_type": "Parasite",
+      "members": [
+        {
+          "id": "ENT_2cf22c47-f038-5884-8672-f26fe0650253",
+          "type": "Parasite",
+          "canonical_name": "Giun chỉ"
+        },
+        {
+          "id": "ENT_3ac4ed05e9695e93",
+          "type": "Pathogen",
+          "canonical_name": "Giun chỉ"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_28520ec7fd3c5a2b",
+      "canonical_name": "Rhinovirus",
+      "canonical_type": "Virus",
+      "members": [
+        {
+          "id": "ENT_1958533f-6c49-5d5c-b4e7-35fb13ad4c46",
+          "type": "Pathogen",
+          "canonical_name": "Rhinovirus"
+        },
+        {
+          "id": "ENT_28520ec7fd3c5a2b",
+          "type": "Virus",
+          "canonical_name": "Rhinovirus"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3b739d51249c5285",
+      "canonical_name": "Parainfluenza virus",
+      "canonical_type": "Virus",
+      "members": [
+        {
+          "id": "ENT_47a0eb9d-1909-5b6c-b84e-5a1e00f2adaf",
+          "type": "Pathogen",
+          "canonical_name": "Parainfluenza virus"
+        },
+        {
+          "id": "ENT_3b739d51249c5285",
+          "type": "Virus",
+          "canonical_name": "Parainfluenza virus"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0cdce1a93e225732",
+      "canonical_name": "Influenza virus",
+      "canonical_type": "Virus",
+      "members": [
+        {
+          "id": "ENT_96a794b6-12d2-5567-b997-4dca1988dd50",
+          "type": "Pathogen",
+          "canonical_name": "Influenza virus"
+        },
+        {
+          "id": "ENT_0cdce1a93e225732",
+          "type": "Virus",
+          "canonical_name": "Influenza virus"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_284c5609-beba-5103-97d0-71c83d4bb0f0",
+      "canonical_name": "Viêm màng ngoài tim",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_284c5609-beba-5103-97d0-71c83d4bb0f0",
+          "type": "Disease",
+          "canonical_name": "Viêm màng ngoài tim"
+        },
+        {
+          "id": "ENT_5c571032-bea4-5082-9f1c-393b6dc7ab48",
+          "type": "Complication",
+          "canonical_name": "Viêm màng ngoài tim"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_1e8a7582-5c36-5b29-a6e7-639d137b3a1b",
+      "canonical_name": "Nhồi máu phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_1e8a7582-5c36-5b29-a6e7-639d137b3a1b",
+          "type": "Disease",
+          "canonical_name": "Nhồi máu phổi"
+        },
+        {
+          "id": "ENT_8a207e487d5555b3",
+          "type": "Etiology",
+          "canonical_name": "Nhồi máu phổi"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_eb0eabb519cb5f4e",
+      "canonical_name": "Hội chứng suy hô hấp cấp tiến triển",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_eb0eabb519cb5f4e",
+          "type": "Disease",
+          "canonical_name": "Hội chứng suy hô hấp cấp tiến triển"
+        },
+        {
+          "id": "ENT_00b952e0-d9f6-5157-8d64-493691e34adf",
+          "type": "RiskFactor",
+          "canonical_name": "Hội chứng suy hô hấp cấp tiến triển"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_f470fb01fe285f93",
+      "canonical_name": "Xơ nang",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_f470fb01fe285f93",
+          "type": "Disease",
+          "canonical_name": "Xơ nang"
+        },
+        {
+          "id": "ENT_bfdbcaea-657e-5f84-91a0-6dee29f63781",
+          "type": "RiskFactor",
+          "canonical_name": "Xơ nang"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_0e8a71a57dbb542a",
+      "canonical_name": "Tiếp xúc radon",
+      "canonical_type": "EnvironmentalFactor",
+      "members": [
+        {
+          "id": "ENT_ec1edd3e86785d09",
+          "type": "RiskFactor",
+          "canonical_name": "Tiếp xúc radon"
+        },
+        {
+          "id": "ENT_0e8a71a57dbb542a",
+          "type": "EnvironmentalFactor",
+          "canonical_name": "Tiếp xúc radon"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_616330d1ed985bc2",
+      "canonical_name": "Yếu tố di truyền",
+      "canonical_type": "GeneticFactor",
+      "members": [
+        {
+          "id": "ENT_1c5befb41ab358ad",
+          "type": "RiskFactor",
+          "canonical_name": "Yếu tố di truyền"
+        },
+        {
+          "id": "ENT_616330d1ed985bc2",
+          "type": "GeneticFactor",
+          "canonical_name": "Yếu tố di truyền"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_3d8930aa4d1b57c5",
+      "canonical_name": "Legionella pneumophila",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_3d8930aa4d1b57c5",
+          "type": "Bacterium",
+          "canonical_name": "Legionella pneumophila"
+        },
+        {
+          "id": "ENT_071ac94f-0f16-5579-8d0d-869d9a5f3be8",
+          "type": "Pathogen",
+          "canonical_name": "Legionella pneumophila"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_089be0d9b70e5f03",
+      "canonical_name": "Mycoplasma pneumoniae",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_089be0d9b70e5f03",
+          "type": "Bacterium",
+          "canonical_name": "Mycoplasma pneumoniae"
+        },
+        {
+          "id": "ENT_e84cc9d0-46a5-5c80-963b-d71d1f674458",
+          "type": "Pathogen",
+          "canonical_name": "Mycoplasma pneumoniae"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_f9ff65533dca5b84",
+      "canonical_name": "Acinetobacter baumannii",
+      "canonical_type": "Bacterium",
+      "members": [
+        {
+          "id": "ENT_f9ff65533dca5b84",
+          "type": "Bacterium",
+          "canonical_name": "Acinetobacter baumannii"
+        },
+        {
+          "id": "ENT_f19a3f86-b697-58de-bfaf-ea73755b675e",
+          "type": "Pathogen",
+          "canonical_name": "Acinetobacter baumannii"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_e15df55fd6f150d7",
+      "canonical_name": "CURB-65",
+      "canonical_type": "ClinicalScore",
+      "members": [
+        {
+          "id": "ENT_e15df55fd6f150d7",
+          "type": "ClinicalScore",
+          "canonical_name": "CURB-65"
+        },
+        {
+          "id": "ENT_7cb721267d785c7d",
+          "type": "ClinicalAssessment",
+          "canonical_name": "CURB-65"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_1633db3893f25dae",
+      "canonical_name": "PSI",
+      "canonical_type": "ClinicalScore",
+      "members": [
+        {
+          "id": "ENT_1633db3893f25dae",
+          "type": "ClinicalScore",
+          "canonical_name": "PSI"
+        },
+        {
+          "id": "ENT_ea127125f0fd5c3d",
+          "type": "ClinicalAssessment",
+          "canonical_name": "PSI"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ENT_7bf5f4d3-a182-5449-b1cd-8facb6def12b",
+      "canonical_name": "Áp-xe phổi",
+      "canonical_type": "Disease",
+      "members": [
+        {
+          "id": "ENT_854bc6c601515f1e",
+          "type": "Complication",
+          "canonical_name": "Áp-xe phổi"
+        },
+        {
+          "id": "ENT_7bf5f4d3-a182-5449-b1cd-8facb6def12b",
+          "type": "Disease",
+          "canonical_name": "Áp-xe phổi"
+        }
+      ]
+    }
+  ]
+}

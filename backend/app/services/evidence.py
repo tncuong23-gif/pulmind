@@ -43,8 +43,9 @@ class Registry:
         if not isinstance(source,dict) or not isinstance(source.get('text'),str) or not source['text'].strip(): return None
         text=source['text'].strip()
         doc=source.get('doc_id') or source.get('document_id')
-        key=(kind,doc,' '.join(text.split()))
-        origin=pick(source,['doc_id','document_id','evidence_id','chunk_id','proposition_id','logical_id'])
+        source_doc=(source.get('source_origin') or {}).get('source_document_id') or doc
+        key=(kind,source_doc,' '.join(text.split()))
+        origin=pick(source,['doc_id','document_id','evidence_id','chunk_id','proposition_id','logical_id','source_origin','source_origins'])
         title=source.get('document_title') or source.get('title')
         if title and doc and str(doc) in str(title):title=str(title).replace(str(doc),'').strip(' -:;()') or None
         if key in self.keys:
@@ -87,6 +88,33 @@ def kg_context(result, registry):
              'paths':[{'nodes':[pick(n,['name','type']) for n in p.get('nodes',[])],
                        'fact_indices':p.get('fact_indices',[])} for p in raw.get('paths',[])],
              'interpretation':raw.get('interpretation',{}),'warnings':result.get('warnings',[])}
+    context['inferences']=[]
+    for proof in raw.get('inferences',[]):
+        indices=proof.get('fact_indices')
+        premises=proof.get('premises') or []
+        if (not isinstance(indices,list) or len(indices)!=len(premises) or len(indices)<2
+                or any(type(i) is not int or i<0 or i>=len(facts) for i in indices)):
+            raise ValueError('Suy luận thiếu tham chiếu tiền đề hợp lệ.')
+        supports=[]
+        for index,premise in zip(indices,premises):
+            actual=raw['facts'][index]
+            if (premise.get('predicate')!=actual.get('predicate') or
+                    any(premise.get(k,{}).get('id')!=actual.get(k,{}).get('id') for k in ('subject','object'))):
+                raise ValueError('Tiền đề suy luận không khớp facts.')
+            refs=[]
+            for rows in premise.get('support_by_source',{}).values():
+                for row in rows:
+                    source=row.get('evidence') or {}
+                    if source not in actual.get('evidence',[]):
+                        raise ValueError('Nguồn suy luận không thuộc tiền đề.')
+                    ref=registry.add(source,module='kg')
+                    if ref and ref not in refs:refs.append(ref)
+            if not refs:raise ValueError('Suy luận thiếu nguồn tiền đề.')
+            supports.append({'fact_index':index,'source_refs':refs})
+        context['inferences'].append({**pick(proof,['kind','rule','predicate','hops','evidence_scope','persisted','interpretation']),
+            'subject':pick(proof.get('subject') or {},['name','type']),
+            'object':pick(proof.get('object') or {},['name','type']),
+            'fact_indices':indices,'premises':supports})
     comparison=raw.get('comparison')
     if comparison:
         entities=comparison.get('entities',[])

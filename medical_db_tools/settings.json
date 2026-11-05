@@ -1,0 +1,7 @@
+{
+  "images": {
+    "neo4j": "neo4j:5.26-community",
+    "mongo": "mongo:7",
+    "qdrant": "qdrant/qdrant:v1.13.5"
+  }
+}

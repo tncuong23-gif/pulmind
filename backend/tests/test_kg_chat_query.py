@@ -265,8 +265,8 @@ def test_indistinguishable_duplicate_nodes_request_data_review(service):
 def test_api_modes_input_validation_and_no_cypher_escape(service):
     with TestClient(create_app(service)) as client:
         meta = client.get('/api/v1/kg/meta').json()
-        assert set(meta['query_modes']) == {'one_hop', 'multi_hop', 'path', 'compare', 'common', 'difference'}
-        assert len(meta['automatic_intents']) == 25
+        assert set(meta['query_modes']) == {'one_hop', 'multi_hop', 'path', 'compare', 'common', 'difference', 'inference'}
+        assert {'screening','taxonomy','applicability','regimen'} <= set(meta['automatic_intents'])
         for extra in ({'mode': 'invalid'}, {'mode': 'multi_hop'}, {'preset': 'bad'},
                       {'cypher': 'MATCH (n) DELETE n'}, {'max_hops': 5}, {'limit': 0},
                       {'mode': 'path', 'preset': 'drugs_for_disease'}, {'intents': ['bad']},

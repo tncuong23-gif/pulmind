@@ -19,8 +19,11 @@ from starlette.concurrency import run_in_threadpool
 from app.modules.kg_import.config import Settings
 from app.modules.kg_import.service import IMPORT_LOCK
 from app.modules.kg_import.utils import sha256_of
-from app.modules.kg_query.intents import PRESET_CHAINS, describe_intents
+from app.modules.kg_query.auto_plan import catalog as auto_catalog
+from app.modules.kg_query.intents import PRESET_CHAINS, describe_intents, preset_catalog, preset_steps, uncovered_relations
 from app.modules.kg_query.models import QuerySpec
+from app.modules.kg_query.retrieval_api import QueryRequest, retrieve
+from app.modules.kg_query.traversal import rule_catalog
 
 log = logging.getLogger(__name__)
 WEB = Path(__file__).with_name("web")
@@ -62,7 +65,8 @@ def create_app(service: Any | None = None, *, review_service: Any | None = None,
                 from app.modules.kg_query.factory import build_query_resources
                 app.state.resources = build_query_resources(Settings.from_env())
                 app.state.query_service = app.state.resources.service
-            return app.state.query_service
+            from app.kg_global.query import select_service
+            return select_service(app.state.query_service)
 
     app.state.get_query_service = get_service
 
@@ -142,14 +146,39 @@ def create_app(service: Any | None = None, *, review_service: Any | None = None,
             return JSONResponse({"error": str(exc)}, status_code=400)
         return payload
 
+    @app.get('/api/review/merge/types')
+    async def merge_types():
+        return {'types':sorted(get_import_service().ontology.entity_types)}
+
+    @app.post('/api/review/merge')
+    async def merge_concepts(request: Request):
+        body=await read_review_json(request)
+        if isinstance(body,JSONResponse): return body
+        def run():
+            from app.modules.kg_import.manual_merge import manager, resolve_redirects
+            with IMPORT_LOCK:
+                service=get_import_service();merger=manager(service)
+                body['payload']=resolve_redirects(body.get('payload'),service.graph)
+                if body.get('operation')=='preview':return merger.preview(body.get('payload'),body.get('choice'))
+                if body.get('operation')!='apply' or body.get('confirmed') is not True:raise ValueError('Cần xác nhận gộp sau khi xem trước.')
+                return merger.apply(body.get('payload'),body.get('token'))
+        try:return await run_in_threadpool(run)
+        except ValueError as exc:return JSONResponse({'error':str(exc)},status_code=409)
+        except Exception:
+            log.exception('Concept merge failed')
+            return JSONResponse({'error':'Không thể hoàn tất gộp. Kiểm tra dịch vụ và xem trước lại.'},status_code=503)
+
     @app.post("/api/review/preview")
     async def review_preview(request: Request):
         payload = await read_review_json(request)
         if isinstance(payload, JSONResponse):
             return payload
         try:
+            from app.modules.kg_import.manual_merge import resolve_redirects
+            payload=await run_in_threadpool(resolve_redirects,payload,get_import_service().graph)
             result = await run_in_threadpool(get_import_service().preview_kg, payload)
             response = result.to_dict()
+            response['resolved_payload']=payload
             response.update(review_store().status(payload, get_import_service().review_profile(),
                 needs_review=bool((result.plan or {}).get('entity_candidates'))))
             add_preview_token(response, payload)
@@ -200,8 +229,19 @@ def create_app(service: Any | None = None, *, review_service: Any | None = None,
 
     @app.get("/api/meta")
     def meta():
-        return {"intents": [{"id": key, "description": desc} for key, desc in describe_intents()],
-                "presets": list(PRESET_CHAINS)}
+        svc=get_service()
+        return {"intents": [{"id": i.name, "description": i.description, "relations":list(i.relations)} for i in svc.intents.values() if i.relations],
+                "presets": list(PRESET_CHAINS),'automatic_presets':auto_catalog(),'preset_details':preset_catalog(svc.ontology),
+                'inference_rules':rule_catalog(svc.ontology),'entity_types':sorted(svc.ontology.entity_types),
+                'relations':svc.ontology.relation_names(),'uncovered_relations':uncovered_relations(svc.ontology)}
+
+    @app.post('/api/query-plan')
+    async def query_plan(payload:QueryRequest):
+        try:return (await run_in_threadpool(retrieve,get_service(),payload)).model_dump()
+        except ValueError as exc:return JSONResponse({'error':str(exc)},status_code=422)
+        except Exception:
+            log.exception('KG query plan failed')
+            return JSONResponse({'error':'Không thể truy vấn. Kiểm tra kết nối Neo4j/MongoDB và log backend.'},status_code=503)
 
     @app.get("/api/health")
     async def health():
@@ -249,8 +289,11 @@ def create_app(service: Any | None = None, *, review_service: Any | None = None,
         except (ValueError, TypeError, KeyError) as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
         try:
+            if payload.get('chain'):spec.chain=preset_steps(payload['chain'],get_service().ontology)
             result = await run_in_threadpool(get_service().run, spec)
             return result.to_dict()
+        except ValueError as exc:
+            return JSONResponse({'error':str(exc)},status_code=422)
         except Exception:
             log.exception("KG query failed")
             return JSONResponse({"error": "Không thể truy vấn cơ sở dữ liệu. Kiểm tra kết nối Neo4j và MongoDB."},

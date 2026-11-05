@@ -33,8 +33,8 @@ def select_kg_evidence(result):
     def intact(group):
         indices = group.get('fact_indices')
         return isinstance(indices, list) and bool(indices) and all(type(i) is int and i in valid for i in indices)
-    if mode in ('path', 'multi_hop'):
-        key = 'paths' if mode == 'path' else 'chains'
+    if mode in ('path', 'multi_hop', 'inference'):
+        key = 'inferences' if mode == 'inference' else 'paths' if mode == 'path' else 'chains'
         original = context.get(key) or []
         groups = [g for g in original if intact(g)]
         if len(groups) != len(original): reasons.append('incomplete_chain')
@@ -44,7 +44,7 @@ def select_kg_evidence(result):
         return None, 'empty', reasons or ['no_sourced_facts']
     remap = {old: new for new, old in enumerate(sorted(valid))}
     context['facts'] = [facts[i] for i in sorted(valid)]
-    for key in ('chains', 'paths'):
+    for key in ('chains', 'paths', 'inferences'):
         context[key] = [{**g, 'fact_indices': [remap[i] for i in g['fact_indices']]}
                         for g in context.get(key, []) if intact(g)]
     # Comparisons retain all facts, so cell indices remain unchanged.

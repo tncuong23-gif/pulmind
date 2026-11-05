@@ -129,6 +129,11 @@ class BatchManager:
             raise KeyError(jid)
         job = json.loads(row[0])
         job['items'] = self._items(jid)
+        # Correct historical report labels without changing saved job/file hashes.
+        if self.module == 'kg':
+            for item in job['items']:
+                if 'ENTITY_LINK_REVIEW_REQUIRED' in item.get('error', ''):
+                    item.update(review_status='needs_review', reviewed_at=None)
         return job
 
     def list(self):
@@ -317,6 +322,31 @@ class BatchManager:
         self._put_job(job)
         return {'saved': True, 'filename': item['filename'], 'item': item,
                 'message': 'Đã duyệt và lưu tài liệu. Có thể chọn file này để xác nhận nạp ngay.'}
+
+    async def merge_concepts(self, jid, position, body):
+        if self.module != 'kg': raise ValueError('Chỉ hỗ trợ gộp KG.')
+        from app.modules.kg_import.service import IMPORT_LOCK
+        from app.modules.kg_import.manual_merge import manager as merger
+        def run():
+            with IMPORT_LOCK:
+                self._busy()
+                job=self.get(jid)
+                if job['mode']!='preview' or job['status']!='completed': raise ValueError('Cần lượt xem trước đã hoàn tất.')
+                item=job['items'][position]
+                raw,_=self.read(item['filename'],item['sha256'])
+                service=self.adapter.get_service()
+                from app.modules.kg_import.manual_merge import resolve_redirects
+                raw=resolve_redirects(raw,service.graph)
+                if body.get('operation')=='preview':return merger(service).preview(raw,body.get('choice'))
+                if body.get('operation')!='apply' or body.get('confirmed') is not True:raise ValueError('Cần xác nhận gộp sau khi xem trước.')
+                result=merger(service).apply(raw,body.get('token'))
+                self.upload(item['filename'],(dump(result['payload'])+'\n').encode('utf-8'))
+                _,sha=self.read(item['filename'])
+                item.update(sha256=sha,status='needs_review',review_status='needs_review',error='',reviewed_at=None)
+                self._put_item(jid,item);job.pop('items',None);self._counts(job);self._put_job(job)
+                result.pop('payload',None)
+                return result
+        return await asyncio.to_thread(run)
 
     def report(self, jid, kind):
         job = self.get(jid)

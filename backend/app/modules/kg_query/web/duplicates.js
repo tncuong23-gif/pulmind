@@ -133,6 +133,11 @@ async function showPair(pair) {
       bar.append(button);
     }
     detail.append(bar);
+    const merge=el('button','', 'Gộp cùng khái niệm…');merge.type='button';
+    merge.onclick=()=>window.openConceptMerge({entities:[a,b],selectedIds:[a.id,b.id],
+      request:body=>jsonRequest('/modules/kg-explorer/api/review/merge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,payload:null})}),
+      onApplied:async()=>{await scan();}});detail.append(merge);
+
     feedback("scanFeedback", "Chi tiết đã tải. Đánh giá chỉ được lưu trong trình duyệt và file xuất.");
   } catch (error) { feedback("scanFeedback", error.message, true); }
 }
@@ -195,6 +200,7 @@ async function previewFile() {
     const data = await jsonRequest("/modules/kg-explorer/api/review/preview", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(state.payload) });
     state.preview = data;
+    if(data.resolved_payload)state.payload=data.resolved_payload;
     state.reviewPayload = structuredClone(state.payload); state.choices = {};
     $('fileReviewActions').classList.remove('hidden');
     $('fileReviewStatus').textContent = data.review_status==='reviewed' ? `Đã duyệt · ${new Date(data.reviewed_at).toLocaleString('vi-VN')}` : 'Chưa duyệt nội dung hiện tại';
@@ -217,9 +223,15 @@ async function previewFile() {
     feedback("previewFeedback", error.message, true);
   } finally { btn.disabled = false; $("jsonFile").disabled = false; }
 }
+function launchFileMerge(selectedIds=[]) {
+  return window.openConceptMerge({entities:[...(state.reviewPayload?.entities||state.payload.entities),...Object.values(state.preview?.plan?.entity_candidates||{}).flat().map(c=>({id:c.entity_id,canonical_name:c.canonical_name,type:c.entity_type}))], selectedIds,
+    request:body=>jsonRequest('/modules/kg-explorer/api/review/merge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,payload:state.reviewPayload||state.payload})}),
+    onApplied:async data=>{state.payload=data.payload;state.reviewPayload=structuredClone(data.payload);state.choices={};state.previewToken=null;await previewFile();}});
+}
 function renderPreview(plan) {
   const target = $("previewItems");
   target.replaceChildren();
+  const mergeButton=el('button','','Gộp cùng khái niệm…');mergeButton.type='button';mergeButton.onclick=()=>launchFileMerge();target.append(mergeButton);
   const candidates = Object.entries(plan.entity_candidates || {});
   const linked = Object.entries(plan.entity_links || {});
   const entities = new Map((state.payload.entities || []).map((entity) => [entity.id, entity]));
@@ -227,7 +239,8 @@ function renderPreview(plan) {
     const card = el("div", "preview-card");
     card.append(el("h3", "", "Đã liên kết tự động theo tên / alias"), el("p", "", "Các ID đầu vào này khớp chính xác với thực thể đã có."));
     for (const [id, chosen] of linked) card.append(el("div", "relation-line", `${entities.get(id)?.canonical_name || id} · ${id} → ${chosen}`));
-    target.append(card);
+  
+  target.append(card);
   }
   if (!candidates.length) {
     target.append(el("div", "empty-note", "Không còn ứng viên embedding cần duyệt trong lần kiểm tra này."));
@@ -244,12 +257,14 @@ function renderPreview(plan) {
     select.setAttribute("aria-label", `Quyết định cho ${id}`);
     select.append(new Option("Chưa quyết định", ""));
     for (const option of options) {
-      if (option.link_allowed === false) { label.append(el("small", "", `Khác loại: ${option.canonical_name} (${option.entity_type}). Sửa JSON nếu cùng khái niệm; chỉ giữ riêng khi khác khái niệm.`)); continue; }
+      select.append(new Option(`Gộp với ${option.canonical_name || option.entity_id} · ${option.entity_type || ""} · chọn loại sau gộp`, `merge:${option.entity_id}`));
+      if (option.link_allowed === false) { label.append(el("small", "", `Đầu vào: ${option.incoming_type || "chưa rõ"} → ứng viên: ${option.canonical_name} (${option.entity_type}) · ${option.entity_id}. Chọn “Gộp với…” nếu cùng khái niệm; chỉ giữ riêng khi khác khái niệm.`)); continue; }
       select.append(new Option(`${option.matched_name || option.entity_id} · ${option.entity_id} · ${Math.round(option.score * 100)}%`, option.entity_id));
     }
     select.append(new Option("Giữ là thực thể riêng", "new"));
     select.value = state.payload.entity_link_decisions?.[id] || "";
     select.addEventListener("change", () => {
+      if(select.value.startsWith("merge:")){const candidate=select.value.slice(6);select.value="";launchFileMerge([id,candidate]);return;}
       const decisions = state.payload.entity_link_decisions ||= {};
       if (select.value) { decisions[id] = select.value; state.choices[id] = select.value; }
       else { delete decisions[id]; delete state.choices[id]; }
@@ -261,6 +276,7 @@ function renderPreview(plan) {
     });
     row.append(label, select); card.append(row);
   }
+
   target.append(card);
 }
 
@@ -285,7 +301,8 @@ $("saveFileReview").addEventListener("click", async () => {
     const data = await jsonRequest("/modules/kg-explorer/api/review/decisions", {method:"POST", headers:{"Content-Type":"application/json"},
       body:JSON.stringify({payload:state.reviewPayload, choices:state.choices})});
     state.payload = data.payload; state.reviewPayload = structuredClone(data.payload); state.choices = {};
-    state.preview = data; state.previewToken = data.preview_token;
+    state.preview = data;
+    if(data.resolved_payload)state.payload=data.resolved_payload; state.previewToken = data.preview_token;
     $("downloadJson").textContent = "Tải JSON đã duyệt";
     $("fileReviewStatus").textContent = `Đã duyệt · ${new Date(data.reviewed_at).toLocaleString('vi-VN')}`;
     $("previewCreate").textContent = data.plan.entities?.create ?? 0;

@@ -1,0 +1,26 @@
+﻿BẢN VÁ ĐƯỜNG DẪN FILE BAT
+
+Lỗi: windows_quickunner.bat is not recognized...
+Nguyên nhân: ký tự CR bị ghi nhầm vào đường dẫn gọi runner.bat.
+
+CÁCH ÁP DỤNG
+1. Nếu cửa sổ cài đặt đang chạy thì chờ kết thúc. Đóng cửa sổ báo lỗi.
+2. Giải nén gói này ra một thư mục tạm.
+3. Chép cả 9 file .bat vào:
+   D:\medical_wed\banmoi\medical-ai-integrated
+   Chọn Replace the files in the destination / Thay thế các tệp.
+   Đây là thư mục chứa RUN.bat, backend, frontend và windows_quick.
+   KHÔNG chép vào bên trong windows_quick.
+4. Nhấp đúp RUN.bat trong thư mục dự án để chạy lại.
+
+Không cần tải lại dự án, xóa .venv hoặc node_modules.
+Nếu bước cài lần trước đã hoàn tất, RUN dùng môi trường đã có.
+Nếu chưa hoàn tất, RUN tiếp tục quy trình cài, pip thường sử dụng lại
+các thư viện đã cài và cache đã tải.
+
+Bản vá chỉ sửa đường dẫn trong 9 file BAT. Không thay .env, mã nguồn,
+model, dữ liệu hoặc môi trường Python. RUN.bat và runner.bat giữ nguyên.
+
+Đã đối chiếu byte: loại bỏ toàn bộ CR nằm giữa dòng trong các file vá,
+giữ CRLF cuối dòng, kiểm tra đúng đường dẫn và toàn vẹn ZIP.
+Chưa chạy trực tiếp các BAT trên Windows.

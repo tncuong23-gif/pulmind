@@ -58,7 +58,10 @@ DELETE e
 """
 
 
-class Neo4jKGStore:
+from .merge import Neo4jMergeMixin
+
+
+class Neo4jKGStore(Neo4jMergeMixin):
     """Implements GraphStore. The Driver (connection pool) is created once by the application."""
 
     def __init__(self, driver: Driver, database: str = "neo4j", batch_size: int = 1000) -> None:
@@ -104,7 +107,7 @@ class Neo4jKGStore:
     def list_entities(self, after_id: str, limit: int) -> list[dict[str, Any]]:
         q = """MATCH (e:Entity) WHERE e.id > $after
                RETURN e.id AS id, e.entity_type AS entity_type, e.canonical_name AS canonical_name,
-                      e.aliases AS aliases, e.source_ids AS source_ids ORDER BY e.id LIMIT $limit"""
+                      e.aliases AS aliases, e.source_ids AS source_ids, e.merge_member_ids AS merge_member_ids ORDER BY e.id LIMIT $limit"""
         with self.driver.session(database=self.database) as s:
             return [dict(r) for r in s.execute_read(lambda tx: list(tx.run(q, after=after_id, limit=limit)))]
 

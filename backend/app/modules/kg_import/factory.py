@@ -32,9 +32,6 @@ def build_resources(settings: Settings, ontology: Ontology | None = None) -> Res
     mstore = MongoKGStore(mongo[settings.mongodb_database], settings.limits.mongo_batch_size)
     gstore = Neo4jKGStore(driver, settings.neo4j_database, settings.limits.neo4j_batch_size)
     entity_index = None
-    if settings.entity_embedding.enabled:
-        from .entity_vector import QdrantEntityIndex
-        entity_index = QdrantEntityIndex(settings.entity_embedding)
     service = KGImportService(ontology or Ontology.load(settings.ontology_path), mstore, gstore, mstore,
                               settings.limits, entity_index=entity_index)
     return Resources(service, mongo, driver, entity_index)

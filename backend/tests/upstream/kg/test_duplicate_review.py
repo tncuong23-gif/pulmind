@@ -38,6 +38,7 @@ class Index:
 
 
 class PreviewMethods:
+    graph = Graph()  # Import service contract includes the redirect lookup repository.
     def preview_kg(self, payload, **kwargs):
         return self.import_kg(payload, "upsert", dry_run=True)
 

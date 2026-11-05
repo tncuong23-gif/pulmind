@@ -137,6 +137,11 @@ class QdrantEntityIndex:
                 count += len(points)
         return count
 
+    def delete_entities(self, ids):
+        from qdrant_client.models import Filter, FieldCondition, MatchAny, FilterSelector
+        self.client.delete(collection_name=self.settings.collection, points_selector=FilterSelector(
+            filter=Filter(must=[FieldCondition(key='entity_id', match=MatchAny(any=ids))])), wait=True)
+
     @staticmethod
     def _candidates(points, limit):
         by_id = {}

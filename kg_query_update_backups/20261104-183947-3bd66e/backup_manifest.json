@@ -1,0 +1,24 @@
+{
+  "created_files": [
+    "backend/app/modules/kg_query/traversal.py",
+    "backend/tests/test_kg_compact_queries.py"
+  ],
+  "updated_files": [
+    "backend/app/modules/kg_query/intents.py",
+    "backend/app/modules/kg_query/models.py",
+    "backend/app/modules/kg_query/question_analysis.py",
+    "backend/app/modules/kg_query/retrieval_api.py",
+    "backend/app/modules/kg_query/service.py",
+    "backend/app/modules/kg_query/traversal.py",
+    "backend/app/modules/kg_query/web/app.js",
+    "backend/app/modules/kg_query/web/index.html",
+    "backend/app/modules/kg_query/web_app.py",
+    "backend/app/services/evidence.py",
+    "backend/app/services/kg_chat.py",
+    "backend/app/services/ollama.py",
+    "backend/app/services/retrieval_quality.py",
+    "backend/tests/test_kg_chat_query.py",
+    "backend/tests/test_kg_compact_queries.py",
+    "backend/tests/upstream/kg/test_web_app.py"
+  ]
+}

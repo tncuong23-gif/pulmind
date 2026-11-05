@@ -28,33 +28,33 @@ coverage/
 *.key
 
 # Local model weights
-/backend/models/
-/backend/clinical_service/models/
-checkpoints/
-weights/
-*.pt
-*.pth
-*.ckpt
-*.safetensors
-*.onnx
-*.gguf
-*.joblib
-*.pkl
+# /backend/models/
+# /backend/clinical_service/models/
+# checkpoints/
+# weights/
+# *.pt
+# *.pth
+# *.ckpt
+# *.safetensors
+# *.onnx
+# *.gguf
+# *.joblib
+# *.pkl
 
 # Runtime data and databases
-/backend/data/
-/data/
-uploads/
-*.sqlite
-*.sqlite3
-*.db
-*.db-journal
+# /backend/data/
+# /data/
+# uploads/
+# *.sqlite
+# *.sqlite3
+# *.db
+# *.db-journal
 
 # Database persistence
-qdrant_storage/
-neo4j/data/
-neo4j/logs/
-docker-volumes/
+# qdrant_storage/
+# neo4j/data/
+# neo4j/logs/
+# docker-volumes/
 
 # Logs and cache
 *.log
@@ -64,10 +64,10 @@ tmp/
 temp/
 
 # Archives and backups
-*.zip
-*.7z
-*.rar
-*.bak
+# *.zip
+# *.7z
+# *.rar
+# *.bak
 
 # IDE and OS
 .idea/

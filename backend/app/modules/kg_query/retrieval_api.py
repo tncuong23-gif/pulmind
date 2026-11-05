@@ -17,14 +17,25 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from app.modules.kg_import.config import Settings
 from app.modules.kg_query.models import QuerySpec
 from .entity_lookup import get_lookup, resolved_anchors
-from .question_analysis import RULES, COMPARISON_MODES, comparison_mode, detect_intents, choose_mode, validate_mode, uses_context
+from .question_analysis import RULES, COMPARISON_MODES, comparison_mode, detect_intents, choose_mode, validate_mode, uses_context, has_cue
 from .comparison import compare
-from .intents import PRESET_CHAINS
+from .intents import PRESET_CHAINS, preset_steps, preset_catalog, uncovered_relations
+from .traversal import RULES as INFERENCE_RULES, rule_catalog
+from .models import Step
+from .auto_plan import inference_plan, suggestions as plan_suggestions, constraint_issue, catalog as auto_catalog, without_mentions
 from app.modules.kg_query.assessment import (
     CoverageRequest, MapRequest, FollowupRequest, coverage, map_entities, followups,
 )
 
 log = logging.getLogger(__name__)
+
+
+class TraversalStep(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    intent: str = 'related'
+    rel_types: list[str] | None = Field(default=None, min_length=1, max_length=12)
+    target_types: list[str] | None = Field(default=None, min_length=1, max_length=20)
+    direction: Literal['auto','out','in','any'] = 'auto'
 
 
 class QueryRequest(BaseModel):
@@ -34,8 +45,14 @@ class QueryRequest(BaseModel):
     intents: list[str] | None = Field(default=None, min_length=1, max_length=6)
     context_mentions: list[str] | None = Field(default=None, min_length=1, max_length=2)
     entity_ids: list[str] | None = Field(default=None, min_length=1, max_length=2)
-    mode: Literal['auto', 'one_hop', 'multi_hop', 'path', 'compare', 'common', 'difference'] = 'auto'
-    preset: Literal['drugs_for_disease', 'drug_adverse_effects', 'drug_contraindications'] | None = None
+    mode: Literal['auto', 'one_hop', 'multi_hop', 'path', 'compare', 'common', 'difference', 'inference'] = 'auto'
+    preset: str | None = None
+    steps: list[TraversalStep] | None = Field(default=None,min_length=1,max_length=4)
+    inference_rule: Literal['is_a_transitive','part_of_transitive'] | None = None
+    evidence_scope: Literal['same_document','cross_document'] = 'same_document'
+    rel_types: list[str] | None = Field(default=None,min_length=1,max_length=12)
+    target_types: list[str] | None = Field(default=None,min_length=1,max_length=20)
+    direction: Literal['auto','out','in','any'] = 'auto'
     max_hops: int = Field(default=3, ge=1, le=4, strict=True)
     limit: int = Field(default=30, ge=1, le=200, strict=True)
     include_evidence: bool = True
@@ -56,13 +73,25 @@ class QueryRequest(BaseModel):
 
     @model_validator(mode='after')
     def compatible_plan(self):
+        if self.preset and self.preset not in PRESET_CHAINS:raise ValueError('Unknown preset')
+        if self.preset and self.steps:raise ValueError('Choose preset or steps')
+        if self.steps and self.mode not in ('auto','multi_hop'):raise ValueError('steps requires auto or multi_hop')
+        if self.mode=='inference' or self.inference_rule:
+            if self.mode not in ('auto','inference') or not self.inference_rule:raise ValueError('Choose an inference rule')
+            if self.preset or self.steps or self.intents or self.rel_types or self.target_types or self.direction!='auto':raise ValueError('Inference uses its own structural plan')
+            if self.max_hops<2 or not self.include_evidence:raise ValueError('Inference needs 2–4 hops and evidence')
+        elif self.evidence_scope!='same_document':raise ValueError('evidence_scope applies only to inference')
+        if self.rel_types and self.mode not in ('auto','one_hop','path'):raise ValueError('rel_types requires one_hop or path')
+        if self.rel_types and (self.intents or self.preset or self.steps):raise ValueError('Choose explicit relations or an intent/preset/steps')
+        if self.target_types and (self.mode not in ('auto','one_hop') or self.preset or self.steps):raise ValueError('target_types applies to one_hop; specify per-step types for a chain')
+        if self.direction!='auto' and (self.mode not in ('auto','one_hop') or self.preset or self.steps):raise ValueError('direction applies to one_hop; specify per-step direction for a chain')
         if self.preset and self.mode not in ('auto', 'multi_hop'):
             raise ValueError('preset requires auto or multi_hop mode')
-        if self.mode == 'multi_hop' and not self.preset:
+        if self.mode == 'multi_hop' and not (self.preset or self.steps):
             raise ValueError('multi_hop requires a supported preset')
         if self.entity_ids and self.mentions:
             raise ValueError('choose entity_ids or mentions, not both')
-        if self.intents and (self.preset or self.mode in ('multi_hop', 'path')):
+        if self.intents and (self.preset or self.steps or self.mode in ('multi_hop', 'path')):
             raise ValueError('intents applies to one_hop or comparison; multi_hop uses preset')
         return self
 
@@ -120,7 +149,7 @@ def evidence_bundle(result, mode, limit):
             indices = add_group(path['facts'])
             if indices:
                 paths.append({'nodes': path['nodes'], 'fact_indices': indices})
-    elif mode == 'multi_hop':
+    elif mode in ('multi_hop','inference'):
         for group in result.get('chains', []):
             indices = add_group(group)
             if indices:
@@ -138,6 +167,9 @@ def evidence_bundle(result, mode, limit):
 def retrieve(service, payload: QueryRequest):
     started = time.perf_counter()
     warnings = []
+    inference_rule=payload.inference_rule
+    auto_plan=payload.mode=='auto' and not (payload.preset or payload.steps or payload.intents or payload.rel_types or payload.target_types or payload.inference_rule) and payload.direction=='auto'
+    inference_issue=None
     if payload.intents and any(i not in service.intents for i in payload.intents):
         raise ValueError('Unknown intent; see GET /api/v1/kg/meta')
     lookup = get_lookup(service)
@@ -162,20 +194,31 @@ def retrieve(service, payload: QueryRequest):
     mentions = [g['mention'] for g in groups]
     intents = payload.intents or detect_intents(payload.question, mentions)
     anchors = resolved_anchors(groups)
+    if auto_plan:
+        planning_text=without_mentions(payload.question,[*mentions,*[a.entity.name for group in anchors.values() for a in group]])
+        inference_rule,inference_issue=inference_plan(planning_text)
+        inference_issue=inference_issue or constraint_issue(planning_text)
+    if inference_rule and (payload.max_hops<2 or not payload.include_evidence):raise ValueError('Suy luận cần từ 2 đến 4 bước và bằng chứng.')
     mode, preset, plan_issue = choose_mode(payload.question, anchors, intents,
         mode='one_hop' if payload.mode == 'auto' and payload.intents and not comparison_mode(payload.question)
                       else payload.mode, preset=payload.preset)
+    if payload.steps:mode,preset,plan_issue='multi_hop',None,None
+    if inference_rule:mode,preset,plan_issue='inference',None,None
+    if payload.rel_types or payload.target_types or payload.direction!='auto':
+        mode,preset,plan_issue=('path' if payload.mode=='path' else 'one_hop'),None,None
+    if inference_issue:plan_issue=inference_issue
     if not issue and len(groups) > 2:
         issue, reason = 'Mỗi lượt hỗ trợ tối đa hai thực thể. Bạn vui lòng tách câu hỏi.', 'too_many_entities'
     if not issue and any(len(g['candidates']) != 1 or g['candidates'][0]['matched_by'] == 'fuzzy' for g in groups):
         issue, reason = 'Tôi chưa xác định chắc tên bệnh/thuốc. Bạn hãy xác nhận thực thể bên dưới hoặc viết lại câu hỏi với tên đầy đủ.', 'ambiguous_entity'
         if any(len({(c['name'].casefold(), c['type']) for c in g['candidates']}) < len(g['candidates']) for g in groups):
-            issue, reason = 'KG đang có nhiều thực thể trùng tên và loại. Vui lòng kiểm tra mục Knowledge Graph → Rà soát trùng trong Quản lý dữ liệu trước khi truy vấn tên này.', 'duplicate_entities'
+            issue, reason = 'KG có nhiều thực thể trùng tên và loại. Hãy chọn ID cụ thể hoặc kiểm tra dữ liệu định danh nguồn.', 'duplicate_entities'
     if not issue and not groups:
         issue = 'Bạn vui lòng nêu rõ tên bệnh, thuốc hoặc thực thể cần tra cứu trong KG.'
         reason = 'missing_entity'
     if not issue:
-        issue = plan_issue or validate_mode(mode, preset, intents, anchors, service)
+        issue = plan_issue or (None if payload.steps or mode=='inference' else validate_mode(mode, preset, intents, anchors, service))
+        if mode=='inference' and len(anchors)!=1:issue='Chọn một thực thể bắt đầu để suy luận.'
         reason = 'query_scope' if issue else None
     planning_ms = (time.perf_counter() - started) * 1000 - entity_ms
     result = {'anchors': {}, 'facts': [], 'chains': [], 'paths': [], 'notes': []}
@@ -185,19 +228,31 @@ def retrieve(service, payload: QueryRequest):
         # Even a single fuzzy suggestion requires an explicit user choice.
         clarification = {'reason': reason, 'message': issue,
             'groups': [{**g, 'candidate_count': len(g['candidates']), 'candidates': g['candidates'][:5]} for g in groups],
+            'suggestions': plan_suggestions(payload.question,[g['mention'] for g in groups]) if reason=='query_scope' else [],
             'can_confirm': reason == 'ambiguous_entity' and 0 < len(groups) <= 2 and all(g['candidates'] for g in groups)}
     elif mode in COMPARISON_MODES:
         result = compare(service, anchors, intents, mode, limit=payload.limit, with_evidence=payload.include_evidence)
         status = result['status']
     else:
         spec = QuerySpec(mentions=mentions, intents=intents if mode == 'one_hop' else [],
-            chain=list(PRESET_CHAINS[preset]) if preset else [], path=mode == 'path',
-            max_hops=payload.max_hops, limit=payload.limit)
+            chain=preset_steps(preset,service.ontology) if preset else
+                [Step(x.intent,tuple(x.target_types) if x.target_types else None,False,tuple(x.rel_types) if x.rel_types else None,x.direction) for x in (payload.steps or [])], path=mode == 'path',
+            max_hops=payload.max_hops, limit=payload.limit, rel_types=payload.rel_types, target_types=payload.target_types,
+            inference=inference_rule,evidence_scope=payload.evidence_scope)
+        if mode=='one_hop' and (payload.rel_types or payload.direction!='auto'):
+            spec.chain=[Step(intents[0] if len(intents)==1 else 'related',tuple(payload.target_types) if payload.target_types else None,False,
+                tuple(payload.rel_types) if payload.rel_types else tuple(dict.fromkeys(r for i in intents for r in service.intents[i].relations)),payload.direction)]
+        if mode=='one_hop' and intents==['rehabilitation'] and not spec.target_types and all(a.entity.type in ('Disease','DiseaseSubtype','ClinicalCondition') for group in anchors.values() for a in group):
+            spec.target_types=['Rehabilitation']
         result = service.run(spec, with_evidence=payload.include_evidence, resolved_anchors=anchors).to_dict()
         status = result['status']
     retrieval_ms = (time.perf_counter() - started) * 1000 - entity_ms - planning_ms
     context, truncated = evidence_bundle(result, mode, payload.limit)
     truncated = truncated or result.get('truncated', False)
+    if mode=='inference':
+        kept={_fact_key(f):i for i,f in enumerate(context['facts'])}
+        context['inferences']=[{**proof,'fact_indices':[kept[_fact_key(p)] for p in proof['premises']]}
+            for proof in result.get('inferences',[]) if all(_fact_key(p) in kept for p in proof['premises'])]
     if result.get('comparison') is not None:
         context['comparison'] = result['comparison']
     if not issue and not context['facts']:
@@ -217,9 +272,11 @@ def retrieve(service, payload: QueryRequest):
     }
     return QueryResponse(request_id=str(uuid4()), question=payload.question, status=status,
         query={'mentions': mentions, 'intents': intents if mode == 'one_hop' or mode in COMPARISON_MODES else [], 'mode': mode,
-               'preset': preset, 'max_hops': payload.max_hops if mode == 'path' else None,
+               'preset': preset, 'max_hops': payload.max_hops if mode in ('path','inference') else None,
+               'steps':[x.model_dump() for x in (payload.steps or [])], 'inference_rule':inference_rule,
+               'evidence_scope':payload.evidence_scope,'rel_types':payload.rel_types,'target_types':payload.target_types,'direction':payload.direction,
                'entity_resolution': 'user_confirmed' if payload.entity_ids else 'dictionary',
-               'analysis': 'validated_upstream' if payload.intents else 'dictionary_and_rules'},
+               'analysis': 'explicit_plan' if not auto_plan else 'dictionary_and_rules_v2'},
         retrieval={'anchors': result.get('anchors', {}), 'fact_count': len(context['facts']),
                    'fallback_recommended': status != 'ok', 'complete': False, 'truncated': truncated},
         llm_context=context, warnings=warnings + result.get('notes', []), clarification=clarification,
@@ -249,7 +306,8 @@ def create_app(service=None, import_service=None):
                 from app.modules.kg_query.factory import build_query_resources
                 resources = build_query_resources(Settings.from_env())
                 service = resources.service
-        return service
+        from app.kg_global.query import select_service
+        return select_service(service)
 
     def get_import_service():
         nonlocal import_service, import_resources
@@ -304,11 +362,15 @@ def create_app(service=None, import_service=None):
     @app.get('/api/v1/kg/meta')
     def meta():
         try:
-            return {'schema_version': '1.2', 'query_modes': ['one_hop', 'multi_hop', 'path', *COMPARISON_MODES],
-                    'default_mode': 'auto', 'planner': 'dictionary_and_rules',
+            return {'schema_version': '1.3', 'query_modes': ['one_hop', 'multi_hop', 'path', *COMPARISON_MODES, 'inference'],
+                    'default_mode': 'auto', 'planner': 'dictionary_and_rules_v2',
                     'comparison': {'max_entities': 2, 'max_criteria': 6, 'scope': 'direct_relations',
                                    'requires_criterion': True, 'absence_is_not_negation': True},
-                    'presets': list(PRESET_CHAINS), 'automatic_intents': list(RULES),
+                    'presets': list(PRESET_CHAINS), 'preset_details':preset_catalog(get_service().ontology),
+                    'inference_rules':rule_catalog(get_service().ontology), 'custom_steps':{'max_steps':4,'directions':['auto','out','in','any']},
+                    'ontology':{'entity_types':sorted(get_service().ontology.entity_types),'relations':get_service().ontology.relation_names(),
+                                'uncovered_relations':uncovered_relations(get_service().ontology)},
+                    'automatic_intents': list(RULES), 'automatic_presets':auto_catalog(),
                     'intents': [{'id': i.name, 'description': i.description,
                                  'relations': list(i.relations)} for i in get_service().intents.values()]}
         except Exception:

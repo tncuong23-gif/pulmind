@@ -1,0 +1,8 @@
+state.json
+state.json.tmp
+compose.generated.json
+compose.generated.json.tmp
+empty.env
+operation.lock
+CONNECTIONS.txt
+__pycache__/

@@ -85,7 +85,10 @@ class MemoryJobStore:
     def get_job(self, import_id): return copy.deepcopy(self.jobs.get(import_id))
 
 
-class MemoryGraphStore:
+from .merge import MemoryMergeMixin
+
+
+class MemoryGraphStore(MemoryMergeMixin):
     def __init__(self) -> None:
         self.entities: dict[str, dict[str, Any]] = {}
         self.relations: dict[str, dict[str, Any]] = {}

@@ -1,0 +1,25 @@
+Baseline: verified-full version 5 (concept update).
+
+KG_MERGE_UPDATE_VI.md
+MERGE_PATCH_FILES.txt
+backend/app/bulk_import/api.py
+backend/app/bulk_import/kg.py
+backend/app/bulk_import/manager.py
+backend/app/bulk_import/web/app.js
+backend/app/bulk_import/web/index.html
+backend/app/modules/kg_import/adapters/memory.py
+backend/app/modules/kg_import/adapters/merge.py
+backend/app/modules/kg_import/adapters/neo4j.py
+backend/app/modules/kg_import/concept_identity.py
+backend/app/modules/kg_import/entity_vector.py
+backend/app/modules/kg_import/manual_merge.py
+backend/app/modules/kg_import/service.py
+backend/app/modules/kg_query/web/duplicates.html
+backend/app/modules/kg_query/web/duplicates.js
+backend/app/modules/kg_query/web/merge.js
+backend/app/modules/kg_query/web_app.py
+backend/scripts/kg/reindex_merged.py
+backend/tests/merge_ui.cjs
+backend/tests/test_manual_merge.py
+backend/tests/test_merge_flows.py
+backend/tests/upstream/kg/test_entity_linking.py

@@ -44,6 +44,11 @@ class Fact:
         return self.object if self.subject.id == self.anchor_id else self.subject
 
     def add_row(self, row: Mapping[str, Any]) -> None:
+        if row.get('global_assertions'):
+            rows = json.loads(row['global_assertions']) if isinstance(row['global_assertions'], str) else row['global_assertions']
+            for assertion in rows:
+                self.add_row(assertion)
+            return
         raw = row.get("properties_json")
         try:
             properties = json.loads(raw) if isinstance(raw, str) else (raw or {})
@@ -127,6 +132,8 @@ class Step:
     intent: str
     target_types: tuple[str, ...] | None = None
     include_previous: bool = False
+    rel_types: tuple[str, ...] | None = None
+    direction: str = 'auto'
 
 
 @dataclass
@@ -141,6 +148,8 @@ class QuerySpec:
     max_hops: int = 3                                     # path mode only
     limit: int = 100
     notes: list[str] = field(default_factory=list)
+    inference: str | None = None
+    evidence_scope: str = 'same_document'
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any], presets: Mapping[str, tuple[Step, ...]] | None = None) -> "QuerySpec":
@@ -155,13 +164,15 @@ class QuerySpec:
                 chain, notes = [], [f"unknown chain preset '{chain_raw}' ignored"]
         else:
             chain = [Step(s["intent"], tuple(s["target_types"]) if s.get("target_types") else None,
-                          bool(s.get("include_previous", False))) for s in chain_raw]
+                          bool(s.get("include_previous", False)), tuple(s['rel_types']) if s.get('rel_types') else None,
+                          s.get('direction', 'auto')) for s in chain_raw]
         intents = data.get("intents") or ([data["intent"]] if data.get("intent") else [])
         return cls(
             mentions=mentions, intents=[str(i) for i in intents], chain=chain, path=bool(data.get("path", False)),
             target_types=data.get("target_types") or None, anchor_types=data.get("anchor_types") or None,
             rel_types=data.get("rel_types") or None, max_hops=int(data.get("max_hops", 3)),
             limit=int(data.get("limit", 100)), notes=notes,
+            inference=data.get('inference'), evidence_scope=data.get('evidence_scope', 'same_document'),
         )
 
 
@@ -180,6 +191,8 @@ class QueryResult:
     chains: list[list[Fact]] = field(default_factory=list)
     paths: list[PathResult] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    inferences: list[dict[str, Any]] = field(default_factory=list)
+    truncated: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -190,4 +203,5 @@ class QueryResult:
             "answers": [a.to_dict() for a in self.answers],
             "chains": [[f.to_dict() for f in c] for c in self.chains],
             "paths": [{"nodes": [vars(n) for n in p.nodes], "facts": [f.to_dict() for f in p.facts]} for p in self.paths],
+            "inferences": self.inferences, "truncated": self.truncated,
         }

@@ -127,9 +127,20 @@ def build_records(data,encoder,config):
         for e in p.evidence:sentence_props.setdefault(e.sentence_id,[]).append(p.id)
     for r in data.relations:
         for pid in r.proposition_ids:prop_relations.setdefault(pid,[]).append(r)
+    origins={s.sentence_id:getattr(s,'source_origin',{'source_document_id':doc.document_id,'source_sentence_id':s.sentence_id}) for sec in doc.sections for p in sec.paragraphs for s in p.sentences}
+    metadata=getattr(doc,'metadata',{}) or {}
     base={'document_id':doc.document_id,'document_title':doc.title,'document_type':doc.document_type,'language':doc.language}
     def add(kind,logical,text,embedding_text,**meta):
         row={**base,'kind':kind,'logical_id':logical,'text':text,'embedding_text':embedding_text,**meta}
+        sids=row.get('sentence_ids',row.get('evidence_sentence_ids',[]))
+        row['source_origins']=[origins[sid] for sid in sids if sid in origins]
+        row['source_document_ids']=sorted({v.get('source_document_id',doc.document_id) for v in row['source_origins']})
+        sources=metadata.get('import_provenance',{}).get('sources',[])
+        if len(row['source_document_ids'])==1:
+            original=next((v for v in sources if v.get('document_id')==row['source_document_ids'][0]),{})
+            if original.get('title'):row['document_title']=original['title']
+        for field in ('publication_year','last_updated_year'):
+            if field in metadata and metadata[field] is not None:row[field]=str(metadata[field])
         row['token_count']=encoder.count('passage: '+embedding_text)
         if row['token_count']>encoder.max_length:raise ValueError(f'{logical}: vượt giới hạn embedding.')
         row['content_hash']=digest(row);records.append(row)
@@ -157,7 +168,13 @@ def build_records(data,encoder,config):
                 chunk_method=method,boundary_reason=boundary['reason'],boundary_distance=boundary['distance'],semantic_threshold=boundary['threshold'])
     for p in data.propositions:
         rels=prop_relations.get(p.id,[])
-        add('proposition',p.id,p.text,p.text,proposition_id=p.id,evidence_sentence_ids=list(dict.fromkeys(e.sentence_id for e in p.evidence)),
-            entity_ids=sorted({e for r in rels for e in (r.source,r.target)}),relation_ids=[r.id for r in rels])
+        spans=[{'start':0,'end':len(p.text)}] if encoder.count('passage: '+p.text)<=encoder.max_length else token_ranges(p.text,'',encoder,config)
+        for part,boundary in enumerate(spans,1):
+            a,b=boundary['start'],boundary['end'];text=p.text[a:b]
+            logical=p.id if len(spans)==1 else f'{p.id}_PART_{part:06d}'
+            add('proposition',logical,text,text,proposition_id=p.id,proposition_part=part,proposition_parts=len(spans),
+                proposition_start_char=a,proposition_end_char=b,
+                evidence_sentence_ids=list(dict.fromkeys(e.sentence_id for e in p.evidence)),
+                entity_ids=sorted({e for r in rels for e in (r.source,r.target)}),relation_ids=[r.id for r in rels])
     if len({r['logical_id'] for r in records})!=len(records):raise ValueError('ID proposition trùng ID chunk được tạo.')
     return records

@@ -25,6 +25,7 @@ from .errors import (ImportConflictError, ImportStateError, ImportTransactionErr
                      MongoImportError, Neo4jImportError, ValidationError)
 from .models import KGImport, parse_import
 from .entity_linking import link_entities
+from .concept_identity import normalization_issues, profile as concept_profile
 from .normalization import NormalizedImport, normalize
 from .ontology import Ontology
 from .planner import MODES, ImportPlan, build_plan
@@ -125,7 +126,7 @@ class KGImportService:
 
     def review_profile(self):
         settings = getattr(self.entity_index, 'settings', None)
-        return sha256_of({'policy': 'kg-review-v3-identity',
+        return sha256_of({'policy': 'kg-review-v5-manual-merge', 'concept_policy': concept_profile(),
             'embedding': getattr(self.entity_index, 'profile', type(self.entity_index).__name__),
             'threshold': getattr(settings, 'candidate_score', None), 'types': sorted(self.ontology.entity_types),
             'relations': {k: [sorted(v.domain), sorted(v.range)] for k, v in self.ontology.relations.items()}})
@@ -152,7 +153,7 @@ class KGImportService:
     def validate_payload(self, payload: Any) -> list[Issue]:
         """Schema + semantic + ontology validation only. No database access."""
         kg, issues = parse_import(payload)
-        return issues if kg is None else validate(kg, self.ontology, self.limits)
+        return issues if kg is None else validate(kg, self.ontology, self.limits) + normalization_issues(payload)
 
     def get_status(self, import_id: str) -> dict[str, Any]:
         job = self.jobs.get_job(import_id)
@@ -162,12 +163,19 @@ class KGImportService:
 
     @serialized
     def import_kg(self, payload: Any, mode: str = "upsert", *, dry_run: bool = False) -> ImportResult:
+        if not dry_run:
+            from app.kg_global.query import active
+            if active():
+                raise ImportStateError('KG global đang phục vụ truy vấn. Nạp tài liệu vào Kho global; không ghi song song bằng luồng cũ.')
         run = _Run(new_import_id(), mode, dry_run, sha256_of(payload))
         return self._guarded(run, lambda: self._pipeline(run, payload))
 
     @serialized
     def retry(self, import_id: str, payload: Any) -> ImportResult:
         """Resume a failed/partial import. The payload must be byte-for-byte the same content (hash checked)."""
+        from app.kg_global.query import active
+        if active():
+            raise ImportStateError('KG global đang phục vụ truy vấn. Nạp lại tài liệu vào Kho global; không chạy lại luồng cũ.')
         try:
             job = self.get_status(import_id)
         except KGImportError as exc:
@@ -230,10 +238,12 @@ class KGImportService:
         t0 = time.perf_counter()
         run.stage = "validation"
         self._job(run, status=Status.VALIDATING.value, stage="validation")
+        from .manual_merge import resolve_redirects
+        payload = resolve_redirects(payload, self.graph)
         kg, issues = parse_import(payload)
         if kg is not None:
             run.document_id = kg.document.document_id
-            issues = validate(kg, self.ontology, self.limits)
+            issues = validate(kg, self.ontology, self.limits) + normalization_issues(payload)
         if issues:
             raise ValidationError("payload failed validation", issues=issues)
         self._log(run, "validation", "success", t0)
@@ -248,7 +258,23 @@ class KGImportService:
         type_decisions = payload.get('entity_type_decisions', {})
         if (not isinstance(type_decisions, dict) or any(k not in {e.id for e in kg.entities} or v != 'distinct' for k,v in type_decisions.items())):
             raise ValidationError('invalid type review decisions', issues=[Issue('ENTITY_TYPE_REVIEW_INVALID', 'Expected input IDs mapped to distinct after individual type review.')])
-        linked, entity_links = link_entities(kg, self.graph, decisions)  # type: ignore[arg-type]
+        ambiguous_candidates = {}
+        try:
+            linked, entity_links = link_entities(kg, self.graph, decisions)
+        except ValidationError as exc:
+            if not run.dry_run or not exc.issues or any(i.code != 'ENTITY_LINK_AMBIGUOUS' for i in exc.issues): raise
+            # Let the review screen offer an explicit merge instead of failing before preview.
+            linked, entity_links = kg, {}
+            rows = self.graph.find_entity_candidates([], sorted({e.canonical_name.casefold() for e in kg.entities}), [])
+            by_id = {r['id']:r for r in rows}
+            for issue in exc.issues:
+                index = int(issue.path.split('[')[1].split(']')[0])
+                eid = kg.entities[index].id
+                ambiguous_candidates[eid] = [{'entity_id':i,'canonical_name':by_id[i]['canonical_name'],
+                    'entity_type':by_id[i]['entity_type'],'score':1.0,'link_allowed':False,
+                    'incoming_type':kg.entities[index].type,'match_kind':'ambiguous_identity'}
+                    for i in issue.context.get('candidate_ids',[]) if i in by_id]
+
         # Revalidate endpoints after linking; no ontology check may be bypassed by rewriting IDs.
         linked_issues = validate(linked, self.ontology, self.limits)
         if linked_issues:
@@ -256,8 +282,25 @@ class KGImportService:
         norm = normalize(linked)
         # Keep document-scoped original IDs for provenance without duplicating graph nodes.
         norm.mongo['documents'][0]['entity_id_map'] = {e.id: entity_links.get(e.id, e.id) for e in kg.entities}
+        provenance = kg.document.metadata.get('concept_identity', {})
+        if isinstance(provenance, dict):
+            prior = provenance.get('original_to_canonical', {})
+            known_ids = {e.id for e in kg.entities}
+            if isinstance(prior, dict):
+                for old, current in prior.items():
+                    if isinstance(old, str) and isinstance(current, str) and current in known_ids:
+                        norm.mongo['documents'][0]['entity_id_map'][old] = entity_links.get(current, current)
+        for merge in kg.document.metadata.get('manual_concept_merges', []):
+            if not isinstance(merge, dict):
+                continue
+            current = merge.get('target_id')
+            if current in {e.id for e in kg.entities}:
+                for old in merge.get('ids', []):
+                    if isinstance(old, str):
+                        norm.mongo['documents'][0]['entity_id_map'][old] = entity_links.get(current, current)
         plan = build_plan(norm, plan_mode, self.ontology, self.graph, self.docs, batch=self.limits.neo4j_batch_size)
         plan.entity_links = entity_links
+        plan.entity_candidates.update(ambiguous_candidates)
         from .identity_review import cross_type_candidates
         plan.entity_candidates.update(cross_type_candidates(kg, self.graph, type_decisions))
         if plan.errors:
@@ -290,6 +333,15 @@ class KGImportService:
                     if c['entity_type'] != e['entity_type']:
                         c.update(match_kind='cross_type', link_allowed=False, incoming_type=e['entity_type'])
                 if candidates: plan.entity_candidates.setdefault(e['id'], []).extend(candidates)
+        for eid, candidates in plan.entity_candidates.items():
+            unique = {}
+            for candidate in candidates:
+                key = (candidate['entity_id'], candidate.get('entity_type'))
+                if key not in unique:
+                    unique[key] = candidate
+                elif candidate.get('link_allowed') is False:
+                    unique[key] = {**unique[key], **candidate}
+            plan.entity_candidates[eid] = list(unique.values())
         if plan.entity_candidates and not run.dry_run:
             raise ValidationError("similar entity names require review before import",
                                   issues=[Issue("ENTITY_LINK_REVIEW_REQUIRED", f"review candidate(s) for '{i}'",

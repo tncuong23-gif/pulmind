@@ -8,10 +8,10 @@ from __future__ import annotations
 import re
 import unicodedata
 
-from .intents import PRESET_CHAINS, DRUG_TYPES
+from .intents import PRESET_CHAINS, DRUG_TYPES, PRESET_START_TYPES, preset_steps
 
 COMPARISON_MODES = ('compare', 'common', 'difference')
-DISEASE_TYPES = {'Disease', 'DiseaseSubtype', 'Syndrome', 'AcuteCondition'}
+DISEASE_TYPES = {'Disease', 'DiseaseSubtype', 'Syndrome', 'AcuteCondition', 'ClinicalCondition', 'Complication', 'Exacerbation'}
 
 
 def text_key(value: str, *, accents: bool = True) -> str:
@@ -52,6 +52,18 @@ RULES = {
     'mechanism': ('cơ chế sinh học', 'cơ chế tác động', 'cơ chế tác dụng', 'thụ thể', 'cytokine', 'tế bào'),
     'anatomy': ('vị trí', 'cơ quan', 'giải phẫu', 'bộ phận', 'ảnh hưởng ở đâu'),
 }
+
+RULES.update({
+    'taxonomy': ('phân loại cha', 'phân loại con', 'thuộc lớp', 'loại con', 'phân cấp'),
+    'screening': ('sàng lọc', 'tầm soát'),
+    'epidemiology': ('tỷ lệ mắc', 'tỉ lệ mắc', 'dịch tễ', 'tỷ lệ hiện mắc'),
+    'source_topic': ('tài liệu nào', 'hướng dẫn nào', 'nguồn nào đề cập'),
+    'sequence': ('trình tự', 'bước tiếp theo', 'sau bước', 'thứ tự điều trị'),
+    'setting': ('môi trường áp dụng', 'cơ sở y tế', 'cách ly ở đâu'),
+    'applicability': ('điều kiện áp dụng', 'áp dụng khi nào', 'đối tượng áp dụng'),
+    'regimen': ('thành phần phác đồ', 'phác đồ gồm', 'thuốc trong phác đồ'),
+})
+RULES['dosage'] += ('tần suất', 'thời gian dùng', 'thời gian điều trị', 'bao lâu')
 
 
 def has_cue(text: str, cues) -> bool:
@@ -98,34 +110,25 @@ def comparison_mode(question: str) -> str | None:
 
 
 def choose_mode(question, anchors, intents, *, mode='auto', preset=None):
-    """Return (mode, preset, clarification). All supplied entities were resolved first."""
-    if mode != 'auto':
-        return mode, preset, None
-    if detected := comparison_mode(question):
-        if preset:
-            return detected, None, 'So sánh hiện đối chiếu các quan hệ trực tiếp. Hãy hỏi riêng từng bệnh nếu cần chuỗi thuốc điều trị.'
-        return detected, None, None
-    if preset:
-        return 'multi_hop', preset, None
-    if has_cue(question, ('mối liên hệ', 'mối liên quan', 'quan hệ giữa', 'liên kết giữa', 'đường liên kết', 'đường đi giữa',
-                         'liên quan với', 'liên quan thế nào', 'liên quan như thế nào')):
-        return 'path', None, None
-    entities = [a.entity for group in anchors.values() for a in group]
-    disease_types = {'Disease', 'DiseaseSubtype', 'Syndrome', 'AcuteCondition'}
-    disease_only = bool(entities) and all(e.type in disease_types for e in entities)
-    drug_cue = has_cue(question, ('thuốc', 'hoạt chất', 'nhóm thuốc'))
-    if disease_only and drug_cue:
-        if 'adverse_effect' in intents and 'contraindication' in intents:
-            return 'one_hop', None, 'Bạn muốn tra tác dụng phụ hay chống chỉ định của thuốc điều trị? Vui lòng chọn một nội dung mỗi lượt.'
-        if 'adverse_effect' in intents:
-            return 'multi_hop', 'drug_adverse_effects', None
-        if 'contraindication' in intents:
-            return 'multi_hop', 'drug_contraindications', None
-        if any(i in intents for i in ('dosage', 'interaction', 'monitoring', 'resistance')):
-            return 'one_hop', None, 'Bạn vui lòng nêu tên thuốc cụ thể để tra cứu nội dung này.'
-        if 'treatment' in intents or has_cue(question, ('thuốc nào', 'thuốc gì')):
-            return 'multi_hop', 'drugs_for_disease', None
-    return 'one_hop', None, None
+    if mode!='auto':return mode,preset,None
+    from .auto_plan import PATH_CUES,candidates,constraint_issue,without_mentions
+    entities=[a.entity for group in anchors.values() for a in group]
+    text=without_mentions(question,[*anchors,*[e.name for e in entities]])
+    if detected:=comparison_mode(text):
+        if preset:return detected,None,'So sánh hiện đối chiếu các quan hệ trực tiếp. Hãy hỏi riêng từng bệnh nếu cần chuỗi thuốc điều trị.'
+        return detected,None,None
+    if preset:return 'multi_hop',preset,None
+    issue=constraint_issue(text)
+    if issue:return 'one_hop',None,issue
+    if has_cue(text,PATH_CUES):return 'path',None,None
+    plans=candidates(text,[e.type for e in entities])
+    if len(plans)>1:
+        from .intents import PRESET_LABELS
+        return 'one_hop',None,'Câu hỏi khớp nhiều chuỗi: '+'; '.join(PRESET_LABELS[k] for k in plans)+'. Hãy chọn một nội dung mỗi lượt để giữ đủ các bước bằng chứng.'
+    if plans:return 'multi_hop',plans[0],None
+    if entities and all(e.type in DISEASE_TYPES for e in entities) and has_cue(text,('thuốc','hoạt chất','nhóm thuốc')) and any(i in intents for i in ('dosage','interaction','monitoring','resistance')):
+        return 'one_hop',None,'Bạn vui lòng nêu tên thuốc cụ thể hoặc nói rõ thuốc trong phác đồ của bệnh để tra nội dung này.'
+    return 'one_hop',None,None
 
 
 def validate_mode(mode, preset, intents, anchors, service):
@@ -152,11 +155,13 @@ def validate_mode(mode, preset, intents, anchors, service):
             return 'Hai tên đang trỏ đến cùng một thực thể. Vui lòng chọn hai thực thể khác nhau.'
     if mode == 'multi_hop':
         if preset not in PRESET_CHAINS:
-            return 'Bạn vui lòng chọn chuỗi truy vấn thuốc, tác dụng phụ hoặc chống chỉ định của thuốc điều trị bệnh.'
-        if any(a.entity.type not in {'Disease', 'DiseaseSubtype', 'Syndrome', 'AcuteCondition'}
-               for group in anchors.values() for a in group):
-            return 'Chuỗi này bắt đầu từ bệnh. Với tên thuốc cụ thể, hãy dùng truy vấn trực tiếp.'
-        required = [s.intent for s in PRESET_CHAINS[preset] if not s.include_previous]
+            return 'Bạn vui lòng chọn một mẫu chuỗi được hỗ trợ hoặc mô tả từng bước trong KG Explorer.'
+        allowed=PRESET_START_TYPES[preset]
+        if any(a.entity.type not in allowed for group in anchors.values() for a in group):
+            return 'Chuỗi này cần thực thể bắt đầu thuộc một trong các loại: '+', '.join(allowed)
+        try:preset_steps(preset,service.ontology)
+        except ValueError as exc:return str(exc)
+        required=[]
     elif mode == 'one_hop' or mode in COMPARISON_MODES:
         required = intents
     else:

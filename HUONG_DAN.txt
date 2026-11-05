@@ -1,0 +1,53 @@
+BỘ CHẠY NHANH MEDICAL AI — WINDOWS
+
+1. Giải nén ZIP này. Chép toàn bộ các file .bat và thư mục windows_quick
+   vào thư mục medical-ai-integrated hiện có, cùng cấp backend và frontend.
+   Không chạy ngay trong cửa sổ xem ZIP; không chỉ chép riêng các file .bat.
+2. Máy cần Python 3.12 (kèm Python Launcher) và Node.js 22 trở lên (kèm npm).
+   Nếu thiếu, script báo rõ. Cài bằng bộ cài chính thức, rồi nhấp lại file .bat.
+3. Lần đầu: nhấp đúp INSTALL_AND_START.bat.
+4. Các lần sau: nhấp đúp START.bat.
+   Frontend tự mở trình duyệt khi Vite chạy. Backend có thể khởi động lâu hơn;
+   chờ “Application startup complete”, rồi tải lại trang nếu cần.
+
+CÁC FILE
+INSTALL.bat: cài requirements backend, kiểm tra pip, cài npm frontend.
+START.bat: mở hai cửa sổ backend (8100) và frontend (5173).
+INSTALL_AND_START.bat: chỉ khởi động sau khi cài đặt thành công.
+START_BACKEND.bat / START_FRONTEND.bat: chạy từng thành phần riêng.
+INSTALL_CLINICAL.bat / START_CLINICAL.bat: gọi script Clinical IE có sẵn,
+   dùng môi trường .venv-clinical riêng, cổng 8002.
+INSTALL_VOICE.bat: cài requirements-voice vào backend và chạy bộ cài
+   VieNeu riêng theo chế độ mặc định của dự án.
+START_VOICE.bat: chạy VieNeu cổng 8880; xem hướng dẫn giọng nói của dự án
+   để thiết lập .env. Không tự chuyển sang bộ cài GPU.
+
+DỮ LIỆU VÀ CẤU HÌNH
+- Bộ này chỉ thêm file khởi chạy; không thay mã nguồn ứng dụng hay .env.
+- INSTALL cập nhật thư viện trong .venv hiện có, hoặc venv nếu không có
+  .venv. Nếu chưa có cả hai, tạo backend/.venv bằng Python 3.12.
+- Không dùng trực tiếp venv chép từ máy khác nếu Python báo lỗi. Đổi tên
+  venv đó để giữ bản sao rồi chạy INSTALL để tạo môi trường mới.
+- npm ci cài lại node_modules theo package-lock.json.
+- Nhật ký cài đặt tại logs/install-backend.log và logs/install-frontend.log;
+  được ghi lại ở mỗi lần cài. Khi lỗi, cửa sổ giữ mở và hiển thị nhật ký.
+- Neo4j, MongoDB, Qdrant và Ollama cần được chạy riêng với thông tin khớp
+  backend/.env. Bộ này không dựng lại CSDL hoặc tự tải model Ollama.
+- Các model lớn có thể cần tải ở lần sử dụng đầu, tùy cấu hình hiện có.
+- Theo tài liệu đi kèm, Clinical IE có thể thiếu trọng số NLP. Bộ cài
+  Clinical kiểm tra checksum và báo mã 2 nếu thiếu/sai model; file BAT
+  không thể thay thế các trọng số đó. Xem CLINICAL_MULTIMODAL_UPDATE_VI.md.
+- START chỉ mở backend/frontend. Nhấp START_CLINICAL hoặc START_VOICE
+  khi dùng tính năng tương ứng và đã cài module đó.
+
+DỪNG VÀ XỬ LÝ LỖI
+- Dùng Ctrl+C trong mỗi cửa sổ dịch vụ; xác nhận Y nếu CMD hỏi.
+- Không bấm START liên tiếp. Khi cổng bị chiếm, dừng đúng cửa sổ cũ.
+  Frontend dùng strictPort để không âm thầm đổi sang cổng khác.
+- Không cần chạy với quyền Administrator.
+- File BAT dùng thông báo không dấu để tránh lỗi font trên CMD.
+
+KIỂM CHỨNG
+Đã đối chiếu lệnh, đường dẫn, cổng và các script module với ZIP được gửi;
+kiểm tra nhãn điều hướng và định dạng CRLF. Môi trường thực hiện là Linux,
+chưa chạy end-to-end trên Windows, chưa kết nối CSDL hoặc suy luận model.

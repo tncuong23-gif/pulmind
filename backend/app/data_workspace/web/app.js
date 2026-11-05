@@ -5,7 +5,7 @@
   const groups = {
     overview: {title: 'Tổng quan dữ liệu'},
     rag: {title: 'Kho tri thức RAG', tabs: [['import', 'Nạp dữ liệu'], ['search', 'Tra cứu tri thức'], ['documents', 'Kho tài liệu']]},
-    kg: {title: 'Knowledge Graph', tabs: [['import', 'Nạp dữ liệu'], ['explore', 'Khám phá đồ thị'], ['review', 'Rà soát trùng'], ['file', 'Xem trước JSON']]},
+    kg: {title: 'Knowledge Graph', tabs: [['global', 'Nhập KG'], ['explore', 'Khám phá đồ thị']]},
     context: {title: 'Context & Patient', tabs: [['import', 'Nạp dữ liệu'], ['history', 'Lịch sử & dữ kiện'], ['tools', 'Kiểm tra ngữ cảnh']]},
     reports: {title: 'Lịch sử & báo cáo'}
   };
@@ -42,6 +42,8 @@
     return {group, view: tabs ? view : '', job: validJob(job) ? job : null};
   }
   function frameSpec() {
+    if(route.group === 'kg' && route.view === 'global') return {key:'kg-global',path:'/kg-global',view:'global'};
+    if (route.group === 'rag' && route.view === 'import') return {key:'rag-import-direct',path:'/direct-import',module:'rag',view:'import'};
     if (route.group === 'rag') return {key: 'rag', path: '/modules/rag/', view: route.view};
     if (route.view === 'import') return {key: route.group + '-import', path: '/imports', module: route.group, view: 'import'};
     if (route.group === 'kg') return route.view === 'explore' ? {key: 'kg-explore', path: '/modules/kg-explorer/', view: 'explore'} : {key: 'kg-review', path: '/modules/kg-explorer/duplicates', view: route.view === 'file' ? 'file' : 'graph'};

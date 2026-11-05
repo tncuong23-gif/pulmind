@@ -1,0 +1,70 @@
+BỘ CÀI CSDL MEDICAL AI — DÙNG OLLAMA ĐÃ CÓ TRÊN WINDOWS
+Bản cập nhật: chỉ quản lý Neo4j, MongoDB và Qdrant.
+
+CẬP NHẬT TỪ BỘ CŨ / LẦN CÀI ĐANG DỞ
+1. Nếu cửa sổ SETUP cũ vẫn đang tải Ollama: nhấn Ctrl+C để dừng.
+   Chờ tiến trình kết thúc rồi đóng cửa sổ. Dừng backend trước khi SETUP.
+2. Giải nén ZIP. Chép SETUP_DATABASES.bat, START_DATABASES.bat và
+   thư mục medical_db_tools vào thư mục dự án cùng cấp backend/frontend:
+   D:\medical_wed\banmoi\medical-ai-integrated
+   Chọn thay thế các tệp trùng tên. Chép đè vào thư mục hiện có;
+   KHÔNG xóa thư mục medical_db_tools hoặc state.json trước khi chép.
+3. Nhấp SETUP_DATABASES.bat để hoàn tất việc cài đang dở.
+   Bộ chạy dùng lại mã bộ CSDL, tên, mật khẩu, cổng và image đã ghi trong
+   state.json. Các khóa Ollama cũ trong state.json được giữ nhưng bỏ qua.
+4. Khi báo [OK] Hoan tat, chạy RUN.bat của dự án.
+5. Những lần sau: START_DATABASES.bat, chờ hoàn tất, rồi RUN.bat.
+
+CHỨC NĂNG HAI FILE
+- SETUP_DATABASES.bat: kiểm tra/cài Docker Desktop nếu thiếu, khởi động
+  Docker, thiết lập ba CSDL, kiểm tra dịch vụ, khởi tạo CSDL MongoDB và
+  sao lưu rồi cập nhật các dòng kết nối CSDL trong backend/.env.
+- START_DATABASES.bat: mở Docker Desktop nếu cần, khởi động ba CSDL
+  của bộ đã lưu và kiểm tra kết nối. Nếu SETUP chưa hoàn tất sẽ báo rõ.
+- Không cài Ollama, không tải image Ollama, không tạo/chạy container
+  Ollama, không tải model và không chờ Ollama sẵn sàng.
+- Không tự mở Ollama trên Windows. Khi cần dùng AI, mở Ollama đã cài.
+- Không kiểm tra hay xác nhận model AI đã có; đây là bộ cài CSDL.
+- Hai file không khởi động backend/frontend, không cài npm/pip.
+
+CẤU HÌNH OLLAMA ĐƯỢC GIỮ NGUYÊN
+- Giữ nguyên OLLAMA_BASE_URL, CONTEXT_OLLAMA_BASE_URL, tên model,
+  CONTEXT_NLP_BACKEND và các cấu hình AI khác trong backend/.env.
+- Nếu bộ cũ từng hoàn tất và .env đang trỏ đến cổng Ollama Docker của
+  bộ cũ, bản này sẽ nhắc kiểm tra URL nhưng không tự đổi URL.
+  Cần đặt URL theo đúng Ollama Windows của bạn trước khi dùng AI.
+- Nếu mới dừng tại bước tải image Ollama như log đã gửi, bộ cũ chưa
+  đến bước cập nhật .env; bản sửa sẽ tiếp tục phần CSDL.
+- Không xóa image, container hay volume Ollama đã có. Nếu container
+  Ollama cũ vẫn đang chạy, bản sửa không dừng nó. Docker có thể báo
+  orphan container; không cần xóa để ba CSDL hoạt động.
+
+DỮ LIỆU VÀ TÊN RIÊNG
+- Lần cài mới tạo mã nckh-medai-<12 ký tự>, tên container/network/volume
+  riêng; chọn cổng trống và kiểm tra nhãn sở hữu tránh trùng bộ khác.
+- Lần chạy lại giữ nguyên bộ đã ghi trong medical_db_tools/state.json.
+- Chỉ công bố cổng CSDL trên 127.0.0.1. Không dùng Docker daemon từ xa.
+- Không xóa volume, không gọi docker prune, không dừng CSDL cũ.
+- Chỉ chuyển kết nối .env sau khi cả ba CSDL phản hồi thành công.
+- Bản sao lưu .env: backend/.env.before-isolated-<thời điểm>-<mã>.
+- Địa chỉ CSDL sau khi hoàn tất: medical_db_tools/CONNECTIONS.txt.
+- CSDL mới ban đầu trống; dữ liệu y khoa phải được nạp/khôi phục riêng.
+- Giữ state.json. Không chia sẻ .env, state.json, compose.generated.json
+  hoặc bản sao lưu chứa mật khẩu. Docker volume không thay thế sao lưu.
+
+YÊU CẦU VÀ XỬ LÝ LỖI
+- Dùng Python backend đã cài hoặc Python 3.12 qua Windows Python Launcher.
+- Docker Desktop phải chạy Linux containers. Cài Docker/WSL lần đầu
+  có thể yêu cầu quyền quản trị và khởi động lại Windows.
+- Nhật ký nằm trong logs/databases-setup-*.log và databases-start-*.log.
+- Không chạy SETUP và START đồng thời. Có khóa ngăn chạy trùng.
+- Lần cài dở: giữ state.json rồi chạy SETUP lại. Image CSDL đã ghi nhận
+  sẽ được dùng lại; Docker có thể tải phần còn thiếu nếu cache bị xóa.
+- Nếu cổng CSDL đã bị chương trình khác chiếm, bộ chạy báo lỗi thay vì
+  tự dừng chương trình đó. Không đổi cổng khi CSDL còn đang chạy.
+- Sau khi .env đổi, cần khởi động lại backend.
+
+KIỂM THỬ
+10 kiểm tra tự động đạt với thao tác Docker giả lập trên Linux.
+Chưa chạy trực tiếp trên Windows/Docker Desktop của bạn.
+Chi tiết trong medical_db_tools/KIEM_TRA.txt.

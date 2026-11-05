@@ -1,0 +1,9 @@
+Baseline: verified-full version 6 (manual concept merge).
+
+KG_REVIEW_RECOVERY_VI.md
+REVIEW_RECOVERY_PATCH_FILES.txt
+backend/app/bulk_import/kg.py
+backend/app/bulk_import/manager.py
+backend/app/bulk_import/web/app.js
+backend/app/modules/kg_import/manual_merge.py
+backend/tests/test_review_recovery.py

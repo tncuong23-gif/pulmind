@@ -61,7 +61,7 @@ RETURN a.id AS anchor_id, r.id AS rel_id, type(r) AS rel,
        endNode(r).id AS target_id, endNode(r).canonical_name AS target_name, endNode(r).entity_type AS target_type,
        r.source_document_id AS doc_id, r.evidence_ids AS evidence_ids,
        r.source_proposition_ids AS proposition_ids, r.confidence AS confidence,
-       r.properties_json AS properties_json
+       r.properties_json AS properties_json, r.global_assertions AS global_assertions
 ORDER BY rel, target_name, rel_id
 LIMIT $limit
 """
@@ -99,7 +99,7 @@ MATCH p = allShortestPaths((a)-[{rels}*..{hops}]-(b))
 RETURN [n IN nodes(p) | {{id: n.id, name: n.canonical_name, type: n.entity_type}}] AS nodes,
        [r IN relationships(p) | {{id: r.id, type: type(r), source: startNode(r).id, target: endNode(r).id,
                                  doc_id: r.source_document_id, evidence_ids: r.evidence_ids,
-                                 proposition_ids: r.source_proposition_ids, confidence: r.confidence, properties_json: r.properties_json}}] AS rels
+                                 proposition_ids: r.source_proposition_ids, confidence: r.confidence, properties_json: r.properties_json, global_assertions: r.global_assertions}}] AS rels
 LIMIT $limit
 """
 

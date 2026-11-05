@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 from fastapi import HTTPException
+from app.modules.kg_query.intents import PRESET_LABELS
 
 
 def query_metadata(result):
     return {**result.get('query', {}), 'status': result.get('status'),
             'fact_count': result.get('retrieval', {}).get('fact_count', 0),
             'elapsed_ms': result.get('elapsed_ms'), 'timings_ms': result.get('timings_ms', {}),
-            'warnings': result.get('warnings', [])}
+            'warnings': result.get('warnings', []),
+            'preset_label': PRESET_LABELS.get(result.get('query',{}).get('preset')),
+            'truncated': result.get('retrieval',{}).get('truncated',False)}
 
 
 def comparison_metadata(result):
@@ -59,6 +62,8 @@ def no_facts_text(result):
     if mode == 'path':
         depth = result.get('query', {}).get('max_hops', 3)
         return f'Chưa tìm thấy đường liên kết trong giới hạn {depth} bước của KG hiện tại. Điều này không có nghĩa hai thực thể không liên quan.'
+    if mode == 'inference':
+        return 'Chưa tìm thấy chuỗi tiền đề đủ điều kiện và nguồn để suy luận cấu trúc. Điều này không khẳng định kết luận là sai.'
     if mode == 'multi_hop':
         return 'Chưa tìm thấy chuỗi bằng chứng hoàn chỉnh để trả lời câu hỏi này trong KG hiện tại. Điều này không khẳng định quan hệ đó không tồn tại.'
     return 'Chưa tìm thấy quan hệ phù hợp để trả lời trong KG hiện tại. Điều này không khẳng định quan hệ đó không tồn tại.'

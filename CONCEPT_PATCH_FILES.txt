@@ -1,0 +1,13 @@
+Baseline: verified-full with KG identity/fallback update.
+
+CONCEPT_PATCH_FILES.txt
+CONCEPT_UPDATE_VI.md
+backend/app/bulk_import/web/app.js
+backend/app/modules/kg_import/concept_identity.py
+backend/app/modules/kg_import/service.py
+backend/app/modules/kg_query/intents.py
+backend/app/modules/kg_query/web/duplicates.js
+backend/examples/kg/concept_identity_policy.json
+backend/examples/kg/kg_ontology.example.json
+backend/scripts/kg/normalize_corpus.py
+backend/tests/test_concept_identity.py

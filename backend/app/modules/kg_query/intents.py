@@ -104,6 +104,30 @@ _DEFS: dict[str, tuple[str, tuple[str, ...]]] = {
                 ("LOCATED_IN", "PART_OF", "AFFECTS", "AFFECTS_SITE")),
 }
 
+# Compact ontology coverage. Keep legacy relation names for older active snapshots.
+_ADDITIONS = {
+    'dosage': ('HAS_DURATION', 'HAS_FREQUENCY'),
+    'diagnosis': ('HAS_LABORATORY_FINDING', 'INDICATES', 'SPECIFIES_CRITERION'),
+    'prognosis': ('HAS_PROGNOSTIC_FACTOR',),
+    'resistance': ('HAS_DRUG_RESISTANCE',),
+    'membership': ('HAS_TREATMENT_COMPONENT', 'USES_MEDICATION'),
+    'recommendation': ('NOT_RECOMMENDED_FOR',),
+}
+for _name, _rels in _ADDITIONS.items():
+    _desc, _old = _DEFS[_name]
+    _DEFS[_name] = (_desc, tuple(dict.fromkeys((*_old, *_rels))))
+_DEFS.update({
+    'taxonomy': ('Phân loại cha/con (IS_A)', ('IS_A',)),
+    'screening': ('Sàng lọc (tách biệt với chẩn đoán)', ('SCREENED_BY',)),
+    'epidemiology': ('Chỉ số dịch tễ và quần thể nghiên cứu', ('HAS_EPIDEMIOLOGICAL_MEASURE', 'HAS_COHORT')),
+    'source_topic': ('Tài liệu/hướng dẫn đề cập chủ đề', ('COVERS_TOPIC',)),
+    'sequence': ('Trình tự và các bước điều trị', ('FOLLOWED_BY', 'HAS_TREATMENT_STEP')),
+    'setting': ('Môi trường áp dụng, cách ly và nhập viện', ('APPLIED_IN', 'REQUIRES_ISOLATION', 'REQUIRES_HOSPITALIZATION')),
+    'applicability': ('Điều kiện và nhóm đối tượng áp dụng', ('HAS_CONDITION', 'FOR_PATIENT_GROUP')),
+    'regimen': ('Phác đồ và các thành phần điều trị', ('HAS_REGIMEN', 'HAS_REGIMEN_COMPONENT', 'HAS_TREATMENT_COMPONENT', 'USES_MEDICATION')),
+    'rehabilitation': ('Can thiệp phục hồi và mục tiêu (cần lọc loại Rehabilitation)', ('TREATS', 'INDICATED_FOR', 'HAS_TREATMENT_GOAL', 'USES_DEVICE', 'HAS_TREATMENT_COMPONENT')),
+})
+
 DRUG_TYPES = ("Medication", "DrugClass", "DrugCombination", "ActiveIngredient")
 
 # Multi-hop = a chain of intents; each step expands from the previous step's result.
@@ -116,7 +140,8 @@ PRESET_CHAINS: dict[str, tuple[Step, ...]] = {
     "drug_adverse_effects": (
         Step("treatment", DRUG_TYPES),
         Step("membership", DRUG_TYPES, include_previous=True),
-        Step("adverse_effect", ("AdverseEffect", "AdverseEvent")),
+        Step("adverse_effect", ("AdverseEffect", "AdverseEvent", "AdverseDrugReaction",
+                                "Symptom", "ClinicalSign", "LaboratoryFinding", "Disease")),
     ),
     "drug_contraindications": (
         Step("treatment", DRUG_TYPES),
@@ -124,6 +149,89 @@ PRESET_CHAINS: dict[str, tuple[Step, ...]] = {
         Step("contraindication"),
     ),
 }
+
+
+# Explicit directional paths preserve the meaning of every individual edge.
+DISEASE_TYPES = ('Disease', 'DiseaseSubtype', 'Syndrome', 'ClinicalCondition', 'Complication', 'Exacerbation')
+TEST_TYPES = ('DiagnosticTest', 'LaboratoryTest', 'Imaging', 'FunctionalTest', 'ClinicalAssessment')
+INTERVENTION_TYPES = (*DRUG_TYPES, 'Treatment', 'TreatmentRegimen', 'Procedure', 'Surgery', 'Rehabilitation', 'RespiratorySupport')
+def edge(*relations, direction='out', targets=None, optional=False):
+    return Step('related', tuple(targets) if targets else None, optional, tuple(relations), direction)
+
+# Correct class-to-member traversal: BELONGS_TO_DRUG_CLASS must be read backwards.
+# Direction is auto only in the legacy-compatible first three presets.
+_member = Step('membership', DRUG_TYPES, True,
+    ('HAS_MEMBER','CONTAINS','CONTAINS_MEDICATION','INCLUDES_MEDICATION','HAS_ACTIVE_INGREDIENT','BELONGS_TO_DRUG_CLASS'))
+PRESET_CHAINS['drugs_for_disease'] = (PRESET_CHAINS['drugs_for_disease'][0], _member)
+PRESET_CHAINS['drug_adverse_effects'] = (*PRESET_CHAINS['drugs_for_disease'], Step('adverse_effect', ('AdverseEvent','AdverseEffect','AdverseDrugReaction','Symptom','ClinicalSign','LaboratoryFinding','Disease')))
+PRESET_CHAINS['drug_contraindications'] = (*PRESET_CHAINS['drugs_for_disease'], Step('contraindication'))
+PRESET_CHAINS.update({
+    'regimen_medications': (edge('HAS_REGIMEN', targets=('TreatmentRegimen',)), edge('HAS_REGIMEN_COMPONENT','USES_MEDICATION','HAS_TREATMENT_COMPONENT', targets=DRUG_TYPES)),
+    'regimen_adverse_effects': (edge('HAS_REGIMEN', targets=('TreatmentRegimen',)), edge('HAS_REGIMEN_COMPONENT','USES_MEDICATION','HAS_TREATMENT_COMPONENT', targets=DRUG_TYPES), edge('HAS_ADVERSE_EFFECT','CAUSES_ADVERSE_EVENT')),
+    'regimen_dosage': (edge('HAS_REGIMEN', targets=('TreatmentRegimen',)), edge('HAS_REGIMEN_COMPONENT','USES_MEDICATION', targets=DRUG_TYPES), edge('HAS_DOSE','HAS_ROUTE','HAS_FREQUENCY','HAS_DURATION')),
+    'recommendation_interventions': (edge('HAS_RECOMMENDATION', targets=('Recommendation',)), edge('RECOMMENDS_INTERVENTION')),
+    'recommendation_conditions': (edge('HAS_RECOMMENDATION', targets=('Recommendation',)), edge('HAS_CONDITION','FOR_PATIENT_GROUP')),
+    'diagnostic_findings': (edge('DIAGNOSED_BY', targets=TEST_TYPES), edge('PRODUCES_FINDING','MEASURES')),
+    'diagnostic_specimens': (edge('DIAGNOSED_BY', targets=TEST_TYPES), edge('USES_SPECIMEN')),
+    'criteria_thresholds': (edge('HAS_DIAGNOSTIC_CRITERION','SPECIFIES_CRITERION'), edge('HAS_THRESHOLD')),
+    'resistant_medications': (edge('HAS_DRUG_RESISTANCE'), edge('RESISTANT_TO','CONFERS_RESISTANCE_TO')),
+    'pathogen_resistance': (edge('CAUSED_BY'), edge('HAS_DRUG_RESISTANCE'), edge('RESISTANT_TO','CONFERS_RESISTANCE_TO')),
+    'regimen_monitoring': (edge('HAS_REGIMEN'), edge('MONITORED_BY')),
+    'treatment_sequence': (edge('HAS_REGIMEN','HAS_TREATMENT_STEP'), edge('HAS_TREATMENT_STEP','FOLLOWED_BY'), edge('FOLLOWED_BY', optional=True)),
+    'prevention_settings': (edge('PREVENTS','REDUCES_TRANSMISSION', direction='in', targets=('PreventiveMeasure','InfectionControlMeasure')), edge('APPLIED_IN')),
+    'rehabilitation_goals': (edge('TREATS','INDICATED_FOR', direction='in', targets=('Rehabilitation',)), edge('HAS_TREATMENT_GOAL')),
+    'prognostic_outcomes': (edge('HAS_PROGNOSTIC_FACTOR'), edge('PREDICTS')),
+    'guideline_interventions': (edge('COVERS_TOPIC', direction='in', targets=('ClinicalGuideline',)), edge('RECOMMENDS','HAS_RECOMMENDATION'), edge('RECOMMENDS_INTERVENTION', optional=True)),
+})
+PRESET_LABELS = {
+    'drugs_for_disease':'Bệnh → thuốc/nhóm thuốc → thành phần',
+    'drug_adverse_effects':'Bệnh → thuốc → tác dụng bất lợi',
+    'drug_contraindications':'Bệnh → thuốc → chống chỉ định/thận trọng',
+    'regimen_medications':'Bệnh → phác đồ → thuốc/thành phần',
+    'regimen_adverse_effects':'Bệnh → phác đồ → thuốc → tác dụng bất lợi',
+    'regimen_dosage':'Bệnh → phác đồ → thuốc → liều/đường/tần suất/thời gian',
+    'recommendation_interventions':'Chủ đề → khuyến nghị → can thiệp',
+    'recommendation_conditions':'Chủ đề → khuyến nghị → điều kiện/đối tượng',
+    'diagnostic_findings':'Bệnh → xét nghiệm → phát hiện/đại lượng',
+    'diagnostic_specimens':'Bệnh → xét nghiệm → bệnh phẩm',
+    'criteria_thresholds':'Bệnh/hướng dẫn → tiêu chuẩn → ngưỡng',
+    'resistant_medications':'Bệnh/tác nhân → hồ sơ kháng → thuốc',
+    'pathogen_resistance':'Bệnh → tác nhân → hồ sơ kháng → thuốc',
+    'regimen_monitoring':'Bệnh → phác đồ → theo dõi',
+    'treatment_sequence':'Bệnh → phác đồ/bước → trình tự',
+    'prevention_settings':'Bệnh → biện pháp dự phòng → môi trường áp dụng',
+    'rehabilitation_goals':'Bệnh → phục hồi chức năng → mục tiêu',
+    'prognostic_outcomes':'Bệnh → yếu tố tiên lượng → kết cục',
+    'guideline_interventions':'Chủ đề → hướng dẫn → khuyến cáo/can thiệp',
+}
+PRESET_START_TYPES = {k: DISEASE_TYPES for k in PRESET_CHAINS}
+PRESET_START_TYPES.update({
+    'recommendation_interventions': (*DISEASE_TYPES, 'ClinicalGuideline'),
+    'recommendation_conditions': (*DISEASE_TYPES, 'ClinicalGuideline'),
+    'criteria_thresholds': (*DISEASE_TYPES, 'ClinicalGuideline', 'ClinicalRule'),
+    'resistant_medications': (*DISEASE_TYPES, 'Pathogen','Bacterium','Virus'),
+    'guideline_interventions': (*DISEASE_TYPES, 'Symptom','Treatment','Procedure','DiagnosticTest','Pathogen'),
+})
+
+def preset_catalog(ontology):
+    intents = build_intents(ontology)
+    return [{'id': key, 'label': PRESET_LABELS[key], 'start_types': [t for t in PRESET_START_TYPES[key] if ontology.has_entity_type(t)],
+        'steps': [{'intent': s.intent, 'relations': [r for r in (s.rel_types or intents[s.intent].relations) if ontology.has_relation(r)],
+                   'direction': s.direction, 'target_types': [t for t in (s.target_types or ()) if ontology.has_entity_type(t)],
+                   'optional': s.include_previous} for s in steps]}
+        for key, steps in PRESET_CHAINS.items()]
+
+def preset_steps(key, ontology):
+    if key not in PRESET_CHAINS:raise ValueError('Chuỗi truy vấn không tồn tại.')
+    intents=build_intents(ontology);steps=[]
+    for s in PRESET_CHAINS[key]:
+        rels=tuple(r for r in (s.rel_types or intents[s.intent].relations) if ontology.has_relation(r))
+        types=tuple(t for t in s.target_types if ontology.has_entity_type(t)) if s.target_types else None
+        if not rels or s.target_types and not types:
+            if s.include_previous:continue
+            raise ValueError('Ontology thiếu quan hệ/loại đích cho chuỗi '+key)
+        steps.append(Step(s.intent,types,s.include_previous,rels,s.direction))
+    return steps
 
 
 @dataclass(frozen=True)

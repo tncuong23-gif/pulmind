@@ -8,6 +8,11 @@ from app.modules.kg_query.web_app import create_app
 
 
 class FakeService:
+    def __init__(self):
+        from .helpers import load_ontology
+        from app.modules.kg_query.intents import build_intents
+        self.ontology=load_ontology();self.intents=build_intents(self.ontology)
+
     def ping(self):
         return None
 

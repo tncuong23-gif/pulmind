@@ -44,6 +44,17 @@ class KGQueryService:
 
     # ------------------------------------------------------------------ plumbing
     def _read(self, query: str, **params: Any) -> list[dict[str, Any]]:
+        if getattr(self,'entity_redirects',None):
+            redirects=self.entity_redirects
+            def resolved(i):
+                seen=set()
+                while i in redirects and i not in seen:seen.add(i);i=redirects[i]
+                return i
+            for key in ('ids','entity_ids','source_ids','target_ids'):
+                if isinstance(params.get(key),list):params[key]=list(dict.fromkeys(resolved(i) for i in params[key]))
+        if getattr(self, 'global_label', None):
+            if query == cypher.RESOLVE_FULLTEXT: return []
+            query = query.replace(':Entity', ':' + self.global_label)
         def work(tx):
             return [dict(r) for r in tx.run(query, **params)]
         with self.driver.session(database=self.database) as session:
@@ -110,7 +121,7 @@ class KGQueryService:
 
     # ------------------------------------------------------------------ 1-hop
     def neighbors(self, anchors: Iterable[EntityRef], rel_names: Iterable[str], *, target_types: Iterable[str] | None = None,
-                  limit: int | None = None, hop: int = 1, diagnostics: dict | None = None) -> list[Fact]:
+                  limit: int | None = None, hop: int = 1, diagnostics: dict | None = None, direction: str = 'auto') -> list[Fact]:
         rel_names = [r for r in rel_names if self.ontology.has_relation(r)]
         types = list(target_types) if target_types else None
         limit = min(limit or self.limits.per_query_rows, self.limits.per_query_rows)
@@ -119,14 +130,19 @@ class KGQueryService:
             by_type.setdefault(a.type, []).append(a.id)
         facts: dict[tuple[str, str, str], Fact] = {}
         for etype, ids in by_type.items():
-            for direction, rels in self.direction_plan(etype, rel_names).items():
+            plan=self.direction_plan(etype, rel_names)
+            if direction!='auto':
+                if direction not in ('out','in','any'):raise ValueError('Invalid direction')
+                allowed=plan['out']+plan['in']+plan['any'] if direction=='any' else plan[direction]+plan['any']
+                plan={direction:allowed}
+            for edge_direction, rels in plan.items():
                 if not rels:
                     continue
-                rows = self._read(cypher.neighbors(direction, rels), ids=ids, types=types, limit=limit)
+                rows = self._read(cypher.neighbors(edge_direction, rels), ids=ids, types=types, limit=limit)
                 if diagnostics is not None and len(rows) >= limit:
                     diagnostics['query_limited'] = True
                 for row in rows:
-                    key = (row["source_id"], row["rel"], row["target_id"])
+                    key = (row['anchor_id'],row["source_id"], row["rel"], row["target_id"])
                     fact = facts.get(key)
                     if fact is None:
                         fact = facts[key] = Fact(
@@ -203,7 +219,7 @@ class KGQueryService:
                 f = Fact(by_id[r["source"]], r["type"], by_id[r["target"]], anchor_id=r["source"], hop=i)
                 f.add_row({"rel_id": r["id"], "doc_id": r["doc_id"], "evidence_ids": r["evidence_ids"],
                            "proposition_ids": r["proposition_ids"], "confidence": r["confidence"],
-                           "properties_json": r.get("properties_json")})
+                           "properties_json": r.get("properties_json"), "global_assertions": r.get("global_assertions")})
                 facts.append(f)
             key = tuple((f.subject.id, f.predicate, f.object.id) for f in facts)
             if key in results:  # parallel edges (same triple, other document): merge the provenance
@@ -238,12 +254,17 @@ class KGQueryService:
             rec = found.get(doc, {}).get(eid)
             if rec:
                 f.evidence_texts.append({"doc_id": doc, "evidence_id": eid, "text": rec.get("text"),
-                                         "sentence_id": rec.get("sentence_id"), "section_id": rec.get("section_id")})
+                                         "sentence_id": rec.get("sentence_id"), "section_id": rec.get("section_id"),
+                                         "source_origin": rec.get("source_origin",{}), "document_title":rec.get("document_title")})
 
     # ------------------------------------------------------------------ front door
     def check_spec(self, spec: QuerySpec) -> QuerySpec:
         """Drop/repair anything the ontology does not know, and say so in spec.notes."""
         spec.mentions = [clean_text(m) for m in spec.mentions if clean_text(m)][:2]
+        if spec.rel_types and any(not self.ontology.has_relation(r) for r in spec.rel_types):
+            raise ValueError('Bộ lọc chứa quan hệ không có trong ontology.')
+        if spec.target_types and any(not self.ontology.has_entity_type(t) for t in spec.target_types):
+            raise ValueError('Bộ lọc chứa loại thực thể không có trong ontology.')
         bad = [i for i in spec.intents if i not in self.intents]
         if bad:
             spec.notes.append(f"unknown intent(s) {bad} -> using '{CATCH_ALL}'")
@@ -251,8 +272,10 @@ class KGQueryService:
         for step in spec.chain:
             if step.intent not in self.intents:
                 spec.notes.append(f"unknown chain intent '{step.intent}' -> using '{CATCH_ALL}'")
-        spec.chain = [s if s.intent in self.intents else Step(CATCH_ALL, s.target_types, s.include_previous)
-                      for s in spec.chain][:3]
+        if len(spec.chain)>4:raise ValueError('Chuỗi hỗ trợ tối đa 4 bước.')
+        # Presets can retain legacy names, but an explicit invalid plan never expands to all relations.
+        from .traversal import validate_steps
+        if spec.chain:validate_steps(self,spec.chain)
         for attr in ("target_types", "anchor_types"):
             vals = getattr(spec, attr)
             if vals:
@@ -274,6 +297,15 @@ class KGQueryService:
         if not found:
             return result
 
+        if spec.inference:
+            from .traversal import infer
+            if not with_evidence:raise ValueError('Suy luận cần kèm bằng chứng.')
+            if not 2<=spec.max_hops<=4:raise ValueError('Suy luận hỗ trợ từ 2 đến 4 bước.')
+            if any(len(a)!=1 for a in found.values()):raise ValueError('Cần xác định duy nhất thực thể trước khi suy luận.')
+            result.facts,result.chains,result.inferences,result.truncated,notes=infer(self,
+                [x.entity for a in found.values() for x in a],spec.inference,spec.max_hops,spec.limit,spec.evidence_scope)
+            result.notes.extend(notes);result.status='ok' if result.inferences else 'no_facts'
+            return result
         if spec.path and len(found) == 2:
             (a, b) = list(found.values())
             result.paths = self.paths([x.entity for x in a], [x.entity for x in b], max_hops=spec.max_hops,
@@ -285,15 +317,9 @@ class KGQueryService:
                 result.notes.append("path needs two resolvable mentions; falling back to neighbourhood")
             anchors = [x.entity for v in found.values() for x in v]
             if spec.chain:
-                result.facts = self.chain(anchors, spec.chain)
-                result.chains = self.build_chains(result.facts)
-                # Optional membership keeps directly linked drugs. Required terminal
-                # steps must actually exist; partial chains cannot answer about effects.
-                required_hop = max((i for i, step in enumerate(spec.chain, 1)
-                                    if not step.include_previous), default=1)
-                result.chains = [p for p in result.chains if p[-1].hop >= required_hop]
-                used = {id(f) for p in result.chains for f in p}
-                result.facts = [f for f in result.facts if id(f) in used]
+                from .traversal import walk
+                result.facts,result.chains,result.truncated=walk(self,anchors,spec.chain,spec.limit)
+                if result.truncated:result.notes.append('Đã chạm giới hạn mở rộng hoặc số kết quả; các chuỗi trả về được giữ đủ bước.')
             else:
                 rels = list(dict.fromkeys(r for i in spec.intents for r in self.intents[i].relations))
                 result.facts = self.neighbors(anchors, rels, target_types=spec.target_types, limit=spec.limit)

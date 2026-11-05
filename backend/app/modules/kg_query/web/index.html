@@ -10,14 +10,15 @@
   <script src="/modules/kg-explorer/static/graph_layout.js" defer></script>
   <script src="/modules/kg-explorer/static/neo4j_graph.js" defer></script>
   <script src="/modules/kg-explorer/static/app.js" defer></script>
-<link rel="stylesheet" href="/data-assets/embed.css"><script src="/data-assets/embed.js"></script></head>
+<link rel="stylesheet" href="/data-assets/embed.css"><script src="/data-assets/embed.js"></script><style>.mode-tabs{flex-wrap:wrap}.step-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.step-row select{padding:9px;max-width:100%;flex:1;min-width:140px}.proof-card{border:1px solid #c5d8d4;border-radius:10px;padding:16px;margin:12px 0;background:#f6faf9}.proof-card h4{margin:0 0 8px}.proof-card li{margin:8px 0;overflow-wrap:anywhere}.query-extras{margin:16px 0}.query-extras table{width:100%;border-collapse:collapse}.query-extras td,.query-extras th{text-align:left;padding:8px;border-bottom:1px solid #ddd}</style>
+</head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
       <a href="/modules/kg-explorer/" class="brand" aria-label="Medical KG, trang chủ"><span class="brand-icon">✳</span><span>medical<span class="brand-strong">KG</span><small>KNOWLEDGE EXPLORER</small></span></a>
       <div class="nav-title">KHÔNG GIAN LÀM VIỆC</div>
       <div class="nav-item active"><span>◈</span> Khám phá tri thức</div>
-      <a href="/modules/kg-explorer/duplicates" class="nav-item nav-link"><span>◎</span> Rà soát trùng lặp</a>
+      <a href="/direct-import?target=kg" class="nav-item nav-link"><span>◎</span> Nhập dữ liệu KG</a>
       <div class="sidebar-note"><span class="live-dot"></span><span id="connection">Đang kiểm tra kết nối</span></div>
       <div class="sidebar-bottom"><div class="sidebar-caption">ABOUT THIS WORKSPACE</div><p>Truy vấn đồ thị y khoa từ Neo4j và xem bằng chứng gốc từ MongoDB.</p><span class="side-tag">KG Query Module</span></div>
     </aside>
@@ -27,8 +28,16 @@
         <section class="intro"><div class="eyebrow">MEDICAL KNOWLEDGE GRAPH <span class="eyebrow-line"></span> EXPLORER</div><h1>Khám phá tri thức <em>y khoa.</em></h1><p>Tìm thực thể, khám phá mối quan hệ và kiểm tra nguồn bằng chứng đằng sau mỗi kết quả.</p></section>
         <form id="queryForm" class="query-panel">
           <div class="panel-head"><div><span class="panel-kicker">01 / TRUY VẤN</span><h2>Bắt đầu khám phá</h2></div><div class="read-only">◉ &nbsp; Chế độ chỉ đọc</div></div>
-          <div class="mode-tabs" role="group" aria-label="Kiểu truy vấn"><button type="button" class="mode active" data-mode="related">✦ &nbsp; Quan hệ</button><button type="button" class="mode" data-mode="path">⌁ &nbsp; Đường đi</button><button type="button" class="mode" data-mode="chain">⤳ &nbsp; Nhiều bước</button></div>
+          <div class="mode-tabs" role="group" aria-label="Kiểu truy vấn"><button type="button" class="mode active" data-mode="related">✦ &nbsp; Quan hệ</button><button type="button" class="mode" data-mode="path">⌁ &nbsp; Đường đi</button><button type="button" class="mode" data-mode="chain">⤳ &nbsp; Nhiều bước</button><button type="button" class="mode" data-mode="custom">Chuỗi tùy chọn</button><button type="button" class="mode" data-mode="inference">Suy luận cấu trúc</button><button type="button" class="mode" data-mode="compare">So sánh</button><button type="button" class="mode" data-mode="common">Điểm chung</button><button type="button" class="mode" data-mode="difference">Điểm khác</button></div>
           <div class="form-grid"><label class="field"><span>THỰC THỂ BẮT ĐẦU <b>*</b></span><input id="mention" autocomplete="off" maxlength="160" required placeholder="Ví dụ: COPD" aria-label="Tên thực thể bắt đầu"></label><label class="field hidden" id="secondField"><span>THỰC THỂ ĐÍCH <b>*</b></span><input id="target" autocomplete="off" maxlength="160" placeholder="Ví dụ: suy tim" aria-label="Tên thực thể đích"></label><label class="field" id="intentField"><span>NHÓM QUAN HỆ</span><select id="intent" aria-label="Nhóm quan hệ"><option value="related">Tất cả quan hệ</option></select></label><label class="field hidden" id="chainField"><span>KIỂU CHUỖI</span><select id="chain" aria-label="Kiểu chuỗi"><option value="drugs_for_disease">Thuốc điều trị bệnh</option><option value="drug_adverse_effects">Tác dụng phụ của thuốc</option><option value="drug_contraindications">Chống chỉ định của thuốc</option></select></label></div>
+          <div class="form-grid" style="margin-top:16px">
+            <label class="field hidden" id="ruleField"><span>QUY TẮC SUY LUẬN</span><select id="inferenceRule"></select></label>
+            <label class="field hidden" id="scopeField"><span>NGUỒN CỦA CÁC TIỀN ĐỀ</span><select id="evidenceScope"><option value="same_document">Cùng tài liệu gốc</option><option value="cross_document">Cho phép kết hợp tài liệu khác nhau</option></select></label>
+            <label class="field hidden" id="depthField"><span>SỐ BƯỚC TỐI ĐA</span><select id="depth"><option value="2">2 bước</option><option value="3" selected>3 bước</option><option value="4">4 bước</option></select></label>
+            <label class="field" id="targetTypeField"><span>LỌC LOẠI KẾT QUẢ</span><select id="targetType"><option value="">Tất cả loại</option></select></label>
+          </div>
+          <div id="customFields" class="hidden" style="margin-top:16px"><p>Mỗi bước chọn quan hệ và chiều đi từ thực thể hiện tại. Chỉ trả các chuỗi hoàn thành đủ bước.</p><div id="stepRows"></div><button type="button" id="addStep">Thêm bước (tối đa 4)</button></div>
+          <p id="modeHelp" class="muted" style="margin-top:16px"></p>
           <div class="form-footer"><div class="examples"><span>THỬ NHANH</span><button type="button" data-example="COPD" data-intent="symptom">COPD · triệu chứng</button><button type="button" data-example="Viêm phổi" data-intent="treatment">Viêm phổi · điều trị</button><button type="button" data-example="COPD" data-target="suy tim">COPD → suy tim</button></div><button type="submit" id="searchBtn" class="search-btn"><span>Khám phá tri thức</span><span class="arrow">↗</span></button></div>
         </form>
         <div id="feedback" class="feedback" role="status" aria-live="polite"></div>

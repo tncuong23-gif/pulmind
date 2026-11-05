@@ -47,8 +47,11 @@ class EntityLinkingTests(ServiceTestCase):
         self.graph.entities["ENT_OTHER"] = other
         p, _ = self.second_document()
         result = self.svc.import_kg(p, dry_run=True)
-        self.assertEqual(result.status, "failed")
-        self.assertIn("ENTITY_LINK_AMBIGUOUS", self.codes(result))
+        self.assertEqual(result.status, "dry_run")
+        self.assertTrue(result.plan["entity_candidates"])
+        commit = self.svc.import_kg(p)
+        self.assertEqual(commit.status, "failed")
+        self.assertIn("ENTITY_LINK_AMBIGUOUS", self.codes(commit))
         self.assertFalse(self.docs.document_exists("DOC_000002"))
 
     def test_duplicate_names_inside_one_payload_share_id(self):

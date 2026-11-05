@@ -26,8 +26,10 @@ export interface ChatMessage {
   metadata?: {
     route?: string; assessment_id?: string; snapshot_id?: string;
     sources?: EvidenceSource[];
-    kg_query?: { mode?: "one_hop" | "multi_hop" | "path" | "compare" | "common" | "difference"; status?: string; warnings?: string[]; fact_count?: number } | null;
+    kg_query?: { mode?: "one_hop" | "multi_hop" | "path" | "compare" | "common" | "difference" | "inference"; preset_label?: string | null; truncated?: boolean; status?: string; warnings?: string[]; fact_count?: number } | null;
     kg_comparison?: KGComparison | null;
+    kg_evidence?: KGChatEvidence | null;
+    retrieval_routing?: { kg_evidence?: string; effective_route?: string };
     kg_clarification?: KGClarification;
     kg_confirmation?: KGConfirmation;
     kg_confirmation_used?: boolean;
@@ -83,7 +85,17 @@ export interface KGComparison {
   }[];
   facts: KGComparisonFact[];
 }
+export interface KGChatFact {
+  subject:{name:string;type:string}; predicate:string; object:{name:string;type:string}; source_refs:number[];
+  assertions:{properties?:Record<string,unknown>;properties_valid?:boolean;source_refs:number[]}[];
+}
+export interface KGChatEvidence {
+  facts:KGChatFact[]; chains?:{fact_indices:number[]}[]; paths?:{fact_indices:number[]}[];
+  inferences?:{kind:string;rule:string;subject:{name:string;type:string};predicate:string;object:{name:string;type:string};
+    hops:number;evidence_scope:string;fact_indices:number[];premises:{fact_index:number;source_refs:number[]}[]}[];
+}
 export interface KGClarification {
+  suggestions?:string[];
   message: string;
   can_confirm: boolean;
   groups: { mention: string; candidate_count?: number;

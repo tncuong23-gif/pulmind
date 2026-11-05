@@ -15,7 +15,8 @@ from .classifier import E5SVMClassifier
 from .modules import ModuleClient
 from .ollama import OllamaClient
 from .kg_chat import query_metadata, comparison_metadata, no_facts_text
-from app.modules.kg_query.question_analysis import uses_context, comparison_mode, COMPARISON_MODES
+from app.modules.kg_query.question_analysis import uses_context, comparison_mode, COMPARISON_MODES, has_cue
+from app.modules.kg_query.auto_plan import routing_hint
 
 
 OUT_OF_SCOPE_TEXT = "Xin lỗi, câu hỏi này nằm ngoài phạm vi trợ lý thông tin bệnh phổi hiện tại."
@@ -54,14 +55,13 @@ class Orchestrator:
         classification = (kg_confirmation['classification'] if kg_confirmation else
                           await run_in_threadpool(self.classifier.predict, resolved_question))
         label = classification["label"]
-        # Preserve the model prediction for audit. Comparison words select a KG
-        # operation, while KG itself still validates both names and the criterion.
-        # Diagnostic and out-of-scope routes retain their existing gates.
-        if (not kg_confirmation and label == 'GENERAL_MEDICAL_QUERY'
-                and comparison_mode(question)):
-            classification = {**classification, 'original_label': label,
-                              'label': 'RELATIONAL_QUERY', 'routing_override': 'kg_comparison_cue'}
-            label = 'RELATIONAL_QUERY'
+        # Keep diagnostic/out-of-scope gates and retain the model's original label.
+        routing_question=resolved_question if uses_context(question) else question
+        hint=routing_hint(routing_question) if not kg_confirmation and label=='GENERAL_MEDICAL_QUERY' else None
+        if hint:
+            combined=has_cue(routing_question,('giải thích','vì sao','tại sao','tổng quan','phân tích'))
+            label='CLINICAL_EXPLANATION_MANAGEMENT' if combined else 'RELATIONAL_QUERY'
+            classification={**classification,'original_label':classification['label'],'label':label,'routing_override':hint}
         logger.info("chat.stage stage=classification route=%s elapsed=%.1fs", label, time.monotonic()-started)
         if label == "OUT_OF_SCOPE":
             return {"content": OUT_OF_SCOPE_TEXT, "route": label, "request_id": request_id, "sources": []}
@@ -139,7 +139,7 @@ class Orchestrator:
                         kg_info.get('mode'), kg_info.get('preset'), kg_info.get('status'),
                         kg_info.get('fact_count'), kg_info.get('elapsed_ms'))
         if (isinstance(kg, dict) and kg.get('status') == 'needs_clarification'
-                and (kg_confirmation or (kg.get('clarification') or {}).get('reason') not in ('duplicate_entities', 'missing_entity', 'dictionary_limit'))):
+                and (kg_confirmation or routing_hint(resolved_question) in ('kg_path_cue','kg_multi_hop_cue','kg_inference_cue','kg_comparison_cue') or (kg.get('clarification') or {}).get('reason') not in ('duplicate_entities', 'missing_entity', 'dictionary_limit'))):
             clarification = kg.get('clarification') or {'message': CLARIFICATION_TEXT}
             return {'content': clarification['message'], 'route': 'NEEDS_CLARIFICATION',
                     'kg_route': label, 'request_id': request_id, 'sources': [], 'kg_query': kg_info,
@@ -161,6 +161,8 @@ class Orchestrator:
                 module_results['kg'] = selected
                 kg_comparison = comparison_metadata(selected)
             if quality != 'sufficient':
+                if (kg_info or {}).get('mode')=='inference':
+                    warnings.append('KG chưa có chứng minh cấu trúc đầy đủ cho yêu cầu này; tài liệu RAG bổ sung không thay thế các tiền đề suy luận còn thiếu.')
                 warnings.append('KG chưa có bằng chứng sử dụng được; chuyển sang tìm tài liệu RAG.' if quality == 'empty'
                                 else 'Bằng chứng KG chưa đầy đủ theo cấu trúc truy vấn; bổ sung tài liệu RAG.')
                 if not rag_attempted:
@@ -239,6 +241,7 @@ class Orchestrator:
             "context_resolution": context_result,
             "kg_query": kg_info,
             "kg_comparison": kg_comparison,
+            "kg_evidence": pack.payload["module_results"].get("kg"),
             "kg_confirmation_used": bool(kg_confirmation),
             **speech,
         }
