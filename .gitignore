@@ -74,3 +74,18 @@ temp/
 .vscode/
 .DS_Store
 Thumbs.db
+# ==========================================
+# Exclude large AI model files from GitHub
+# ==========================================
+
+# PhoWhisper model
+/backend/models/phowhisper-small-ct2/model.bin
+
+# Clinical IE - Image classifier
+/backend/clinical_service/vendor/clinical-ie/models/classifier-fusion-v1/image/convnext_tiny_model.pt
+
+# Clinical IE - Joint model
+/backend/clinical_service/vendor/clinical-ie/models/clinical-ie-models-v1.3/joint/final_model/model.safetensors
+
+# Clinical IE - Simplifier model
+/backend/clinical_service/vendor/clinical-ie/models/clinical-ie-models-v1.3/simplifier/final_model/model.safetensors

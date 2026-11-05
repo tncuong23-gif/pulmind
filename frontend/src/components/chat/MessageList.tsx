@@ -12,6 +12,7 @@ export function MessageList({
   onFeedback,
   onView,
   onConfirmKG,
+  onSendKGQuestion,
 }: {
   messages: ChatMessage[];
   busy: boolean;
@@ -20,6 +21,7 @@ export function MessageList({
   onRegenerate: (id: string) => void;
   onFeedback: (id: string, value: "up" | "down") => void;
   onView: (attachment: Attachment) => void;
+  onSendKGQuestion?: (text: string) => void;
   onConfirmKG?: (messageId: string, ids: string[]) => void;
 }) {
   const end = useRef<HTMLDivElement>(null);
@@ -41,6 +43,7 @@ export function MessageList({
           onRegenerate={() => onRegenerate(message.id)}
           onFeedback={(value) => onFeedback(message.id, value)}
           busy={busy}
+          onSendKGQuestion={message.id === messages.at(-1)?.id ? onSendKGQuestion : undefined}
           onConfirmKG={onConfirmKG && message.id === messages.at(-1)?.id
             ? ids => onConfirmKG(message.id, ids) : undefined}
         />

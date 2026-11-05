@@ -34,7 +34,7 @@ class QueryLimits:
 class KGQueryService:
     def __init__(self, driver: Any, ontology: Ontology, *, database: str = "neo4j", limits: QueryLimits | None = None,
                  evidence_store: Any | None = None, fulltext_index: str = "entity_names",
-                 merge_alias_siblings: bool = True) -> None:
+                 merge_alias_siblings: bool = False) -> None:
         self.driver, self.ontology, self.database = driver, ontology, database
         self.limits = limits or QueryLimits()
         self.evidence_store = evidence_store
@@ -92,7 +92,7 @@ class KGQueryService:
         if used == "fulltext":  # drop weak hits: keep those within 60% of the best score
             top = max(r["score"] for r in rows)
             rows = [r for r in rows if r["score"] >= 0.6 * top]
-        anchors = [Anchor(EntityRef(r["id"], r["name"], r["type"]), used, r.get("score")) for r in rows]
+        anchors = [Anchor(EntityRef(r["id"], r["name"], r["type"]), r.get("matched_by",used), r.get("score")) for r in rows]
 
         if anchors and self.merge_alias_siblings:
             ids = [a.entity.id for a in anchors]
@@ -238,24 +238,42 @@ class KGQueryService:
     def attach_evidence(self, facts: Iterable[Fact]) -> None:
         if self.evidence_store is None:
             return
-        picked: list[tuple[Fact, str, str]] = []
+        facts = list(facts)
         wanted: dict[str, set[str]] = {}
-        for f in facts:
-            budget = self.limits.evidence_per_fact
-            for doc, ids in f.evidence.items():
-                for eid in ids:
-                    if budget <= 0:
+        for fact in facts:
+            for doc, ids in fact.evidence.items():
+                wanted.setdefault(doc, set()).update(ids)
+        found = {}
+        for doc, ids in wanted.items():
+            ordered_ids = sorted(ids)
+            records = {}
+            for start in range(0, len(ordered_ids), 500):
+                records.update(self.evidence_store.fetch(doc, ordered_ids[start:start + 500]))
+            found[doc] = records
+
+        for fact in facts:
+            selected = {}
+            for assertion in fact.assertions:
+                doc = assertion.get("document_id")
+                for eid in assertion.get("evidence_ids", []):
+                    record = found.get(doc, {}).get(eid)
+                    if record and (record.get("text") or "").strip():
+                        selected[doc, eid] = record
                         break
-                    picked.append((f, doc, eid))
-                    wanted.setdefault(doc, set()).add(eid)
-                    budget -= 1
-        found = {doc: self.evidence_store.fetch(doc, sorted(ids)) for doc, ids in wanted.items()}
-        for f, doc, eid in picked:
-            rec = found.get(doc, {}).get(eid)
-            if rec:
-                f.evidence_texts.append({"doc_id": doc, "evidence_id": eid, "text": rec.get("text"),
-                                         "sentence_id": rec.get("sentence_id"), "section_id": rec.get("section_id"),
-                                         "source_origin": rec.get("source_origin",{}), "document_title":rec.get("document_title")})
+            for doc, ids in fact.evidence.items():
+                for eid in ids:
+                    if len(selected) >= self.limits.evidence_per_fact:
+                        break
+                    record = found.get(doc, {}).get(eid)
+                    if record and (record.get("text") or "").strip():
+                        selected[doc, eid] = record
+            fact.evidence_texts = [
+                {"doc_id": doc, "evidence_id": eid, "text": record["text"],
+                 "sentence_id": record.get("sentence_id"), "section_id": record.get("section_id"),
+                 "source_origin": record.get("source_origin", {}),
+                 "document_title": record.get("document_title")}
+                for (doc, eid), record in selected.items()
+            ]
 
     # ------------------------------------------------------------------ front door
     def check_spec(self, spec: QuerySpec) -> QuerySpec:

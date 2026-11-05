@@ -179,6 +179,10 @@ class Orchestrator:
 
         for name, result in module_results.items():
             items = result.get("results", []) if isinstance(result, dict) else []
+            if name == 'kg':
+                count = len(result.get('llm_context', {}).get('facts', []))
+                logger.info("retrieval.result message_id=%s module=kg count=%s", message_id, count)
+                continue
             logger.info("retrieval.result message_id=%s module=%s count=%s sources=%s", message_id, name, len(items),
                         [{"id": item.get("chunk_id") or item.get("proposition_id"), "document": item.get("document_id"), "score": item.get("score")} for item in items])
         llm_input = {
@@ -200,14 +204,21 @@ class Orchestrator:
                 module_results['rag'] = await self.modules.rag_search(resolved_question)
             except Exception:
                 warnings.append('RAG dự phòng chưa phản hồi sau khi lọc bằng chứng KG.')
+            warnings.extend(w for w in pack.payload['warnings'] if w not in warnings)
             module_results.pop('kg', None)
             label = 'GENERAL_MEDICAL_QUERY'
             routing.update(effective_route=label, kg_evidence='empty', reasons=['kg_filtered_out'])
             llm_input.update(route=label, module_results=module_results, warnings=warnings)
             pack = prepare_evidence(llm_input)
         llm_input = pack.payload
+        warnings.extend(w for w in llm_input['warnings'] if w not in warnings)
         if not has_evidence(llm_input):
-            return {'content': insufficient_answer(llm_input), 'route': label, 'request_id': request_id,
+            content = insufficient_answer(llm_input)
+            if isinstance(kg, dict) and kg.get('status') == 'no_facts':
+                content = no_facts_text(kg)
+                if warnings:
+                    content += '\n\n' + '\n'.join('- ' + warning for warning in warnings)
+            return {'content': content, 'route': label, 'request_id': request_id,
                     'sources': [], 'warnings': warnings, 'classifier': classification,
                     'resolved_question': resolved_question, 'retrieval_routing': routing, 'kg_query': kg_info}
         if 'kg' not in pack.payload['module_results']:kg_comparison=None

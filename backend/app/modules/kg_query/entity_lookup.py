@@ -97,7 +97,26 @@ class EntityLookup:
 
     def named(self, mentions):
         self.refresh()
-        return [{'mention': name, 'candidates': self.matches(name) or self.suggestions(name)} for name in mentions]
+        groups = []
+        for mention in mentions:
+            matches = self.matches(mention)
+            if not matches:
+                key = text_key(mention, accents=False)
+                words = key.split()
+                ranked = {}
+                if words and len(key) >= 3 and key not in GENERIC:
+                    for name, rows in self.plain.items():
+                        if f" {key} " not in f" {name} ":
+                            continue
+                        for row in rows:
+                            rank = (len(name.split()) - len(words), len(name), row['name'], row['id'])
+                            if row['id'] not in ranked or rank < ranked[row['id']][0]:
+                                ranked[row['id']] = (rank, {**row, 'matched_by': 'fuzzy'})
+                matches = [row for _, row in sorted(ranked.values(), key=lambda item: item[0])[:5]]
+                if not matches:
+                    matches = self.suggestions(mention)[:5]
+            groups.append({'mention': mention, 'candidates': matches})
+        return groups
 
     def detect(self, question):
         self.refresh()

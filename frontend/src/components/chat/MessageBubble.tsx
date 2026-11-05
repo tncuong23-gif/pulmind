@@ -23,12 +23,14 @@ export function MessageBubble({
   onFeedback,
   busy,
   onConfirmKG,
+  onSendKGQuestion,
 }: {
   message: ChatMessage;
   onView: (attachment: Attachment) => void;
   onRegenerate: () => void;
   onFeedback: (value: "up" | "down") => void;
   busy: boolean;
+  onSendKGQuestion?: (text: string) => void;
   onConfirmKG?: (ids: string[]) => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -82,7 +84,7 @@ export function MessageBubble({
             )}
           </div>
         )}
-        {!user && <KGQueryDetails message={message} busy={busy} onConfirm={onConfirmKG} />}
+        {!user && <KGQueryDetails message={message} busy={busy} onConfirm={onConfirmKG} onSendQuestion={onSendKGQuestion} />}
         {!user && <SourcesList/>}
         {!user && (
           <div className="message-toolbar">

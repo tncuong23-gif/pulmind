@@ -1,0 +1,137 @@
+............ssssss.FF.....sssssssssssssssssss........................... [ 43%]
+.........................F.....F............F........................... [ 87%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+______ IntentTests.test_every_name_in_every_intent_exists_in_the_ontology ______
+
+self = <tests.upstream.kg.test_query.IntentTests testMethod=test_every_name_in_every_intent_exists_in_the_ontology>
+
+    def test_every_name_in_every_intent_exists_in_the_ontology(self):
+>       self.assertEqual(unknown_relation_names(ONTOLOGY), {})
+E       AssertionError: {'symptom': ['HAS_MANIFESTATION', 'HAS_PER[3637 chars]IC']} != {}
+E       Diff is 6095 characters long. Set self.maxDiff to None to see it.
+
+tests/upstream/kg/test_query.py:15: AssertionError
+__________ IntentTests.test_presets_reference_known_intents_and_types __________
+
+self = <tests.upstream.kg.test_query.IntentTests testMethod=test_presets_reference_known_intents_and_types>
+
+    def test_presets_reference_known_intents_and_types(self):
+        intents = build_intents(ONTOLOGY)
+        for steps in PRESET_CHAINS.values():
+            for s in steps:
+                self.assertIn(s.intent, intents)
+                for t in s.target_types or ():
+>                   self.assertTrue(ONTOLOGY.has_entity_type(t), t)
+E                   AssertionError: False is not true : DrugCombination
+
+tests/upstream/kg/test_query.py:29: AssertionError
+______________________ test_all_compact_relations_covered ______________________
+
+    def test_all_compact_relations_covered():
+>       o=Ontology.load(ONTOLOGY);assert len(o.entity_types)==74 and len(o.relations)==76
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert (53 == 74)
+E        +  where 53 = len(frozenset({'ActiveIngredient', 'AdverseEvent', 'AnatomicalStructure', 'Biomarker', 'ClinicalAssessment', 'ClinicalCondition', ...}))
+E        +    where frozenset({'ActiveIngredient', 'AdverseEvent', 'AnatomicalStructure', 'Biomarker', 'ClinicalAssessment', 'ClinicalCondition', ...}) = Ontology(entity_types=frozenset({'Disease', 'ClinicalCondition', 'AnatomicalStructure', 'TreatmentRegimen', 'GeneVaria...in=frozenset({'FunctionalTest', 'LaboratoryTest', 'Imaging'}), range=frozenset({'Disease', 'Biomarker', 'Pathogen'}))}).entity_types
+
+tests/test_kg_compact_queries.py:37: AssertionError
+___ test_every_preset_executes_ontology_valid_complete_chain[regimen_dosage] ___
+
+preset = 'regimen_dosage'
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    def test_every_preset_executes_ontology_valid_complete_chain(preset):
+>       g=Graph();s=g.service();o=s.ontology;steps=preset_steps(preset,o)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_kg_compact_queries.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'regimen_dosage'
+ontology = Ontology(entity_types=frozenset({'Disease', 'ClinicalCondition', 'AnatomicalStructure', 'TreatmentRegimen', 'GeneVaria...in=frozenset({'FunctionalTest', 'LaboratoryTest', 'Imaging'}), range=frozenset({'Disease', 'Biomarker', 'Pathogen'}))})
+
+    def preset_steps(key, ontology):
+        if key not in PRESET_CHAINS:raise ValueError('Chuỗi truy vấn không tồn tại.')
+        intents=build_intents(ontology);steps=[]
+        for s in PRESET_CHAINS[key]:
+            rels=tuple(r for r in (s.rel_types or intents[s.intent].relations) if ontology.has_relation(r))
+            types=tuple(t for t in s.target_types if ontology.has_entity_type(t)) if s.target_types else None
+            if not rels or s.target_types and not types:
+                if s.include_previous:continue
+>               raise ValueError('Ontology thiếu quan hệ/loại đích cho chuỗi '+key)
+E               ValueError: Ontology thiếu quan hệ/loại đích cho chuỗi regimen_dosage
+
+app/modules/kg_query/intents.py:232: ValueError
+_ test_every_preset_executes_ontology_valid_complete_chain[guideline_interventions] _
+
+preset = 'guideline_interventions'
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    def test_every_preset_executes_ontology_valid_complete_chain(preset):
+>       g=Graph();s=g.service();o=s.ontology;steps=preset_steps(preset,o)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_kg_compact_queries.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+key = 'guideline_interventions'
+ontology = Ontology(entity_types=frozenset({'Disease', 'ClinicalCondition', 'AnatomicalStructure', 'TreatmentRegimen', 'GeneVaria...in=frozenset({'FunctionalTest', 'LaboratoryTest', 'Imaging'}), range=frozenset({'Disease', 'Biomarker', 'Pathogen'}))})
+
+    def preset_steps(key, ontology):
+        if key not in PRESET_CHAINS:raise ValueError('Chuỗi truy vấn không tồn tại.')
+        intents=build_intents(ontology);steps=[]
+        for s in PRESET_CHAINS[key]:
+            rels=tuple(r for r in (s.rel_types or intents[s.intent].relations) if ontology.has_relation(r))
+            types=tuple(t for t in s.target_types if ontology.has_entity_type(t)) if s.target_types else None
+            if not rels or s.target_types and not types:
+                if s.include_previous:continue
+>               raise ValueError('Ontology thiếu quan hệ/loại đích cho chuỗi '+key)
+E               ValueError: Ontology thiếu quan hệ/loại đích cho chuỗi guideline_interventions
+
+app/modules/kg_query/intents.py:232: ValueError
+=============================== warnings summary ===============================
+../../../../root/.local/lib/python3.12/site-packages/starlette/testclient.py:40
+  /root/.local/lib/python3.12/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+app/modules/kg_query/web_app.py:90
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_import_requires_recent_matching_preview_and_token_is_one_use
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_routes_and_dry_run_only
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_unreviewed_candidates_cannot_be_imported_from_ui
+tests/upstream/kg/test_web_app.py::WebAppTests::test_query_preserves_direction_and_evidence
+tests/upstream/kg/test_web_app.py::WebAppTests::test_rejects_invalid_path_and_large_input
+tests/upstream/kg/test_web_app.py::WebAppTests::test_ui_and_metadata
+tests/test_kg_compact_queries.py::test_explorer_new_endpoint_and_catalog
+  /tmp/pulmind-baseline/pulmind-main/backend/app/modules/kg_query/web_app.py:90: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+../../../../root/.local/lib/python3.12/site-packages/fastapi/applications.py:4495
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_import_requires_recent_matching_preview_and_token_is_one_use
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_routes_and_dry_run_only
+tests/upstream/kg/test_duplicate_review.py::DuplicateReviewTests::test_unreviewed_candidates_cannot_be_imported_from_ui
+tests/upstream/kg/test_web_app.py::WebAppTests::test_query_preserves_direction_and_evidence
+tests/upstream/kg/test_web_app.py::WebAppTests::test_rejects_invalid_path_and_large_input
+tests/upstream/kg/test_web_app.py::WebAppTests::test_ui_and_metadata
+tests/test_kg_compact_queries.py::test_explorer_new_endpoint_and_catalog
+  /root/.local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/upstream/kg/test_query.py::IntentTests::test_every_name_in_every_intent_exists_in_the_ontology
+FAILED tests/upstream/kg/test_query.py::IntentTests::test_presets_reference_known_intents_and_types
+FAILED tests/test_kg_compact_queries.py::test_all_compact_relations_covered
+FAILED tests/test_kg_compact_queries.py::test_every_preset_executes_ontology_valid_complete_chain[regimen_dosage]
+FAILED tests/test_kg_compact_queries.py::test_every_preset_executes_ontology_valid_complete_chain[guideline_interventions]
+5 failed, 135 passed, 25 skipped, 17 warnings in 2.23s

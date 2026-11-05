@@ -87,6 +87,23 @@ def create_router():
             result += [r for r in data.get('source_entity_mapping',[]) if r['source_document_id']==doc_id and r['source_entity_id']==entity_id]
             return result
         finally:s.db.close()
+    @api.get('/api/v1/direct-import/identity')
+    def identity_review():
+        s=configured_store()
+        try:
+            data=s.materialize()
+            return {'revision':data['revision'],'entities':data['entities'],'ambiguous_terms':data['ambiguous_terms'],
+                    'warnings':data['identity_warnings'],'alias_decisions':data['alias_decisions']}
+        finally:s.db.close()
+    @api.post('/api/v1/direct-import/identity')
+    async def identity_decision(request:Request):
+        body=await request.json();s=configured_store()
+        try:
+            with operation_lock():
+                if body.get('action')=='alias':return s.decide_alias(body)
+                return s.decide(body)
+        except (ValueError,KeyError,TypeError) as exc:raise HTTPException(409,str(exc))
+        finally:s.db.close()
     @api.post('/api/v1/direct-import',status_code=202)
     async def upload(request:Request,filename:str,target:str='kg',selection:str='merged'):
         if target not in ('kg','rag','both'):raise HTTPException(422,'Đích nhập không hợp lệ.')

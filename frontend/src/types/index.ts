@@ -31,6 +31,7 @@ export interface ChatMessage {
     kg_evidence?: KGChatEvidence | null;
     retrieval_routing?: { kg_evidence?: string; effective_route?: string };
     kg_clarification?: KGClarification;
+    resolved_question?: string;
     kg_confirmation?: KGConfirmation;
     kg_confirmation_used?: boolean;
   };

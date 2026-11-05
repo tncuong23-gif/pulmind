@@ -14,13 +14,15 @@ _ENTITY_COLS = "e.id AS id, e.canonical_name AS name, e.entity_type AS type, coa
 
 # ---- entity resolution (stages are tried in order; the first stage with rows wins) -------------------------
 RESOLVE_EXACT = f"""
-MATCH (e:Entity {{normalized_name: $q}}) WHERE {_TYPES_FILTER}
-RETURN {_ENTITY_COLS}
+MATCH (e:Entity) WHERE (e.normalized_name = $q
+  OR $q IN coalesce(e.normalized_aliases, [])
+  OR (e.normalized_aliases IS NULL AND any(a IN coalesce(e.aliases, []) WHERE toLower(a) = $q))) AND {_TYPES_FILTER}
+RETURN {_ENTITY_COLS}, CASE WHEN e.normalized_name = $q THEN 'exact_name' ELSE 'alias' END AS matched_by
 ORDER BY name LIMIT $limit
 """
 
 RESOLVE_ALIAS = f"""
-MATCH (e:Entity) WHERE any(a IN coalesce(e.aliases, []) WHERE toLower(a) = $q) AND {_TYPES_FILTER}
+MATCH (e:Entity) WHERE ($q IN coalesce(e.normalized_aliases, []) OR (e.normalized_aliases IS NULL AND any(a IN coalesce(e.aliases, []) WHERE toLower(a) = $q))) AND {_TYPES_FILTER}
 RETURN {_ENTITY_COLS}
 ORDER BY name LIMIT $limit
 """
@@ -35,7 +37,7 @@ ORDER BY score DESC LIMIT $limit
 
 RESOLVE_CONTAINS = f"""
 MATCH (e:Entity)
-WHERE (e.normalized_name CONTAINS $q OR any(a IN coalesce(e.aliases, []) WHERE toLower(a) CONTAINS $q))
+WHERE (e.normalized_name CONTAINS $q OR any(a IN coalesce(e.normalized_aliases, e.aliases, []) WHERE toLower(a) CONTAINS $q))
   AND {_TYPES_FILTER}
 RETURN {_ENTITY_COLS}
 ORDER BY size(e.normalized_name), name LIMIT $limit

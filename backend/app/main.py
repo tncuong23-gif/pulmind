@@ -181,7 +181,7 @@ async def _chat_message(payload: ChatRequest, *, voice=False, on_sentence=None):
         )
     except Exception as exc:
         request_id = str(uuid4())
-        logger.error("chat.failed request_id=%s elapsed=%.1fs error_type=%s", request_id, time.monotonic()-started, type(exc).__name__)
+        logger.exception("chat.failed request_id=%s elapsed=%.1fs error_type=%s", request_id, time.monotonic()-started, type(exc).__name__)
         return JSONResponse(
             status_code=502,
             content={

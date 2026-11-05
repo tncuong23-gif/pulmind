@@ -17,23 +17,30 @@ def payload(doc='D1',entities=None,relation=False):
         p['propositions']=[{'id':'P1','text':'Original sentence.','evidence':[{'sentence_id':'S1'}]}]
     return p
 
+def mark_verified(store,sid):
+    from app.kg_global.projection import build_projection,PROJECTION_VERSION
+    store.progress(sid,'ready',{'verification':{**build_projection(store.snapshot(sid))['counts'],'version':PROJECTION_VERSION,'verified':True}})
+
 class ExactTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.s=ExactStore(pathlib.Path(self.tmp.name)/'global.sqlite3',Ontology.from_dict(ONTOLOGY),Limits());self.addCleanup(self.s.db.close)
-    def test_a_b_c_d_transitive(self):
-        a=payload();self.s.ingest(a);gid=next(iter(self.s.materialize()['entities']))
+    def test_alias_chain_does_not_merge(self):
+        a=payload();self.s.ingest(a)
         for i,e in enumerate([entity('B'),entity('C'),entity('D',['B']),entity('E',['D'])],2):self.s.ingest(payload('D'+str(i),[e]))
-        d=self.s.materialize();self.assertEqual(list(d['entities']),[gid]);self.assertEqual(d['entities'][gid]['canonical_name'],'A');self.assertEqual(set(d['entities'][gid]['aliases']),{'B','C','D','E'})
+        d=self.s.materialize();self.assertEqual(len(d['entities']),5);self.assertFalse(d['redirects'])
+        self.assertTrue(self.s.lookup_term('B','F')['ambiguous'])
         self.assertEqual(d['documents']['D1']['payload'],a)
-    def test_bridge_two_existing_groups_preserves_history(self):
+
+    def test_bridge_keeps_entities_and_evidence_separate(self):
         self.s.ingest(payload('D1',[entity('A',['B'])],True));self.s.ingest(payload('D2',[entity('D',['C'])],True))
-        old=self.s.materialize();first=old['entity_mapping']['D1']['ids']['E1'];drop=old['entity_mapping']['D2']['ids']['E1']
-        stored=self.s.db.execute("SELECT gid FROM mappings WHERE doc='D2' AND local='E1'").fetchone()[0]
+        old=self.s.materialize()
         self.s.ingest(payload('D3',[entity('E',['B','C'])]));d=self.s.materialize()
-        self.assertEqual(d['entity_mapping']['D2']['ids']['E1'],first);self.assertEqual(d['redirects'][drop],first)
-        self.assertEqual(stored,self.s.db.execute("SELECT gid FROM mappings WHERE doc='D2' AND local='E1'").fetchone()[0])
-        self.assertEqual(len(d['relations']),1);self.assertEqual(len(d['assertions']),2);self.assertEqual({e['document_id'] for e in d['evidence'].values()},{'D1','D2'})
+        self.assertEqual(d['entity_mapping']['D1'],old['entity_mapping']['D1'])
+        self.assertEqual(d['entity_mapping']['D2'],old['entity_mapping']['D2'])
+        self.assertFalse(d['redirects']);self.assertEqual(len(d['relations']),2)
+        self.assertEqual({e['document_id'] for e in d['evidence'].values()},{'D1','D2'})
+
     def test_different_types_separate(self):
         self.s.ingest(payload(entities=[entity('A',['B']),entity('B',kind='G',eid='E2')]))
         self.assertEqual(len(self.s.materialize()['entities']),2)
@@ -54,27 +61,42 @@ class ExactTests(unittest.TestCase):
         self.assertTrue(all(r['canonical_entity_id']==gid and r['source_entity_id']=='LOCAL' for r in rows))
         self.assertEqual(d['document_history'][0]['provenance'],prov)
         self.assertEqual(d['document_history'][0]['canonical_mapping']['E1'],gid)
-    def test_property_conflict_rolls_back_all(self):
-        self.s.ingest(payload('D1',[entity('A',['B'],props={'strength':'10'})]));before=self.s.materialize()
-        with self.assertRaisesRegex(ValueError,'PROPERTY_CONFLICT'):self.s.ingest(payload('D2',[entity('B',props={'strength':'20'})]))
+    def test_conflicting_alias_properties_stay_separate_and_review_rejects_merge(self):
+        self.s.ingest(payload('D1',[entity('A',['B'],props={'strength':'10'})]))
+        self.s.ingest(payload('D2',[entity('B',props={'strength':'20'})]));before=self.s.materialize();ids=list(before['entities'])
+        with self.assertRaisesRegex(ValueError,'mâu thuẫn'):
+            self.s.decide({'revision':self.s.revision(),'action':'merge','ids':ids,'target_id':ids[0],'type':'F','name':'Approved'})
         self.assertEqual(self.s.materialize(),before)
-    def test_self_edge_merge_rolls_back(self):
+
+    def test_alias_edge_is_preserved_and_review_self_loop_rolls_back(self):
         p=payload(entities=[entity('A',['B']),entity('B',eid='E2')]);p['relations']=[{'id':'R','type':'RELATED','source':'E1','target':'E2','proposition_ids':['P']}];p['propositions']=[{'id':'P','text':'Original sentence.','evidence':[{'sentence_id':'S1'}]}]
-        with self.assertRaisesRegex(ValueError,'GRAPH_CONFLICT'):self.s.ingest(p)
-        self.assertFalse(self.s.materialize()['documents'])
+        self.s.ingest(p);before=self.s.materialize();ids=list(before['entities'])
+        self.assertEqual(len(before['relations']),1)
+        with self.assertRaisesRegex(ValueError,'tự nối'):
+            self.s.decide({'revision':self.s.revision(),'action':'merge','ids':ids,'target_id':ids[0],'type':'F','name':'Approved'})
+        self.assertEqual(self.s.materialize(),before)
+
     def test_preserve_polarity_and_source_properties(self):
         a=payload('D1',relation=True);b=payload('D2',relation=True);b['relations'][0]['properties']={'negated':True}
-        self.s.ingest(a);self.s.ingest(b);d=self.s.snapshot(self.s.seal_direct())
+        self.s.ingest(a);self.s.ingest(b)
+        for kind in ('F','G'):
+            d=self.s.materialize();ids=[i for i,e in d['entities'].items() if e['type']==kind]
+            self.s.decide({'revision':self.s.revision(),'action':'merge','ids':ids,'target_id':ids[0],'type':kind,'name':d['entities'][ids[0]]['canonical_name']})
+        d=self.s.snapshot(self.s.seal_direct())
         self.assertEqual(len(d['relations']),1);self.assertEqual(len(d['assertions']),2);self.assertTrue(d['conflicts'])
     def test_source_overlap_rejected(self):
         self.s.ingest(payload(),provenance={'source_document_ids':['S1','S2']})
         with self.assertRaisesRegex(ValueError,'SOURCE_OVERLAP'):self.s.ingest(payload('D2'),provenance={'source_document_ids':['S2']})
     def test_normalization_preserves_accents_numbers(self):
         self.s.ingest(payload(entities=[entity('  Á  A ',eid='E1'),entity('á a',eid='E2'),entity('a a',eid='E3'),entity('A 2023',eid='E4'),entity('A 2024',eid='E5')]))
-        self.assertEqual(len(self.s.materialize()['entities']),4)
-    def test_order_independent_within_file(self):
+        self.assertEqual(len(self.s.materialize()['entities']),5)
+        self.assertTrue(self.s.lookup_term('á   a','F')['ambiguous'])
+        self.assertFalse(self.s.lookup_term('a a','F')['ambiguous'])
+    def test_source_names_preserved_independent_of_declaration_order(self):
         es=[entity('C',['B'],eid='E3'),entity('B',['A'],eid='E2'),entity('A',eid='E1')]
-        self.s.ingest(payload(entities=es));self.assertEqual(next(iter(self.s.materialize()['entities'].values()))['canonical_name'],'A')
+        self.s.ingest(payload(entities=es));d=self.s.materialize()
+        self.assertEqual({local:d['entities'][gid]['canonical_name'] for local,gid in d['entity_mapping']['D1']['ids'].items()},{'E1':'A','E2':'B','E3':'C'})
+
     def test_missing_sentence_rejected_before_mutation(self):
         p=payload(relation=True);p['propositions'][0]['evidence'][0]['sentence_id']='MISSING'
         with self.assertRaises(ValueError):self.s.ingest(p)
@@ -84,7 +106,7 @@ class ExactTests(unittest.TestCase):
         self.s.ingest(payload());row=self.s.db.execute('SELECT * FROM exact_terms LIMIT 1').fetchone()
         with self.assertRaises(sqlite3.IntegrityError):
             with self.s.write():self.s.db.execute('INSERT INTO exact_terms VALUES(?,?,?)',tuple(row))
-    def test_concurrent_connections_merge_once(self):
+    def test_concurrent_connections_keep_source_identities_separate(self):
         barrier=threading.Barrier(2);errors=[]
         def f(doc):
             s=ExactStore(self.s.path,Ontology.from_dict(ONTOLOGY),Limits())
@@ -94,13 +116,13 @@ class ExactTests(unittest.TestCase):
         ts=[threading.Thread(target=f,args=(d,)) for d in ('D1','D2')]
         for t in ts:t.start()
         for t in ts:t.join(10)
-        self.assertFalse(errors);self.assertFalse(any(t.is_alive() for t in ts));self.assertEqual(len(self.s.materialize()['entities']),1)
+        self.assertFalse(errors);self.assertFalse(any(t.is_alive() for t in ts));self.assertEqual(len(self.s.materialize()['entities']),2)
     def test_failure_does_not_activate_then_retry(self):
         class Failing:
             def __init__(self,store,settings):self.s=store;assert settings.entity_embedding.enabled is False
             def sync(self,sid):self.s.progress(sid,'failed',{});raise RuntimeError('injected')
         class Passing(Failing):
-            def sync(self,sid):self.s.progress(sid,'ready',{})
+            def sync(self,sid):mark_verified(self.s,sid)
         with self.assertRaises(RuntimeError):process(payload(),{},'kg',store=self.s,publisher_factory=Failing)
         self.assertIsNone(self.s.active())
         result=process(payload(),{},'kg',store=self.s,publisher_factory=Passing)
@@ -108,7 +130,7 @@ class ExactTests(unittest.TestCase):
     def test_rag_failure_does_not_undo_completed_kg(self):
         class Passing:
             def __init__(self,s,settings):self.s=s
-            def sync(self,sid):self.s.progress(sid,'ready',{})
+            def sync(self,sid):mark_verified(self.s,sid)
         result=process(payload(),{},'both',store=self.s,publisher_factory=Passing)
         self.assertEqual(result['status'],'partial');self.assertIsNotNone(self.s.active())
     def test_ontology_mismatch(self):
@@ -220,11 +242,24 @@ class ApiTests(unittest.TestCase):
         try:
             s.ingest(payload());sid=s.seal_direct()
             self.assertEqual(self.client.get('/api/v1/direct-import/source/D1/E1').json(),[])
-            s.progress(sid,'ready',{});s.activate(sid)
+            mark_verified(s,sid);s.activate(sid)
             before=self.client.get('/api/v1/direct-import/source/D1/E1').json()
             s.ingest(payload(entities=[entity('Different')]))
             self.assertEqual(self.client.get('/api/v1/direct-import/source/D1/E1').json(),before)
             self.assertEqual(before[0]['version'],1)
+        finally:s.db.close()
+    def test_identity_api_is_revision_guarded_and_keeps_active_snapshot_immutable(self):
+        s=self.api.configured_store()
+        try:
+            s.ingest(payload(entities=[entity('A',['Shared']),entity('B',['Shared'],eid='E2')]))
+            sid=s.seal_direct();mark_verified(s,sid);s.activate(sid);published=s.snapshot(sid)
+            data=self.client.get('/api/v1/direct-import/identity').json()
+            self.assertEqual(len(data['ambiguous_terms']),1)
+            gid=published['entity_mapping']['D1']['ids']['E1']
+            body={'action':'alias','revision':data['revision'],'entity_id':gid,'term':'Shared','status':'rejected','reason':'Reviewed'}
+            self.assertEqual(self.client.post('/api/v1/direct-import/identity',json=body).status_code,200)
+            self.assertEqual(self.client.post('/api/v1/direct-import/identity',json=body).status_code,409)
+            self.assertEqual(s.snapshot(sid),published);self.assertEqual(s.active()['id'],sid)
         finally:s.db.close()
     def test_http_upload_end_to_end_without_live_databases(self):
         api=self.api

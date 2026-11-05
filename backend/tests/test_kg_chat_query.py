@@ -292,7 +292,7 @@ async def test_orchestrator_clarification_and_no_facts_do_not_call_llm(service):
     modules.rag_search = AsyncMock(return_value={'results': []})
     empty = await orchestrator.answer(question='COVID19 có triệu chứng gì?', **args)
     modules.rag_search.assert_awaited_once()
-    assert 'Chưa đủ bằng chứng' in empty['content']
+    assert 'Chưa tìm thấy quan hệ phù hợp' in empty['content']
     llm.generate.assert_not_awaited()
 
 

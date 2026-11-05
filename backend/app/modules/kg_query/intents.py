@@ -215,11 +215,19 @@ PRESET_START_TYPES.update({
 
 def preset_catalog(ontology):
     intents = build_intents(ontology)
-    return [{'id': key, 'label': PRESET_LABELS[key], 'start_types': [t for t in PRESET_START_TYPES[key] if ontology.has_entity_type(t)],
+    catalog = [{'id': key, 'label': PRESET_LABELS[key], 'start_types': [t for t in PRESET_START_TYPES[key] if ontology.has_entity_type(t)],
         'steps': [{'intent': s.intent, 'relations': [r for r in (s.rel_types or intents[s.intent].relations) if ontology.has_relation(r)],
                    'direction': s.direction, 'target_types': [t for t in (s.target_types or ()) if ontology.has_entity_type(t)],
                    'optional': s.include_previous} for s in steps]}
         for key, steps in PRESET_CHAINS.items()]
+    for entry in catalog:
+        try:
+            preset_steps(entry['id'], ontology)
+            entry.update(available=True, unavailable_reason=None)
+        except ValueError as error:
+            entry.update(available=False, unavailable_reason=str(error))
+    return catalog
+
 
 def preset_steps(key, ontology):
     if key not in PRESET_CHAINS:raise ValueError('Chuỗi truy vấn không tồn tại.')

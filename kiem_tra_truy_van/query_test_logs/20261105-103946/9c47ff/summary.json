@@ -1,0 +1,16 @@
+{
+  "project": "medical-ai-integrated",
+  "started_backend": true,
+  "device_override": null,
+  "catalog_coverage": {},
+  "classifier_probe_skipped": false,
+  "classifier_probe_exit": 1,
+  "cases": 0,
+  "outcomes": {},
+  "failed_cases": [],
+  "interrupted": false,
+  "fatal_error": "Traceback (most recent call last):\n  File \"D:\\medical_wed\\banmoi\\medical-ai-integrated\\kiem_tra_truy_van\\test_queries.py\", line 259, in main\n    catalog=json.loads((output/'catalog.json').read_text()) if (output/'catalog.json').is_file() else {}\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py\", line 1028, in read_text\n    return f.read()\n           ^^^^^^^^\n  File \"C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\encodings\\cp1252.py\", line 23, in decode\n    return codecs.charmap_decode(input,self.errors,decoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeDecodeError: 'charmap' codec can't decode byte 0x90 in position 182: character maps to <undefined>\n",
+  "coverage_note": "HTTP_OK is transport/schema success, not proof of correct routing or medical content. NO_FACTS/NO_ENTITY/NEEDS_CLARIFICATION mean the full retrieval branch may not have executed.",
+  "scope": "text chat, classifier probe, KG modes/intents/presets/ontology relations, RAG search and synthetic multi-turn context; excludes voice, uploads and interactive assessment actions",
+  "existing_backend_note": "Traceback filter enabled only in this diagnostic backend; project source unchanged."
+}

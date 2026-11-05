@@ -62,8 +62,12 @@ def process(raw,provenance,target,rag_service=None,progress=lambda stage,data:No
                 # No confirmation/review stage. The previous active snapshot survives any failed write.
                 s.activate(sid)
                 data=s.snapshot(sid)
+                from app.kg_global.projection import build_projection
+                projection=build_projection(data)
                 results['kg']={'status':'completed','snapshot_id':sid,**stats,
-                    'counts':{k:len(data[k]) for k in ('entities','relations','assertions','evidence')}}
+                    'counts':{k:len(data[k]) for k in ('entities','relations','assertions','evidence')},
+                    'graph_counts':projection['counts'],'ambiguous_terms':len(data.get('ambiguous_terms',[])),
+                    'warnings':data.get('identity_warnings',[])}
                 results['kg']['status']='completed'
                 progress('kg_completed',results)
             if target in ('rag','both'):

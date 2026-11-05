@@ -33,7 +33,8 @@ def test_revision_guard_and_snapshot_immutability(s):
  with pytest.raises(ValueError):s.seal(old['revision'])
  assert s.snapshot(sid)==old
  with pytest.raises(ValueError):s.activate(sid)
- s.progress(sid,'ready',{});s.activate(sid);assert s.active()['id']==sid
+ from tests.test_direct_import import mark_verified
+ mark_verified(s,sid);s.activate(sid);assert s.active()['id']==sid
 def test_withdraw_one_source_keeps_other(s):
  s.ingest(payload());s.ingest(payload('DOC_B'));merge_all(s);before=s.materialize();s.withdraw('DOC_A',s.revision());after=s.materialize()
  assert set(after['relations'])==set(before['relations'])
@@ -106,15 +107,25 @@ def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
  from app.kg_global.publish import Publisher
  from app.modules.kg_import.config import Settings
  s.ingest(payload());sid=seal(s)
- calls=[];fail={'graph':True}
+ calls=[];fail={'graph':True,'drop_edges':False};nodes={};edges={}
  class Result:
+  def __init__(self,rows=()):self.rows=list(rows)
   def consume(self):pass
+  def __iter__(self):return iter(self.rows)
+  def single(self):return self.rows[0]
  class Session:
   def __enter__(self):return self
   def __exit__(self,*args):pass
   def run(self,q,**params):
    calls.append((q,params))
    if fail['graph'] and q.startswith('UNWIND'):raise RuntimeError('injected graph failure')
+   if 'SET e += row' in q:
+    nodes.update({r['id']:dict(r) for r in params['rows']})
+   if 'SET r.global_assertions' in q and not fail['drop_edges']:
+    edges.update({r['id']:dict(r) for r in params['rows']})
+   if 'properties(n) AS node' in q:return Result([{'node':n} for n in nodes.values()])
+   if 'r.global_assertions AS assertions' in q:return Result(edges.values())
+   if 'RETURN count(' in q:return Result([{'count':0}])
    return Result()
   def execute_write(self,fn):return fn(self)
  class Driver:
@@ -137,8 +148,12 @@ def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
  with pytest.raises(RuntimeError):publisher.sync(sid)
  assert s.active() is None
  with pytest.raises(ValueError):s.activate(sid)
- fail['graph']=False;assert publisher.sync(sid)['state']=='ready';assert s.active() is None
+ fail['graph']=False;fail['drop_edges']=True
+ with pytest.raises(ValueError,match='VERIFY_RELATIONS'):publisher.sync(sid)
+ assert s.active() is None
+ with pytest.raises(ValueError):s.activate(sid)
+ fail['drop_edges']=False;assert publisher.sync(sid)['state']=='ready';assert s.active() is None
  assert all(':Entity' not in q for q,_ in calls)
- edge_rows=[p['rows'] for q,p in calls if 'global_assertions' in q];assert edge_rows
+ edge_rows=[p['rows'] for q,p in calls if 'SET r.global_assertions' in q];assert edge_rows
  before=len(calls);publisher.sync(sid);assert len(calls)==before
  s.activate(sid);assert s.active()['id']==sid

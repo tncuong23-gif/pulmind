@@ -1,0 +1,272 @@
+..................................FFF.................F............F.... [ 27%]
+.F............F......................................................... [ 55%]
+......................F.................................FF.............. [ 83%]
+.......s....................................                             [100%]
+=================================== FAILURES ===================================
+_ test_multi_hop_plans_have_connected_complete_evidence[COPD d\xf9ng thu\u1ed1c n\xe0o?-drugs_for_disease] _
+
+service = <app.modules.kg_query.service.KGQueryService object at 0x7f6d4aa579e0>
+question = 'COPD dùng thuốc nào?', preset = 'drugs_for_disease'
+
+    @pytest.mark.parametrize(('question', 'preset'), [
+        ('COPD dùng thuốc nào?', 'drugs_for_disease'),
+        ('Thuốc điều trị COPD có tác dụng phụ gì?', 'drug_adverse_effects'),
+        ('Chống chỉ định của thuốc điều trị COPD?', 'drug_contraindications'),
+    ])
+    def test_multi_hop_plans_have_connected_complete_evidence(service, question, preset):
+        result = query(service, question)
+        assert result['query']['mode'] == 'multi_hop'
+        assert result['query']['preset'] == preset
+>       assert result['status'] == 'ok'
+E       AssertionError: assert 'no_facts' == 'ok'
+E         
+E         - ok
+E         + no_facts
+
+tests/test_kg_chat_query.py:172: AssertionError
+_ test_multi_hop_plans_have_connected_complete_evidence[Thu\u1ed1c \u0111i\u1ec1u tr\u1ecb COPD c\xf3 t\xe1c d\u1ee5ng ph\u1ee5 g\xec?-drug_adverse_effects] _
+
+service = <app.modules.kg_query.service.KGQueryService object at 0x7f6d4aa56360>
+question = 'Thuốc điều trị COPD có tác dụng phụ gì?'
+preset = 'drug_adverse_effects'
+
+    @pytest.mark.parametrize(('question', 'preset'), [
+        ('COPD dùng thuốc nào?', 'drugs_for_disease'),
+        ('Thuốc điều trị COPD có tác dụng phụ gì?', 'drug_adverse_effects'),
+        ('Chống chỉ định của thuốc điều trị COPD?', 'drug_contraindications'),
+    ])
+    def test_multi_hop_plans_have_connected_complete_evidence(service, question, preset):
+        result = query(service, question)
+        assert result['query']['mode'] == 'multi_hop'
+        assert result['query']['preset'] == preset
+>       assert result['status'] == 'ok'
+E       AssertionError: assert 'no_facts' == 'ok'
+E         
+E         - ok
+E         + no_facts
+
+tests/test_kg_chat_query.py:172: AssertionError
+_ test_multi_hop_plans_have_connected_complete_evidence[Ch\u1ed1ng ch\u1ec9 \u0111\u1ecbnh c\u1ee7a thu\u1ed1c \u0111i\u1ec1u tr\u1ecb COPD?-drug_contraindications] _
+
+service = <app.modules.kg_query.service.KGQueryService object at 0x7f6d4aa57950>
+question = 'Chống chỉ định của thuốc điều trị COPD?'
+preset = 'drug_contraindications'
+
+    @pytest.mark.parametrize(('question', 'preset'), [
+        ('COPD dùng thuốc nào?', 'drugs_for_disease'),
+        ('Thuốc điều trị COPD có tác dụng phụ gì?', 'drug_adverse_effects'),
+        ('Chống chỉ định của thuốc điều trị COPD?', 'drug_contraindications'),
+    ])
+    def test_multi_hop_plans_have_connected_complete_evidence(service, question, preset):
+        result = query(service, question)
+        assert result['query']['mode'] == 'multi_hop'
+        assert result['query']['preset'] == preset
+>       assert result['status'] == 'ok'
+E       AssertionError: assert 'no_facts' == 'ok'
+E         
+E         - ok
+E         + no_facts
+
+tests/test_kg_chat_query.py:172: AssertionError
+____________________ test_all_presets[False-regimen_dosage] ____________________
+
+preset = 'regimen_dosage', unaccented = False
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    @pytest.mark.parametrize('unaccented',[False,True])
+    def test_all_presets(preset,unaccented):
+     g=Graph();g.node('A');q=AUTO_EXAMPLES[preset].format(name='Test A')
+     if unaccented:q=text_key(q,accents=False)
+     r=retrieve(g.service(),QueryRequest(question=q)).model_dump()
+     assert r['query']['mode']=='multi_hop' and r['query']['preset']==preset,r
+>    assert r['status']=='no_facts' and routing_hint(q)
+E    AssertionError: assert ('needs_clarification' == 'no_facts'
+E      
+E      - no_facts
+E      + needs_clarification)
+
+tests/test_kg_chat_auto.py:19: AssertionError
+_______________ test_all_presets[False-guideline_interventions] ________________
+
+preset = 'guideline_interventions', unaccented = False
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    @pytest.mark.parametrize('unaccented',[False,True])
+    def test_all_presets(preset,unaccented):
+     g=Graph();g.node('A');q=AUTO_EXAMPLES[preset].format(name='Test A')
+     if unaccented:q=text_key(q,accents=False)
+     r=retrieve(g.service(),QueryRequest(question=q)).model_dump()
+     assert r['query']['mode']=='multi_hop' and r['query']['preset']==preset,r
+>    assert r['status']=='no_facts' and routing_hint(q)
+E    AssertionError: assert ('needs_clarification' == 'no_facts'
+E      
+E      - no_facts
+E      + needs_clarification)
+
+tests/test_kg_chat_auto.py:19: AssertionError
+____________________ test_all_presets[True-regimen_dosage] _____________________
+
+preset = 'regimen_dosage', unaccented = True
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    @pytest.mark.parametrize('unaccented',[False,True])
+    def test_all_presets(preset,unaccented):
+     g=Graph();g.node('A');q=AUTO_EXAMPLES[preset].format(name='Test A')
+     if unaccented:q=text_key(q,accents=False)
+     r=retrieve(g.service(),QueryRequest(question=q)).model_dump()
+     assert r['query']['mode']=='multi_hop' and r['query']['preset']==preset,r
+>    assert r['status']=='no_facts' and routing_hint(q)
+E    AssertionError: assert ('needs_clarification' == 'no_facts'
+E      
+E      - no_facts
+E      + needs_clarification)
+
+tests/test_kg_chat_auto.py:19: AssertionError
+________________ test_all_presets[True-guideline_interventions] ________________
+
+preset = 'guideline_interventions', unaccented = True
+
+    @pytest.mark.parametrize('preset',list(PRESET_CHAINS))
+    @pytest.mark.parametrize('unaccented',[False,True])
+    def test_all_presets(preset,unaccented):
+     g=Graph();g.node('A');q=AUTO_EXAMPLES[preset].format(name='Test A')
+     if unaccented:q=text_key(q,accents=False)
+     r=retrieve(g.service(),QueryRequest(question=q)).model_dump()
+     assert r['query']['mode']=='multi_hop' and r['query']['preset']==preset,r
+>    assert r['status']=='no_facts' and routing_hint(q)
+E    AssertionError: assert ('needs_clarification' == 'no_facts'
+E      
+E      - no_facts
+E      + needs_clarification)
+
+tests/test_kg_chat_auto.py:19: AssertionError
+___________ test_explicit_mode_intents_multicriteria_and_no_evidence ___________
+
+service = <app.modules.kg_query.service.KGQueryService object at 0x7f6d4a9f13a0>
+
+    def test_explicit_mode_intents_multicriteria_and_no_evidence(service):
+        result = query(service, 'Đối chiếu hai thực thể', mode='compare', entity_ids=['D1','D2'],
+                       intents=['symptom','treatment'], include_evidence=False)
+        assert result['status'] == 'ok'
+>       assert {r['criterion'] for r in result['llm_context']['comparison']['rows']} == {'symptom','treatment'}
+E       AssertionError: assert {'symptom'} == {'symptom', 'treatment'}
+E         
+E         Extra items in the right set:
+E         'treatment'
+E         Use -v to get more diff
+
+tests/test_kg_comparison.py:199: AssertionError
+___________________ test_re_review_replaces_stale_decisions ____________________
+
+    def test_re_review_replaces_stale_decisions():
+        service = FakeService()
+        adapter = KGAdapter(lambda: service)
+        raw = {
+            'document': {'document_id': 'DOC_X'},
+            'entities': [{'id': 'INCOMING', 'canonical_name': 'Example'}],
+            'entity_link_decisions': {'INCOMING': 'DELETED', 'OTHER': 'STALE'},
+            'entity_type_decisions': {'OTHER': 'distinct'},
+        }
+>       out = asyncio.run(adapter.decisions(raw, {'INCOMING': 'EXISTING'}))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_kg_review_stale_decisions.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.bulk_import.kg.KGAdapter object at 0x7f6d4a945820>
+raw = {'document': {'document_id': 'DOC_X'}, 'entities': [{'id': 'INCOMING', 'canonical_name': 'Example'}], 'entity_link_decisions': {'INCOMING': 'DELETED', 'OTHER': 'STALE'}, 'entity_type_decisions': {'OTHER': 'distinct'}}
+choices = {'INCOMING': 'EXISTING'}
+
+    async def decisions(self, raw, choices):
+        from app.modules.kg_import.manual_merge import resolve_redirects
+>       raw = await asyncio.to_thread(resolve_redirects, raw, self.get_service().graph)
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'FakeService' object has no attribute 'graph'
+
+app/bulk_import/kg.py:77: AttributeError
+___________________ test_re_review_rejects_missing_candidate ___________________
+
+    def test_re_review_rejects_missing_candidate():
+        service = FakeService()
+        adapter = KGAdapter(lambda: service)
+        raw = {'entities': [{'id': 'INCOMING', 'canonical_name': 'Example'}],
+               'entity_link_decisions': {'INCOMING': 'DELETED'}}
+        try:
+>           asyncio.run(adapter.decisions(raw, {'INCOMING': 'DELETED'}))
+
+tests/test_kg_review_stale_decisions.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <app.bulk_import.kg.KGAdapter object at 0x7f6d4a95bb90>
+raw = {'entities': [{'id': 'INCOMING', 'canonical_name': 'Example'}], 'entity_link_decisions': {'INCOMING': 'DELETED'}}
+choices = {'INCOMING': 'DELETED'}
+
+    async def decisions(self, raw, choices):
+        from app.modules.kg_import.manual_merge import resolve_redirects
+>       raw = await asyncio.to_thread(resolve_redirects, raw, self.get_service().graph)
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'FakeService' object has no attribute 'graph'
+
+app/bulk_import/kg.py:77: AttributeError
+=============================== warnings summary ===============================
+../../../../root/.local/lib/python3.12/site-packages/starlette/testclient.py:40
+  /root/.local/lib/python3.12/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+app/modules/kg_query/web_app.py:90
+app/modules/kg_query/web_app.py:90
+tests/test_kg_review_workflow.py::test_single_file_review_uses_shared_receipt_and_content_bound_import_token
+tests/test_kg_review_workflow.py::test_single_file_review_uses_shared_receipt_and_content_bound_import_token
+  /tmp/pulmind-baseline/pulmind-main/backend/app/modules/kg_query/web_app.py:90: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+../../../../root/.local/lib/python3.12/site-packages/fastapi/applications.py:4495
+../../../../root/.local/lib/python3.12/site-packages/fastapi/applications.py:4495
+tests/test_kg_review_workflow.py::test_single_file_review_uses_shared_receipt_and_content_bound_import_token
+tests/test_kg_review_workflow.py::test_single_file_review_uses_shared_receipt_and_content_bound_import_token
+  /root/.local/lib/python3.12/site-packages/fastapi/applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_kg_chat_query.py::test_multi_hop_plans_have_connected_complete_evidence[COPD d\xf9ng thu\u1ed1c n\xe0o?-drugs_for_disease]
+FAILED tests/test_kg_chat_query.py::test_multi_hop_plans_have_connected_complete_evidence[Thu\u1ed1c \u0111i\u1ec1u tr\u1ecb COPD c\xf3 t\xe1c d\u1ee5ng ph\u1ee5 g\xec?-drug_adverse_effects]
+FAILED tests/test_kg_chat_query.py::test_multi_hop_plans_have_connected_complete_evidence[Ch\u1ed1ng ch\u1ec9 \u0111\u1ecbnh c\u1ee7a thu\u1ed1c \u0111i\u1ec1u tr\u1ecb COPD?-drug_contraindications]
+FAILED tests/test_kg_chat_auto.py::test_all_presets[False-regimen_dosage] - A...
+FAILED tests/test_kg_chat_auto.py::test_all_presets[False-guideline_interventions]
+FAILED tests/test_kg_chat_auto.py::test_all_presets[True-regimen_dosage] - As...
+FAILED tests/test_kg_chat_auto.py::test_all_presets[True-guideline_interventions]
+FAILED tests/test_kg_comparison.py::test_explicit_mode_intents_multicriteria_and_no_evidence
+FAILED tests/test_kg_review_stale_decisions.py::test_re_review_replaces_stale_decisions
+FAILED tests/test_kg_review_stale_decisions.py::test_re_review_rejects_missing_candidate
+10 failed, 249 passed, 2 skipped, 9 warnings in 4.35s

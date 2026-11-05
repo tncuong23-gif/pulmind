@@ -4,7 +4,7 @@
 .kg-query-details ol,.kg-query-details ul{padding-left:22px}.kg-query-details li{margin:10px 0}
 .kg-query-details blockquote{margin:6px 0;padding:8px 12px;border-left:3px solid var(--accent);white-space:pre-wrap;background:var(--surface)}
 .kg-query-details small{display:block;color:var(--muted);margin-top:4px}.kg-query-details fieldset{border:0;padding:0;margin:10px 0;min-width:0}
-.kg-query-details legend{font-weight:600}.kg-query-details label{display:block;margin:10px 0}.kg-query-details select{display:block;width:100%;max-width:100%;margin-top:5px;padding:9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font:inherit}
+.kg-query-details legend{font-weight:600}.kg-query-details label{display:block;margin:10px 0}.kg-query-details select,.kg-query-details input{display:block;width:100%;max-width:100%;margin-top:5px;padding:9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font:inherit}
 .kg-query-details button{margin-top:8px}.kg-query-details fieldset:disabled{opacity:.7}
 .kg-comparison{min-width:0;max-width:100%}.kg-comparison-notice{margin:8px 0 12px;color:var(--muted)}
 .kg-comparison-scroll{max-width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface)}

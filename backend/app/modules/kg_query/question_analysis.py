@@ -76,6 +76,7 @@ def detect_intents(question: str, mentions=()) -> list[str]:
     text = f' {text_key(question, accents=False)} '
     for mention in sorted(mentions, key=len, reverse=True):
         text = text.replace(f' {text_key(mention, accents=False)} ', ' ')
+    text = re.sub(r"\bkhong (?:hoi|can hoi) ve [^,]*?\b(?=chi hoi|ma hoi)", " ", text)
     found = [key for key, cues in RULES.items() if has_cue(text, cues)]
     if 'differential' in found:
         found = [i for i in found if i != 'diagnosis']
@@ -95,6 +96,8 @@ def uses_context(question: str) -> bool:
 
 
 def comparison_mode(question: str) -> str | None:
+    if has_cue(question, ('không so sánh', 'không cần so sánh', 'đừng so sánh')):
+        return None
     common = has_cue(question, ('điểm chung', 'giống nhau', 'tương đồng', 'triệu chứng chung',
                                 'dấu hiệu chung', 'cùng có', 'chung nào'))
     different = has_cue(question, ('điểm khác', 'khác nhau', 'khác biệt', 'khác gì'))

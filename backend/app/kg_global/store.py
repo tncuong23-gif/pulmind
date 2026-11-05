@@ -71,7 +71,13 @@ class GlobalStore:
             self.changed('ingest',{'document_id':doc,'version':version,'filename':filename})
         return {'document_id':doc,'version':version,'status':'staged'}
     def resolve_gid(self, gid):
-        return gid
+        seen=set()
+        while gid not in seen:
+            seen.add(gid)
+            row=self.db.execute('SELECT target FROM redirects WHERE old=?',(gid,)).fetchone()
+            if not row:return gid
+            gid=row[0]
+        raise ValueError('Vòng lặp ánh xạ ID: '+gid)
 
     def materialize(self):
         with self.lock:
@@ -170,6 +176,9 @@ class GlobalStore:
             elif body['action']=='merge':
                 tid=body.get('target_id');kind=body.get('type');name=body.get('name','').strip()
                 if tid not in ids or kind not in self.ontology.entity_types or not name or len(name)>500:raise ValueError('ID, loại hoặc tên chuẩn không hợp lệ.')
+                distinct={r[0] for r in self.db.execute('SELECT pair FROM distinct_pairs')}
+                if any(self.pairkey(a,b) in distinct for j,a in enumerate(ids) for b in ids[j+1:]):
+                    raise ValueError('Nhóm chứa thực thể đã được xác nhận khác nhau.')
                 # Check every affected active relation before saving the group.
                 for r in data['relations'].values():
                     if r['source'] not in ids and r['target'] not in ids:continue
@@ -183,23 +192,30 @@ class GlobalStore:
                     for k,v in e['properties'].items():
                         if k in props and props[k]!=v:raise ValueError('Thuộc tính mâu thuẫn: '+k)
                         props[k]=v
-                result={'id':tid,'canonical_name':name,'type':kind,'aliases':sorted(set(a for a in aliases if a!=name)),'properties':props}
+                result={'reviewed_name':name,'id':tid,'canonical_name':name,'type':kind,'aliases':sorted(set(a for a in aliases if a!=name)),'properties':props}
                 self.db.execute('UPDATE entities SET data=? WHERE id=?',(dumps(result),tid))
                 for i in ids:
                     if i==tid:continue
-                    self.db.execute('UPDATE mappings SET gid=? WHERE gid=?',(tid,i))
                     self.db.execute('UPDATE redirects SET target=? WHERE target=?',(tid,i))
                     self.db.execute('INSERT OR REPLACE INTO redirects VALUES(?,?)',(i,tid))
                     self.db.execute('DELETE FROM entities WHERE id=?',(i,))
-                # Old "distinct" decisions involving altered members must be reviewed again.
+                # Preserve distinct decisions through a reviewed merge: A != B and
+                # merge(A,C) must still prohibit merging the resulting identity with B.
                 for row in self.db.execute('SELECT pair FROM distinct_pairs').fetchall():
-                    if set(row[0].split('|'))&set(ids):self.db.execute('DELETE FROM distinct_pairs WHERE pair=?',(row[0],))
+                    a,b=row[0].split('|')
+                    if a in ids or b in ids:
+                        self.db.execute('DELETE FROM distinct_pairs WHERE pair=?',(row[0],))
+                        self.db.execute('INSERT OR IGNORE INTO distinct_pairs VALUES(?)',
+                                        (self.pairkey(tid if a in ids else a,tid if b in ids else b),))
             else:raise ValueError('Thao tác không hợp lệ.')
+            if hasattr(self,'_unify'):self._unify()
             self.changed(body['action'],body)
         return self.review()
     def withdraw(self,doc,revision):
         with self.write(revision):
-            self.db.execute('UPDATE documents SET active=0 WHERE doc=?',(doc,));self.changed('withdraw',{'document_id':doc})
+            self.db.execute('UPDATE documents SET active=0 WHERE doc=?',(doc,))
+            if hasattr(self,'_unify'):self._unify()
+            self.changed('withdraw',{'document_id':doc})
     def exclude(self,aid,reason,revision):
         with self.write(revision):
             a=self.materialize()['assertions'].get(aid)
@@ -225,6 +241,7 @@ class GlobalStore:
             if review['pairs']:raise ValueError('Còn nhóm thực thể cần duyệt.')
             if any(c['kind']!='polarity' for c in data['conflicts']):raise ValueError('Còn lỗi ontology/bằng chứng.')
             if data['conflicts'] and not ack_conflicts:raise ValueError('Cần xác nhận giữ các phát biểu trái chiều cùng nguồn.')
+            data['projection_mode']='triples_only'
             data['change_plan']=self.plan()
             data['review']={'distinct_pairs':[r[0] for r in self.db.execute('SELECT pair FROM distinct_pairs')],
                 'audit':[dict(r) for r in self.db.execute('SELECT * FROM audit')],'conflicts_acknowledged':ack_conflicts}
@@ -242,8 +259,15 @@ class GlobalStore:
         with self.write():self.db.execute('UPDATE snapshots SET state=?,progress=? WHERE id=?',(state,dumps(progress),sid))
     def activate(self,sid):
         with self.write():
-            row=self.db.execute('SELECT state FROM snapshots WHERE id=?',(sid,)).fetchone()
+            row=self.db.execute('SELECT state,progress FROM snapshots WHERE id=?',(sid,)).fetchone()
             if not row or row[0]!='ready':raise ValueError('Phiên bản chưa đồng bộ đầy đủ.')
+            data=self.snapshot(sid)
+            if data.get('projection_mode')=='triples_only':
+                from .projection import build_projection, PROJECTION_VERSION
+                verification=json.loads(row['progress']).get('verification',{})
+                expected=build_projection(data)['counts']
+                if not verification.get('verified') or verification.get('version')!=PROJECTION_VERSION or any(verification.get(k)!=v for k,v in expected.items()):
+                    raise ValueError('Phiên bản chưa xác minh projection bộ ba đầy đủ.')
             self.db.execute("INSERT OR REPLACE INTO meta VALUES('active',?)",(dumps({'id':sid}),))
     def restore(self,data):
         # Restore into an empty workspace only; preserve IDs and the immutable snapshot.
@@ -274,6 +298,7 @@ class GlobalStore:
             for pair in data.get('review',{}).get('distinct_pairs',[]):self.db.execute('INSERT INTO distinct_pairs VALUES(?)',(pair,))
             for a in data['assertions'].values():
                 if a.get('excluded_reason'):self.db.execute('INSERT INTO dispositions VALUES(?,?,?,?)',(a['document_id'],a['document_version'],a['original_relation_id'],a['excluded_reason']))
+            if hasattr(self,'_restore_metadata'):self._restore_metadata(data)
             rebuilt=self.materialize()
             for key in ('relations','assertions','evidence'):
                 if rebuilt[key]!=data[key]:raise ValueError('Dữ liệu global không nhất quán: '+key)

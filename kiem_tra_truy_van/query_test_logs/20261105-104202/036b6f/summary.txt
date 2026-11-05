@@ -1,0 +1,33 @@
+MEDICAL AI QUERY DIAGNOSTICS
+{
+  "HTTP_OK": 31,
+  "NEEDS_CLARIFICATION": 5,
+  "NO_FACTS": 123,
+  "HTTP_ERROR": 23
+}
+FAILED CASES:
+chat:general
+chat:general-prevention
+chat:outside
+chat:diagnostic
+chat:symptom
+chat:diagnosis
+chat:treatment
+chat:adverse-effect
+chat:contraindication
+chat:risk
+chat:explanation
+chat:compare
+chat:common
+chat:difference
+chat:path
+chat:multi-hop
+chat:inference
+chat:alias
+chat:ambiguous
+chat:unknown
+context-turn:1
+context-turn:2
+context-turn:3
+
+HTTP_OK is transport/schema success, not proof of correct routing or medical content. NO_FACTS/NO_ENTITY/NEEDS_CLARIFICATION mean the full retrieval branch may not have executed.

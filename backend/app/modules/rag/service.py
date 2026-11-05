@@ -65,9 +65,13 @@ class Service:
             docs=[d for d in self.store.documents() if not filters.get('document_id') or d['document_id']==filters['document_id']]
             if any(d['encoder']!=self.encoder.fingerprint for d in docs):raise ValueError('Embedding đã đổi. Reindex tài liệu trước khi tìm kiếm.')
             if self.encoder.count('query: '+query)>self.encoder.max_length:raise ValueError('Câu truy vấn quá dài.')
-            vector=self.encoder.encode([query],query=True)[0]
-            hits=self.store.search(vector,[d['active_revision'] for d in docs],kind,filters,top_k)
+            hits=[]
+            if docs:
+                vector=self.encoder.encode([query],query=True)[0]
+                hits=self.store.search(vector,[d['active_revision'] for d in docs],kind,filters,top_k)
             return {'mode':self.mode,'search_type':'lexical_demo' if self.mode=='demo' else 'semantic','query':query,
+                    'retrieval_status':'matched' if hits else 'no_match' if docs else 'no_active_documents',
+                    'active_document_count':len(docs),
                     'chunking':self.chunking_profile(),'reindex_required':[d['document_id'] for d in docs if self.document_status(d)['needs_reindex']],
                     'results':[{k:v for k,v in hit.items() if k not in ('vector','embedding_text')} for hit in hits]}
     def delete(self,doc_id):

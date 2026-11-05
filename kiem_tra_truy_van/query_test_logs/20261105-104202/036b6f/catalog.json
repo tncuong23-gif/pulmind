@@ -1,0 +1,1712 @@
+{
+  "intents": [
+    {
+      "id": "symptom",
+      "description": "Triệu chứng / dấu hiệu của bệnh"
+    },
+    {
+      "id": "treatment",
+      "description": "Điều trị / thuốc / can thiệp cho bệnh (hoặc thuốc dùng cho bệnh gì)"
+    },
+    {
+      "id": "membership",
+      "description": "Nhóm thuốc gồm những thuốc nào / chế phẩm phối hợp chứa gì (đi xuống)"
+    },
+    {
+      "id": "drug_class",
+      "description": "Thuốc thuộc nhóm nào"
+    },
+    {
+      "id": "dosage",
+      "description": "Liều dùng, đường dùng, phác đồ, dụng cụ đưa thuốc"
+    },
+    {
+      "id": "adverse_effect",
+      "description": "Tác dụng phụ / độc tính của thuốc hoặc can thiệp"
+    },
+    {
+      "id": "contraindication",
+      "description": "Chống chỉ định / thận trọng"
+    },
+    {
+      "id": "interaction",
+      "description": "Tương tác thuốc"
+    },
+    {
+      "id": "risk_factor",
+      "description": "Yếu tố nguy cơ / yếu tố khởi phát / làm nặng bệnh"
+    },
+    {
+      "id": "cause",
+      "description": "Nguyên nhân / cơ chế bệnh sinh"
+    },
+    {
+      "id": "prevention",
+      "description": "Phòng ngừa / dự phòng / vắc-xin"
+    },
+    {
+      "id": "diagnosis",
+      "description": "Chẩn đoán: xét nghiệm, hình ảnh, tiêu chuẩn, ngưỡng"
+    },
+    {
+      "id": "differential",
+      "description": "Chẩn đoán phân biệt"
+    },
+    {
+      "id": "assessment",
+      "description": "Đánh giá bằng thang điểm / phép đo"
+    },
+    {
+      "id": "classification",
+      "description": "Phân loại, mức độ nặng, giai đoạn, nhóm"
+    },
+    {
+      "id": "comorbidity",
+      "description": "Bệnh đi kèm, biến chứng, đợt cấp, tiến triển"
+    },
+    {
+      "id": "monitoring",
+      "description": "Theo dõi bệnh / theo dõi điều trị"
+    },
+    {
+      "id": "prognosis",
+      "description": "Tiên lượng, kết cục, diễn tiến, đáp ứng điều trị"
+    },
+    {
+      "id": "recommendation",
+      "description": "Khuyến cáo, phác đồ từng bậc, mục tiêu điều trị, khi nào nhập viện"
+    },
+    {
+      "id": "transmission",
+      "description": "Lây truyền, tính lây nhiễm, ủ bệnh, giảm phơi nhiễm"
+    },
+    {
+      "id": "resistance",
+      "description": "Kháng thuốc / nhạy cảm thuốc"
+    },
+    {
+      "id": "rehabilitation",
+      "description": "Can thiệp phục hồi và mục tiêu (cần lọc loại Rehabilitation)"
+    },
+    {
+      "id": "population",
+      "description": "Nhóm bệnh nhân / đối tượng áp dụng"
+    },
+    {
+      "id": "mechanism",
+      "description": "Cơ chế sinh học (tế bào, cytokine, thụ thể)"
+    },
+    {
+      "id": "anatomy",
+      "description": "Vị trí giải phẫu, cơ quan bị ảnh hưởng"
+    },
+    {
+      "id": "taxonomy",
+      "description": "Phân loại cha/con (IS_A)"
+    },
+    {
+      "id": "screening",
+      "description": "Sàng lọc (tách biệt với chẩn đoán)"
+    },
+    {
+      "id": "epidemiology",
+      "description": "Chỉ số dịch tễ và quần thể nghiên cứu"
+    },
+    {
+      "id": "source_topic",
+      "description": "Tài liệu/hướng dẫn đề cập chủ đề"
+    },
+    {
+      "id": "sequence",
+      "description": "Trình tự và các bước điều trị"
+    },
+    {
+      "id": "setting",
+      "description": "Môi trường áp dụng, cách ly và nhập viện"
+    },
+    {
+      "id": "applicability",
+      "description": "Điều kiện và nhóm đối tượng áp dụng"
+    },
+    {
+      "id": "regimen",
+      "description": "Phác đồ và các thành phần điều trị"
+    },
+    {
+      "id": "related",
+      "description": "Không rõ ý định cụ thể"
+    }
+  ],
+  "presets": [
+    "drugs_for_disease",
+    "drug_adverse_effects",
+    "drug_contraindications",
+    "regimen_medications",
+    "regimen_adverse_effects",
+    "regimen_dosage",
+    "recommendation_interventions",
+    "recommendation_conditions",
+    "diagnostic_findings",
+    "diagnostic_specimens",
+    "criteria_thresholds",
+    "resistant_medications",
+    "pathogen_resistance",
+    "regimen_monitoring",
+    "treatment_sequence",
+    "prevention_settings",
+    "rehabilitation_goals",
+    "prognostic_outcomes",
+    "guideline_interventions"
+  ],
+  "ontology": {
+    "relations": [
+      "AFFECTS",
+      "APPLIED_IN",
+      "ASSESSED_BY",
+      "BELONGS_TO_DRUG_CLASS",
+      "CAUSED_BY",
+      "CAUSES",
+      "CAUSES_ADVERSE_EVENT",
+      "CONFERS_RESISTANCE_TO",
+      "CONTRAINDICATED_IN",
+      "DETECTS",
+      "DIAGNOSED_BY",
+      "DIFFERENTIAL_DIAGNOSIS_OF",
+      "FOLLOWED_BY",
+      "FOR_PATIENT_GROUP",
+      "HAS_ACTIVE_INGREDIENT",
+      "HAS_ADVERSE_EFFECT",
+      "HAS_BIOMARKER",
+      "HAS_CLINICAL_SIGN",
+      "HAS_COMORBIDITY",
+      "HAS_COMPLICATION",
+      "HAS_CONDITION",
+      "HAS_DIAGNOSTIC_CRITERION",
+      "HAS_DRUG_RESISTANCE",
+      "HAS_EPIDEMIOLOGICAL_MEASURE",
+      "HAS_FINDING",
+      "HAS_IMAGING_FINDING",
+      "HAS_LABORATORY_FINDING",
+      "HAS_MECHANISM",
+      "HAS_MUTATION_IN",
+      "HAS_OUTCOME",
+      "HAS_PATHOLOGY_FINDING",
+      "HAS_PROGNOSTIC_FACTOR",
+      "HAS_RECOMMENDATION",
+      "HAS_REGIMEN",
+      "HAS_REGIMEN_COMPONENT",
+      "HAS_SEVERITY",
+      "HAS_STAGE",
+      "HAS_SYMPTOM",
+      "HAS_THRESHOLD",
+      "HAS_TREATMENT_COMPONENT",
+      "HAS_TREATMENT_GOAL",
+      "HAS_TREATMENT_STEP",
+      "INDICATED_FOR",
+      "INDICATES",
+      "INTERACTS_WITH",
+      "IS_A",
+      "LOCATED_IN",
+      "MEASURES",
+      "MONITORED_BY",
+      "NOT_RECOMMENDED_FOR",
+      "PART_OF",
+      "PREDICTS",
+      "PREVENTS",
+      "PRODUCES_FINDING",
+      "RECOMMENDS_INTERVENTION",
+      "REDUCES_TRANSMISSION",
+      "REQUIRES_CAUTION_IN",
+      "REQUIRES_HOSPITALIZATION",
+      "REQUIRES_ISOLATION",
+      "RESISTANT_TO",
+      "RISK_FACTOR_FOR",
+      "SCREENED_BY",
+      "TARGETS",
+      "TRANSMITTED_VIA",
+      "TREATS",
+      "USES_MEDICATION",
+      "USES_SPECIMEN"
+    ],
+    "entity_types": [
+      "ActiveIngredient",
+      "AdverseEvent",
+      "AnatomicalStructure",
+      "Biomarker",
+      "ClinicalAssessment",
+      "ClinicalCondition",
+      "ClinicalFinding",
+      "ClinicalScore",
+      "ClinicalSign",
+      "Complication",
+      "DiagnosticCriterion",
+      "Disease",
+      "DiseaseStage",
+      "DiseaseSubtype",
+      "DrugClass",
+      "DrugResistanceProfile",
+      "EpidemiologicalMeasure",
+      "Exacerbation",
+      "FunctionalTest",
+      "Gene",
+      "GeneVariant",
+      "HealthcareSetting",
+      "Imaging",
+      "ImagingFinding",
+      "InfectionControlMeasure",
+      "LaboratoryFinding",
+      "LaboratoryTest",
+      "Medication",
+      "Organ",
+      "Outcome",
+      "Pathogen",
+      "PathologyFinding",
+      "PathophysiologicalMechanism",
+      "PatientGroup",
+      "PhysiologicalParameter",
+      "PreventiveMeasure",
+      "Procedure",
+      "PrognosticFactor",
+      "Recommendation",
+      "Rehabilitation",
+      "RespiratorySupport",
+      "RiskFactor",
+      "Severity",
+      "Specimen",
+      "Symptom",
+      "Syndrome",
+      "TransmissionRoute",
+      "Treatment",
+      "TreatmentCondition",
+      "TreatmentGoal",
+      "TreatmentRegimen",
+      "TreatmentStep",
+      "Vaccine"
+    ]
+  },
+  "relation_specs": {
+    "AFFECTS": {
+      "domain": [
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen",
+        "Treatment"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ]
+    },
+    "APPLIED_IN": {
+      "domain": [
+        "InfectionControlMeasure",
+        "PreventiveMeasure"
+      ],
+      "range": [
+        "HealthcareSetting"
+      ]
+    },
+    "ASSESSED_BY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Exacerbation",
+        "Severity"
+      ],
+      "range": [
+        "ClinicalAssessment",
+        "ClinicalScore",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest"
+      ]
+    },
+    "BELONGS_TO_DRUG_CLASS": {
+      "domain": [
+        "ActiveIngredient",
+        "Medication"
+      ],
+      "range": [
+        "DrugClass"
+      ]
+    },
+    "CAUSED_BY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "Pathogen"
+      ]
+    },
+    "CAUSES": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Medication",
+        "Pathogen",
+        "PathophysiologicalMechanism",
+        "RiskFactor"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "ClinicalFinding",
+        "ClinicalSign",
+        "Complication",
+        "Disease",
+        "Symptom"
+      ]
+    },
+    "CAUSES_ADVERSE_EVENT": {
+      "domain": [
+        "Medication"
+      ],
+      "range": [
+        "AdverseEvent"
+      ]
+    },
+    "CONFERS_RESISTANCE_TO": {
+      "domain": [
+        "DrugResistanceProfile",
+        "Gene",
+        "GeneVariant"
+      ],
+      "range": [
+        "ActiveIngredient",
+        "DrugClass",
+        "Medication"
+      ]
+    },
+    "CONTRAINDICATED_IN": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "RespiratorySupport",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "PatientGroup",
+        "TreatmentCondition"
+      ]
+    },
+    "DETECTS": {
+      "domain": [
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest"
+      ],
+      "range": [
+        "Biomarker",
+        "Disease",
+        "Pathogen"
+      ]
+    },
+    "DIAGNOSED_BY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome"
+      ],
+      "range": [
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest",
+        "Procedure"
+      ]
+    },
+    "DIFFERENTIAL_DIAGNOSIS_OF": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ]
+    },
+    "FOLLOWED_BY": {
+      "domain": [
+        "Treatment",
+        "TreatmentRegimen",
+        "TreatmentStep"
+      ],
+      "range": [
+        "Treatment",
+        "TreatmentRegimen",
+        "TreatmentStep"
+      ]
+    },
+    "FOR_PATIENT_GROUP": {
+      "domain": [
+        "Recommendation",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "PatientGroup"
+      ]
+    },
+    "HAS_ACTIVE_INGREDIENT": {
+      "domain": [
+        "Medication"
+      ],
+      "range": [
+        "ActiveIngredient"
+      ]
+    },
+    "HAS_ADVERSE_EFFECT": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "AdverseEvent"
+      ]
+    },
+    "HAS_BIOMARKER": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "Biomarker"
+      ]
+    },
+    "HAS_CLINICAL_SIGN": {
+      "domain": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "Exacerbation",
+        "Syndrome"
+      ],
+      "range": [
+        "ClinicalSign"
+      ]
+    },
+    "HAS_COMORBIDITY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease"
+      ]
+    },
+    "HAS_COMPLICATION": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Procedure",
+        "Treatment"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease"
+      ]
+    },
+    "HAS_CONDITION": {
+      "domain": [
+        "Recommendation",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "DiagnosticCriterion",
+        "TreatmentCondition"
+      ]
+    },
+    "HAS_DIAGNOSTIC_CRITERION": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome"
+      ],
+      "range": [
+        "DiagnosticCriterion"
+      ]
+    },
+    "HAS_DRUG_RESISTANCE": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen"
+      ],
+      "range": [
+        "DrugResistanceProfile"
+      ]
+    },
+    "HAS_EPIDEMIOLOGICAL_MEASURE": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "EpidemiologicalMeasure"
+      ]
+    },
+    "HAS_FINDING": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Exacerbation"
+      ],
+      "range": [
+        "ClinicalFinding"
+      ]
+    },
+    "HAS_IMAGING_FINDING": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "ImagingFinding"
+      ]
+    },
+    "HAS_LABORATORY_FINDING": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "LaboratoryFinding"
+      ]
+    },
+    "HAS_MECHANISM": {
+      "domain": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "PathophysiologicalMechanism"
+      ]
+    },
+    "HAS_MUTATION_IN": {
+      "domain": [
+        "DrugResistanceProfile",
+        "Pathogen"
+      ],
+      "range": [
+        "Gene",
+        "GeneVariant"
+      ]
+    },
+    "HAS_OUTCOME": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "Outcome"
+      ]
+    },
+    "HAS_PATHOLOGY_FINDING": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "PathologyFinding"
+      ]
+    },
+    "HAS_PROGNOSTIC_FACTOR": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "PrognosticFactor"
+      ]
+    },
+    "HAS_RECOMMENDATION": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "Recommendation"
+      ]
+    },
+    "HAS_REGIMEN": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "TreatmentRegimen"
+      ]
+    },
+    "HAS_REGIMEN_COMPONENT": {
+      "domain": [
+        "TreatmentRegimen",
+        "TreatmentStep"
+      ],
+      "range": [
+        "DrugClass",
+        "Medication",
+        "Treatment"
+      ]
+    },
+    "HAS_SEVERITY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Exacerbation"
+      ],
+      "range": [
+        "Severity"
+      ]
+    },
+    "HAS_STAGE": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "DiseaseStage"
+      ]
+    },
+    "HAS_SYMPTOM": {
+      "domain": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "Exacerbation",
+        "Syndrome"
+      ],
+      "range": [
+        "Symptom"
+      ]
+    },
+    "HAS_THRESHOLD": {
+      "domain": [
+        "ClinicalScore",
+        "DiagnosticCriterion"
+      ],
+      "range": [
+        "Biomarker",
+        "PhysiologicalParameter"
+      ]
+    },
+    "HAS_TREATMENT_COMPONENT": {
+      "domain": [
+        "RespiratorySupport",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "Medication",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport",
+        "Treatment"
+      ]
+    },
+    "HAS_TREATMENT_GOAL": {
+      "domain": [
+        "Disease",
+        "Rehabilitation",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "TreatmentGoal"
+      ]
+    },
+    "HAS_TREATMENT_STEP": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "TreatmentStep"
+      ]
+    },
+    "INDICATED_FOR": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "PatientGroup",
+        "TreatmentCondition"
+      ]
+    },
+    "INDICATES": {
+      "domain": [
+        "Biomarker",
+        "ClinicalFinding",
+        "ClinicalSign",
+        "ImagingFinding",
+        "LaboratoryFinding",
+        "PathologyFinding",
+        "Symptom"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "Severity"
+      ]
+    },
+    "INTERACTS_WITH": {
+      "domain": [
+        "DrugClass",
+        "Medication"
+      ],
+      "range": [
+        "DrugClass",
+        "Medication"
+      ]
+    },
+    "IS_A": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "DrugClass",
+        "Pathogen",
+        "Syndrome"
+      ],
+      "range": [
+        "Disease",
+        "DiseaseSubtype",
+        "DrugClass",
+        "Pathogen",
+        "Syndrome"
+      ]
+    },
+    "LOCATED_IN": {
+      "domain": [
+        "ClinicalFinding",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "ImagingFinding",
+        "PathologyFinding"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ]
+    },
+    "MEASURES": {
+      "domain": [
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest"
+      ],
+      "range": [
+        "Biomarker",
+        "PhysiologicalParameter"
+      ]
+    },
+    "MONITORED_BY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest",
+        "PhysiologicalParameter"
+      ]
+    },
+    "NOT_RECOMMENDED_FOR": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "PatientGroup"
+      ]
+    },
+    "PART_OF": {
+      "domain": [
+        "AnatomicalStructure",
+        "Organ"
+      ],
+      "range": [
+        "AnatomicalStructure",
+        "Organ"
+      ]
+    },
+    "PREDICTS": {
+      "domain": [
+        "Biomarker",
+        "ClinicalScore",
+        "PrognosticFactor"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "Outcome",
+        "Severity"
+      ]
+    },
+    "PREVENTS": {
+      "domain": [
+        "InfectionControlMeasure",
+        "Medication",
+        "PreventiveMeasure",
+        "Treatment",
+        "Vaccine"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype"
+      ]
+    },
+    "PRODUCES_FINDING": {
+      "domain": [
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest"
+      ],
+      "range": [
+        "ClinicalFinding",
+        "ClinicalSign",
+        "ImagingFinding",
+        "LaboratoryFinding",
+        "PathologyFinding"
+      ]
+    },
+    "RECOMMENDS_INTERVENTION": {
+      "domain": [
+        "Recommendation"
+      ],
+      "range": [
+        "DrugClass",
+        "InfectionControlMeasure",
+        "Medication",
+        "PreventiveMeasure",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport",
+        "Treatment",
+        "TreatmentRegimen"
+      ]
+    },
+    "REDUCES_TRANSMISSION": {
+      "domain": [
+        "InfectionControlMeasure",
+        "PreventiveMeasure"
+      ],
+      "range": [
+        "Disease",
+        "Pathogen",
+        "TransmissionRoute"
+      ]
+    },
+    "REQUIRES_CAUTION_IN": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "Treatment"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Disease",
+        "PatientGroup"
+      ]
+    },
+    "REQUIRES_HOSPITALIZATION": {
+      "domain": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "PatientGroup"
+      ],
+      "range": [
+        "HealthcareSetting"
+      ]
+    },
+    "REQUIRES_ISOLATION": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype"
+      ],
+      "range": [
+        "HealthcareSetting",
+        "InfectionControlMeasure"
+      ]
+    },
+    "RESISTANT_TO": {
+      "domain": [
+        "DrugResistanceProfile",
+        "Pathogen"
+      ],
+      "range": [
+        "ActiveIngredient",
+        "DrugClass",
+        "Medication"
+      ]
+    },
+    "RISK_FACTOR_FOR": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "PatientGroup",
+        "RiskFactor"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype"
+      ]
+    },
+    "SCREENED_BY": {
+      "domain": [
+        "ClinicalCondition",
+        "Disease",
+        "DiseaseSubtype",
+        "PatientGroup"
+      ],
+      "range": [
+        "ClinicalAssessment",
+        "FunctionalTest",
+        "Imaging",
+        "LaboratoryTest"
+      ]
+    },
+    "TARGETS": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Treatment"
+      ],
+      "range": [
+        "Biomarker",
+        "Pathogen",
+        "PathophysiologicalMechanism"
+      ]
+    },
+    "TRANSMITTED_VIA": {
+      "domain": [
+        "Disease",
+        "DiseaseSubtype",
+        "Pathogen"
+      ],
+      "range": [
+        "TransmissionRoute"
+      ]
+    },
+    "TREATS": {
+      "domain": [
+        "DrugClass",
+        "Medication",
+        "Procedure",
+        "Rehabilitation",
+        "RespiratorySupport",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "ClinicalCondition",
+        "Complication",
+        "Disease",
+        "DiseaseSubtype",
+        "Symptom"
+      ]
+    },
+    "USES_MEDICATION": {
+      "domain": [
+        "Procedure",
+        "Treatment",
+        "TreatmentRegimen"
+      ],
+      "range": [
+        "DrugClass",
+        "Medication"
+      ]
+    },
+    "USES_SPECIMEN": {
+      "domain": [
+        "LaboratoryTest"
+      ],
+      "range": [
+        "Specimen"
+      ]
+    }
+  },
+  "samples": {
+    "InfectionControlMeasure": [
+      {
+        "id": "GE_0003ef8c3680418e97fda330ec5b0c69",
+        "name": "Thử thở ra để kiểm tra độ kín khẩu trang",
+        "type": "InfectionControlMeasure"
+      },
+      {
+        "id": "GE_0095656401094acd9ac50048c45b08ea",
+        "name": "Sàng lọc người bệnh có ho",
+        "type": "InfectionControlMeasure"
+      }
+    ],
+    "PreventiveMeasure": [
+      {
+        "id": "GE_0005abf4d75d4ac5b95a65b91744a656",
+        "name": "Giảm cân trẻ thừa cân/béo phì",
+        "type": "PreventiveMeasure"
+      },
+      {
+        "id": "GE_06e323b847c749218a53d12eab51b0b4",
+        "name": "Theo dõi áp lực bóng chèn 25–30 cmH₂O",
+        "type": "PreventiveMeasure"
+      }
+    ],
+    "PathologyFinding": [
+      {
+        "id": "GE_000d965ead67455292f679b0935494ab",
+        "name": "Nang lao ở xương khớp",
+        "type": "PathologyFinding"
+      },
+      {
+        "id": "GE_0257b832e7b8437ea27b4095ad832ade",
+        "name": "U hạt lao",
+        "type": "PathologyFinding"
+      }
+    ],
+    "Medication": [
+      {
+        "id": "GE_00f14ef448ce45a88edb33032aaa289c",
+        "name": "Imipenem-cilastatin",
+        "type": "Medication"
+      },
+      {
+        "id": "GE_01003abb0b3f48e7b1e2192ed6879615",
+        "name": "Ranolazin",
+        "type": "Medication"
+      }
+    ],
+    "ClinicalFinding": [
+      {
+        "id": "GE_002b075042cb4ed889c7777bf2105687",
+        "name": "Viêm khớp mạn tính hoặc bán cấp",
+        "type": "ClinicalFinding"
+      },
+      {
+        "id": "GE_0165381d36704203b33fd4485f506871",
+        "name": "Phản ứng tăng cường khi thực hiện TST lặp lại",
+        "type": "ClinicalFinding"
+      }
+    ],
+    "ClinicalCondition": [
+      {
+        "id": "GE_00376308cb854e029c8902d4db6244a3",
+        "name": "Nhiễm trùng",
+        "type": "ClinicalCondition"
+      },
+      {
+        "id": "GE_004a1f688cee42e2b40af238ad589ae5",
+        "name": "Cơn hen phế quản nặng và nguy kịch",
+        "type": "ClinicalCondition"
+      }
+    ],
+    "PathophysiologicalMechanism": [
+      {
+        "id": "GE_0049e2b668184efeaf0c2c63a86931e7",
+        "name": "Co thắt cơ trơn phế quản",
+        "type": "PathophysiologicalMechanism"
+      },
+      {
+        "id": "GE_03e88215afb9464cba40cfe615d26540",
+        "name": "Tăng tính thấm vi mạch và phù nề đường thở",
+        "type": "PathophysiologicalMechanism"
+      }
+    ],
+    "DiagnosticCriterion": [
+      {
+        "id": "GE_01b49a15b60d41a4ad582b0fd8b2268e",
+        "name": "Triệu chứng hô hấp xấu đi ít nhất hai ngày",
+        "type": "DiagnosticCriterion"
+      },
+      {
+        "id": "GE_0292114468bd4cd6be8acb869ff3094c",
+        "name": "Khò khè kèm ho hoặc khó thở tái diễn",
+        "type": "DiagnosticCriterion"
+      }
+    ],
+    "Complication": [
+      {
+        "id": "GE_0055d4884d614279b49efd5ead1ab880",
+        "name": "Xơ hóa bàng quang",
+        "type": "Complication"
+      },
+      {
+        "id": "GE_00ecfe9f99814a52aa647e8ba27992b9",
+        "name": "Tâm phế mạn tính",
+        "type": "Complication"
+      }
+    ],
+    "PatientGroup": [
+      {
+        "id": "GE_006f1f8573214d1abaadead88df8d7ec",
+        "name": "Nhân viên y tế sau phơi nhiễm lao",
+        "type": "PatientGroup"
+      },
+      {
+        "id": "GE_00fd0c458c51432183298bdbde3dc079",
+        "name": "Người bệnh COVID-19 hỗ trợ ECMO",
+        "type": "PatientGroup"
+      }
+    ],
+    "DrugClass": [
+      {
+        "id": "GE_007a01b15ecb4ca19ba9044b54659b7a",
+        "name": "Thuốc chống lao hàng một",
+        "type": "DrugClass"
+      },
+      {
+        "id": "GE_04cf5a3dab1143199b23d01f17b72aa0",
+        "name": "Thuốc kháng nấm",
+        "type": "DrugClass"
+      }
+    ],
+    "LaboratoryTest": [
+      {
+        "id": "GE_009894e58e2449d4a03e41aa87044e42",
+        "name": "Đo áp lực thẩm thấu máu",
+        "type": "LaboratoryTest"
+      },
+      {
+        "id": "GE_025242595df3458cb964d1b23fe8195a",
+        "name": "Chọc hút hạch tìm AFB",
+        "type": "LaboratoryTest"
+      }
+    ],
+    "TreatmentCondition": [
+      {
+        "id": "GE_012380c2f3634d9c96e2256e72f12a8c",
+        "name": "Tùy mức kiểm soát và nguy cơ",
+        "type": "TreatmentCondition"
+      },
+      {
+        "id": "GE_024bf16fa70b43e9bb1ab1f611d51f1e",
+        "name": "Không kiểm soát tốt với ICS liều thấp",
+        "type": "TreatmentCondition"
+      }
+    ],
+    "ClinicalSign": [
+      {
+        "id": "GE_014793463ce24a529d4ad45b49fc55ae",
+        "name": "Nhẹ khi pChE = 20 -50% GTBTTT",
+        "type": "ClinicalSign"
+      },
+      {
+        "id": "GE_035fa2e6078a4cf8bab06f0bdbdf9804",
+        "name": "Thở nhanh, tím môi và đầu chi",
+        "type": "ClinicalSign"
+      }
+    ],
+    "Biomarker": [
+      {
+        "id": "GE_015ada737bad4f9192c003ccf46d4b23",
+        "name": "Nồng độ nitric oxide trong khí thở ra",
+        "type": "Biomarker"
+      },
+      {
+        "id": "GE_0602e0e123874e9d9cb830aee28a5463",
+        "name": "Interleukin-13",
+        "type": "Biomarker"
+      }
+    ],
+    "Rehabilitation": [
+      {
+        "id": "GE_02ee1217a7bf494d89ceef4ad7b5a395",
+        "name": "Phân bố hoạt động đều trong ngày hoặc tuần",
+        "type": "Rehabilitation"
+      },
+      {
+        "id": "GE_09740256691e4435ba5aa9163b9d0da1",
+        "name": "Xây dựng nhịp độ hoạt động",
+        "type": "Rehabilitation"
+      }
+    ],
+    "LaboratoryFinding": [
+      {
+        "id": "GE_0176b28f17754d3aa95d831150284099",
+        "name": "Tế bào bất thường trong dịch màng phổi",
+        "type": "LaboratoryFinding"
+      },
+      {
+        "id": "GE_02c47d89d36a41b593534436d7480b77",
+        "name": "Glucose dịch não tủy giảm",
+        "type": "LaboratoryFinding"
+      }
+    ],
+    "Symptom": [
+      {
+        "id": "GE_017b3836a81b4e70ab32fdf45874a73a",
+        "name": "Đau chói sau vài phút chuyển thành đau rát bỏng",
+        "type": "Symptom"
+      },
+      {
+        "id": "GE_028c07f9d16b47af8a26ba50d82006ef",
+        "name": "Yếu cơ",
+        "type": "Symptom"
+      }
+    ],
+    "Treatment": [
+      {
+        "id": "GE_01a491e7aaa84fbda0622f0a4598ba59",
+        "name": "Không dùng kháng sinh hoặc kháng nấm",
+        "type": "Treatment"
+      },
+      {
+        "id": "GE_02171d39478e469983d1e0b63ceea37c",
+        "name": "Tập căng giãn",
+        "type": "Treatment"
+      }
+    ],
+    "Recommendation": [
+      {
+        "id": "GE_01ac2b0233314dbb8c43e11b3396c147",
+        "name": "Khuyến nghị Sàng lọc và phát hiện sớm lao",
+        "type": "Recommendation"
+      },
+      {
+        "id": "GE_032d0b76c1c74b56858ae13be04c25ed",
+        "name": "Hít thở bình thường khi sử dụng dụng cụ hít",
+        "type": "Recommendation"
+      }
+    ],
+    "Disease": [
+      {
+        "id": "GE_01b72ff3f149475db2286de95c1f3753",
+        "name": "Viêm màng não mủ",
+        "type": "Disease"
+      },
+      {
+        "id": "GE_025842f9311540f683da7988b23f5742",
+        "name": "Viêm đường hô hấp do virus hợp bào RSV",
+        "type": "Disease"
+      }
+    ],
+    "Imaging": [
+      {
+        "id": "GE_01b8cae37821452f8301550d486927ca",
+        "name": "Nội soi thanh khí quản",
+        "type": "Imaging"
+      },
+      {
+        "id": "GE_033891a6784e41649ad5142e671a7090",
+        "name": "Siêu âm phổi",
+        "type": "Imaging"
+      }
+    ],
+    "FunctionalTest": [
+      {
+        "id": "GE_01dd299aaed6428e8076239612cccb18",
+        "name": "Đa ký giấc ngủ",
+        "type": "FunctionalTest"
+      },
+      {
+        "id": "GE_07db71940b77420993896ba7aa420975",
+        "name": "Đo lưu lượng đỉnh",
+        "type": "FunctionalTest"
+      }
+    ],
+    "RiskFactor": [
+      {
+        "id": "GE_02286eb92239446a8756f304f3796ff6",
+        "name": "Nghiện rượu",
+        "type": "RiskFactor"
+      },
+      {
+        "id": "GE_0295ee51a3ba44c1928ad0e08d4c70e4",
+        "name": "Trẻ tiếp xúc nguồn lây lao",
+        "type": "RiskFactor"
+      }
+    ],
+    "Procedure": [
+      {
+        "id": "GE_023285f55c7444a89470ef0490772c7c",
+        "name": "Hút dịch màng bụng khi tràn dịch nhiều",
+        "type": "Procedure"
+      },
+      {
+        "id": "GE_06f71a1da9c54acebc4b7887578f97a5",
+        "name": "Chọc tháo dịch màng phổi",
+        "type": "Procedure"
+      }
+    ],
+    "Vaccine": [
+      {
+        "id": "GE_02aabaa34c4a46e59f4847400e8f7947",
+        "name": "Tiêm vắc xin cúm",
+        "type": "Vaccine"
+      },
+      {
+        "id": "GE_03e62284a2db4a2cbb65770ac4f75f19",
+        "name": "Vắc-xin cúm",
+        "type": "Vaccine"
+      }
+    ],
+    "Organ": [
+      {
+        "id": "GE_0317cda0fcbc4d52b5b3782f9c9a6aa7",
+        "name": "Phúc mạc",
+        "type": "Organ"
+      },
+      {
+        "id": "GE_094a0720dfb6475a882c112f6d594de3",
+        "name": "Hạch trung thất",
+        "type": "Organ"
+      }
+    ],
+    "HealthcareSetting": [
+      {
+        "id": "GE_032160e73cca491a8bb488d3241f11d6",
+        "name": "Cơ sở khám bệnh, chữa bệnh",
+        "type": "HealthcareSetting"
+      },
+      {
+        "id": "GE_0ccf5923af5f4687a6d374dc0568b655",
+        "name": "Bệnh viện (đợt cấp COPD)",
+        "type": "HealthcareSetting"
+      }
+    ],
+    "Severity": [
+      {
+        "id": "GE_0349eccc66cf4e7da2a2d04556becf0e",
+        "name": "Nặng",
+        "type": "Severity"
+      },
+      {
+        "id": "GE_04288c4860184b988e0cf47bee82ffa1",
+        "name": "Nặng – COVID-19 2022",
+        "type": "Severity"
+      }
+    ],
+    "DrugResistanceProfile": [
+      {
+        "id": "GE_03575e3dbe324b88b3f331f81b3046f3",
+        "name": "Lao kháng nhiều thuốc không kháng rifampicin",
+        "type": "DrugResistanceProfile"
+      },
+      {
+        "id": "GE_481f65d74b304c36a7c29bb767262308",
+        "name": "Kháng đơn thuốc chống lao",
+        "type": "DrugResistanceProfile"
+      }
+    ],
+    "TreatmentRegimen": [
+      {
+        "id": "GE_06a770e66323453cb41d1ed80efb1ed7",
+        "name": "BPaLM — 6 tháng",
+        "type": "TreatmentRegimen"
+      },
+      {
+        "id": "GE_09b3dab7e9de4cb4b21b029358b7a8d0",
+        "name": "A1 — 2HRZE/4RHE",
+        "type": "TreatmentRegimen"
+      }
+    ],
+    "ImagingFinding": [
+      {
+        "id": "GE_049ba0c1e9cc4aeb990f9caa55735a52",
+        "name": "Mờ hình cánh bướm lan tỏa từ hai rốn phổi",
+        "type": "ImagingFinding"
+      },
+      {
+        "id": "GE_06fd39cbc1df4e458ab1845fcdbdd4cb",
+        "name": "Tràn dịch rãnh liên thùy",
+        "type": "ImagingFinding"
+      }
+    ],
+    "ActiveIngredient": [
+      {
+        "id": "GE_04c0f0f9fa124e2e9bbbf3e81d4acfc0",
+        "name": "Fenoterol",
+        "type": "ActiveIngredient"
+      },
+      {
+        "id": "GE_10a96e1a12374888a4454c2dddfbba54",
+        "name": "Terbutaline",
+        "type": "ActiveIngredient"
+      }
+    ],
+    "Syndrome": [
+      {
+        "id": "GE_0511946cc8f44842887ef79db8ca56b4",
+        "name": "Hội chứng suy hô hấp cấp tiến triển trẻ em",
+        "type": "Syndrome"
+      }
+    ],
+    "DiseaseSubtype": [
+      {
+        "id": "GE_0570cf79467c44f6a67488dce60decf5",
+        "name": "Hen không dị ứng",
+        "type": "DiseaseSubtype"
+      },
+      {
+        "id": "GE_068d0759e35e4884afc22f1bdc2a67e6",
+        "name": "Lao hạch bạch huyết",
+        "type": "DiseaseSubtype"
+      }
+    ],
+    "Specimen": [
+      {
+        "id": "GE_05a9b588c2c44338bdddb978982f5b5a",
+        "name": "Dịch khớp",
+        "type": "Specimen"
+      },
+      {
+        "id": "GE_1676fb3c3272427696d2b488800a0203",
+        "name": "Mô sinh thiết",
+        "type": "Specimen"
+      }
+    ],
+    "PhysiologicalParameter": [
+      {
+        "id": "GE_05d71d50dfef453caff725c89d3505a1",
+        "name": "DLco",
+        "type": "PhysiologicalParameter"
+      },
+      {
+        "id": "GE_1bea2f201608463597179fe4504b23c1",
+        "name": "PaO₂",
+        "type": "PhysiologicalParameter"
+      }
+    ],
+    "ClinicalScore": [
+      {
+        "id": "GE_0ee8623f31ba44e389e78f7ed262b179",
+        "name": "Thang Candida index",
+        "type": "ClinicalScore"
+      },
+      {
+        "id": "GE_20b32eae03314264971e2643fc5530f3",
+        "name": "Thang điểm nghi ngờ COVID-19 trên CT",
+        "type": "ClinicalScore"
+      }
+    ],
+    "AnatomicalStructure": [
+      {
+        "id": "GE_06b84db6671a4660bdd806a001ec6622",
+        "name": "Các cơ quan ngoài phổi",
+        "type": "AnatomicalStructure"
+      },
+      {
+        "id": "GE_0bd8dd29182244bea5af1375281c0ff9",
+        "name": "Xương bàn tay",
+        "type": "AnatomicalStructure"
+      }
+    ],
+    "Outcome": [
+      {
+        "id": "GE_0788212bb8e54cc5ba37a7e4da5c316d",
+        "name": "Đa số nhiễm lao nguyên phát không có triệu chứng",
+        "type": "Outcome"
+      },
+      {
+        "id": "GE_0a6fedcd5db447b28e4fedd131a12101",
+        "name": "Nguy cơ tử vong và di chứng cao",
+        "type": "Outcome"
+      }
+    ],
+    "TreatmentStep": [
+      {
+        "id": "GE_07b2d173139c44e383c1793edf2cadde",
+        "name": "Điều trị biến chứng và hỗ trợ",
+        "type": "TreatmentStep"
+      },
+      {
+        "id": "GE_462c64e9f2514c1b8784cbc28cf22a72",
+        "name": "Giai đoạn tập luyện 5",
+        "type": "TreatmentStep"
+      }
+    ],
+    "TreatmentGoal": [
+      {
+        "id": "GE_0d19ca2de4e04a2f8d7e43165eb5ac73",
+        "name": "Điều trị COVID-19 nặng/nguy kịch",
+        "type": "TreatmentGoal"
+      },
+      {
+        "id": "GE_1240600251184f76a4d1a9c965471162",
+        "name": "Duy trì sinh hoạt và ngủ tốt khi còn đau",
+        "type": "TreatmentGoal"
+      }
+    ],
+    "ClinicalAssessment": [
+      {
+        "id": "GE_0db9ded4d56e4b57b63631bcca51785d",
+        "name": "Khám lâm sàng",
+        "type": "ClinicalAssessment"
+      },
+      {
+        "id": "GE_14c4b5c1c60849e5a341c4ddde2a77fc",
+        "name": "Sàng lọc triệu chứng nghi lao",
+        "type": "ClinicalAssessment"
+      }
+    ],
+    "PrognosticFactor": [
+      {
+        "id": "GE_0a13cee670584867b457dadf747362d4",
+        "name": "Ít nhất hai đợt cấp trong năm trước",
+        "type": "PrognosticFactor"
+      },
+      {
+        "id": "GE_0eaaa4a2a36446928a0e98da7275cf81",
+        "name": "Yếu tố nguy cơ diễn biến COVID-19 nặng: Thalassemia",
+        "type": "PrognosticFactor"
+      }
+    ],
+    "AdverseEvent": [
+      {
+        "id": "GE_0a5cb8153c1a43cf976db639eda5dea3",
+        "name": "Viêm thần kinh thị giác",
+        "type": "AdverseEvent"
+      },
+      {
+        "id": "GE_0d61aef84e9843e0956aef27fa6275cd",
+        "name": "Ngộ độc tim mạch khi phối hợp nhóm macrolide",
+        "type": "AdverseEvent"
+      }
+    ],
+    "RespiratorySupport": [
+      {
+        "id": "GE_0ad55ad327e74e83ab0ca9d2b8d418de",
+        "name": "Thở oxy qua mặt nạ",
+        "type": "RespiratorySupport"
+      },
+      {
+        "id": "GE_296452ebb8f34ef79cc4b038e4b6cd2d",
+        "name": "Thở mặt nạ có túi dự trữ",
+        "type": "RespiratorySupport"
+      }
+    ],
+    "Pathogen": [
+      {
+        "id": "GE_0bdfb0cc218e4c4e8bc7a21e7b67e0ca",
+        "name": "Virus hợp bào hô hấp",
+        "type": "Pathogen"
+      },
+      {
+        "id": "GE_0c0ea973d0c844ed98fac2d2bd1c1fb6",
+        "name": "Mycobacterium bovis",
+        "type": "Pathogen"
+      }
+    ],
+    "DiseaseStage": [
+      {
+        "id": "GE_0e95d74f54af4f67a856d2599006fa47",
+        "name": "GOLD 4",
+        "type": "DiseaseStage"
+      },
+      {
+        "id": "GE_2435460616cb4197a699d5ed00167eee",
+        "name": "GOLD 1",
+        "type": "DiseaseStage"
+      }
+    ],
+    "TransmissionRoute": [
+      {
+        "id": "GE_1222c27c273e46fb9486af331ba21276",
+        "name": "Lây truyền người sang người",
+        "type": "TransmissionRoute"
+      },
+      {
+        "id": "GE_1e0a0504966641a9be6df0d670c5a96c",
+        "name": "Hạt khí dung mang trực khuẩn lao",
+        "type": "TransmissionRoute"
+      }
+    ],
+    "Gene": [
+      {
+        "id": "GE_386c4b21358e4f398a72388696b3d9c6",
+        "name": "gyrA",
+        "type": "Gene"
+      },
+      {
+        "id": "GE_5600329c0d99451cbaeb8f70584cf43a",
+        "name": "rpsL",
+        "type": "Gene"
+      }
+    ],
+    "Exacerbation": [
+      {
+        "id": "GE_424da9e5df5440769a008034f1420e26",
+        "name": "Đợt cấp BPTNMT",
+        "type": "Exacerbation"
+      },
+      {
+        "id": "GE_7ccf02a89dd049f3bf6ee51dd814ceae",
+        "name": "Hen phế quản cấp",
+        "type": "Exacerbation"
+      }
+    ]
+  },
+  "inference_rules": [
+    {
+      "id": "is_a_transitive"
+    },
+    {
+      "id": "part_of_transitive"
+    }
+  ],
+  "active_snapshot": "S_01e9e24738a6496dbcd60411a41a1fae"
+}

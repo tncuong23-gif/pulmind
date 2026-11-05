@@ -111,6 +111,7 @@ export function ChatContainer() {
             onRegenerate={(id) => retry(conversation.id, id)}
             onFeedback={(id, value) => feedback(conversation.id, id, value)}
             onView={setViewer}
+            onSendKGQuestion={assessmentOpen ? undefined : text => onSend(text, [])}
             onConfirmKG={(messageId, ids) => confirmKG(conversation.id, messageId, ids)}
           />
           {!voiceOpen && conversation.assessment && <AssessmentPanel key={`${conversation.assessment.id}:${conversation.assessment.version}`} assessment={conversation.assessment} busy={busy} onAction={body => void assessmentAction(conversation.id, body)} />}

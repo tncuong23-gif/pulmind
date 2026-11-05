@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from copy import deepcopy
 import threading
 import time
@@ -181,6 +182,13 @@ def retrieve(service, payload: QueryRequest):
         groups = lookup.named(payload.mentions)
     else:
         groups = lookup.detect(payload.question)
+        # Keep an unmatched endpoint when the user explicitly writes “giữa A và B”.
+        pair = re.search(r"\bgiữa (.+?) và (.+?)[?!.]*$", payload.question, re.IGNORECASE)
+        if len(groups) == 1 and pair and has_cue(payload.question, ('mối liên hệ', 'mối liên quan', 'đường liên kết', 'quan hệ giữa')):
+            names = [re.sub(r"\s+(là gì|như thế nào)$", "", name.strip(), flags=re.IGNORECASE)
+                     for name in pair.groups()]
+            if all(names) and any(lookup.matches(name) for name in names):
+                groups = lookup.named(names)
         if not groups and uses_context(payload.question) and payload.context_mentions:
             groups = lookup.named(payload.context_mentions)
         if not groups and not uses_context(payload.question):
@@ -209,6 +217,11 @@ def retrieve(service, payload: QueryRequest):
     if inference_issue:plan_issue=inference_issue
     if not issue and len(groups) > 2:
         issue, reason = 'Mỗi lượt hỗ trợ tối đa hai thực thể. Bạn vui lòng tách câu hỏi.', 'too_many_entities'
+    if not issue:
+        missing = [g['mention'] for g in groups if not g['candidates']]
+        if missing:
+            issue = 'Chưa nhận diện được ' + ', '.join(f'“{name}”' for name in missing) + '. Hãy dùng tên đầy đủ của thực thể này.'
+            reason = 'missing_entity'
     if not issue and any(len(g['candidates']) != 1 or g['candidates'][0]['matched_by'] == 'fuzzy' for g in groups):
         issue, reason = 'Tôi chưa xác định chắc tên bệnh/thuốc. Bạn hãy xác nhận thực thể bên dưới hoặc viết lại câu hỏi với tên đầy đủ.', 'ambiguous_entity'
         if any(len({(c['name'].casefold(), c['type']) for c in g['candidates']}) < len(g['candidates']) for g in groups):

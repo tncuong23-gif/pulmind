@@ -1,0 +1,439 @@
+{
+  "counts": {
+    "entities": 6194,
+    "relations": 6930,
+    "propositions": 4483
+  },
+  "unique_triples": 6930,
+  "referenced_entities": 5324,
+  "isolated_entities": 870,
+  "missing_endpoints": [],
+  "declared_aliases": 402,
+  "ambiguous_terms": [
+    {
+      "type": "Biomarker",
+      "term": "crp",
+      "entity_ids": [
+        "ENT_000005",
+        "ENT_001332"
+      ]
+    },
+    {
+      "type": "Biomarker",
+      "term": "feno",
+      "entity_ids": [
+        "ENT_002837",
+        "ENT_002893",
+        "ENT_003485"
+      ]
+    },
+    {
+      "type": "Biomarker",
+      "term": "ige",
+      "entity_ids": [
+        "ENT_003154",
+        "ENT_003898"
+      ]
+    },
+    {
+      "type": "ClinicalScore",
+      "term": "cat",
+      "entity_ids": [
+        "ENT_000013",
+        "ENT_000364",
+        "ENT_000819"
+      ]
+    },
+    {
+      "type": "ClinicalScore",
+      "term": "copd assessment test",
+      "entity_ids": [
+        "ENT_000364",
+        "ENT_000819"
+      ]
+    },
+    {
+      "type": "ClinicalScore",
+      "term": "mmrc",
+      "entity_ids": [
+        "ENT_000012",
+        "ENT_000365",
+        "ENT_000820"
+      ]
+    },
+    {
+      "type": "ClinicalScore",
+      "term": "tss",
+      "entity_ids": [
+        "ENT_001226",
+        "ENT_002334"
+      ]
+    },
+    {
+      "type": "Disease",
+      "term": "copd",
+      "entity_ids": [
+        "ENT_000001",
+        "ENT_004736"
+      ]
+    },
+    {
+      "type": "Disease",
+      "term": "gerd",
+      "entity_ids": [
+        "ENT_000020",
+        "ENT_000468",
+        "ENT_002833"
+      ]
+    },
+    {
+      "type": "Disease",
+      "term": "khí phế thũng",
+      "entity_ids": [
+        "ENT_000370",
+        "ENT_007304"
+      ]
+    },
+    {
+      "type": "Disease",
+      "term": "trào ngược dạ dày thực quản",
+      "entity_ids": [
+        "ENT_000020",
+        "ENT_003486"
+      ]
+    },
+    {
+      "type": "DrugClass",
+      "term": "arv",
+      "entity_ids": [
+        "ENT_004805",
+        "ENT_005277"
+      ]
+    },
+    {
+      "type": "DrugClass",
+      "term": "laba",
+      "entity_ids": [
+        "ENT_000008",
+        "ENT_000371",
+        "ENT_000824",
+        "ENT_002843"
+      ]
+    },
+    {
+      "type": "DrugClass",
+      "term": "lama",
+      "entity_ids": [
+        "ENT_000010",
+        "ENT_000372",
+        "ENT_000826"
+      ]
+    },
+    {
+      "type": "DrugClass",
+      "term": "saba",
+      "entity_ids": [
+        "ENT_000007",
+        "ENT_000373",
+        "ENT_000644",
+        "ENT_000823",
+        "ENT_002849"
+      ]
+    },
+    {
+      "type": "DrugClass",
+      "term": "sama",
+      "entity_ids": [
+        "ENT_000009",
+        "ENT_000374",
+        "ENT_000825"
+      ]
+    },
+    {
+      "type": "FunctionalTest",
+      "term": "hppq",
+      "entity_ids": [
+        "ENT_000367",
+        "ENT_000821"
+      ]
+    },
+    {
+      "type": "HealthcareSetting",
+      "term": "icu",
+      "entity_ids": [
+        "ENT_000308",
+        "ENT_002840"
+      ]
+    },
+    {
+      "type": "Imaging",
+      "term": "ct",
+      "entity_ids": [
+        "ENT_000369",
+        "ENT_007138"
+      ]
+    },
+    {
+      "type": "Imaging",
+      "term": "hrct",
+      "entity_ids": [
+        "ENT_000368",
+        "ENT_000822"
+      ]
+    },
+    {
+      "type": "InfectionControlMeasure",
+      "term": "bảo vệ hô hấp",
+      "entity_ids": [
+        "ENT_004123",
+        "ENT_005565"
+      ]
+    },
+    {
+      "type": "InfectionControlMeasure",
+      "term": "kiểm soát hành chính",
+      "entity_ids": [
+        "ENT_004119",
+        "ENT_005563"
+      ]
+    },
+    {
+      "type": "InfectionControlMeasure",
+      "term": "kiểm soát môi trường",
+      "entity_ids": [
+        "ENT_004121",
+        "ENT_005564"
+      ]
+    },
+    {
+      "type": "LaboratoryFinding",
+      "term": "hạ oxy máu",
+      "entity_ids": [
+        "ENT_006610",
+        "ENT_007358"
+      ]
+    },
+    {
+      "type": "LaboratoryTest",
+      "term": "igra",
+      "entity_ids": [
+        "ENT_004312",
+        "ENT_005389",
+        "ENT_005805"
+      ]
+    },
+    {
+      "type": "LaboratoryTest",
+      "term": "naat",
+      "entity_ids": [
+        "ENT_001797",
+        "ENT_005378"
+      ]
+    },
+    {
+      "type": "LaboratoryTest",
+      "term": "phản ứng mantoux",
+      "entity_ids": [
+        "ENT_004167",
+        "ENT_005976"
+      ]
+    },
+    {
+      "type": "LaboratoryTest",
+      "term": "rt-pcr",
+      "entity_ids": [
+        "ENT_001231",
+        "ENT_001798"
+      ]
+    },
+    {
+      "type": "LaboratoryTest",
+      "term": "tst",
+      "entity_ids": [
+        "ENT_004167",
+        "ENT_004311",
+        "ENT_005379",
+        "ENT_005549",
+        "ENT_005804"
+      ]
+    },
+    {
+      "type": "Medication",
+      "term": "budesonid",
+      "entity_ids": [
+        "ENT_000697",
+        "ENT_000968"
+      ]
+    },
+    {
+      "type": "Medication",
+      "term": "formoterol/budesonide",
+      "entity_ids": [
+        "ENT_000143",
+        "ENT_002854"
+      ]
+    },
+    {
+      "type": "Medication",
+      "term": "ics/laba/lama",
+      "entity_ids": [
+        "ENT_000609",
+        "ENT_000828"
+      ]
+    },
+    {
+      "type": "Medication",
+      "term": "laba/lama",
+      "entity_ids": [
+        "ENT_000602",
+        "ENT_000827"
+      ]
+    },
+    {
+      "type": "Medication",
+      "term": "salmeterol/fluticasone propionate",
+      "entity_ids": [
+        "ENT_000147",
+        "ENT_002855"
+      ]
+    },
+    {
+      "type": "Pathogen",
+      "term": "rsv",
+      "entity_ids": [
+        "ENT_001229",
+        "ENT_007575"
+      ]
+    },
+    {
+      "type": "Pathogen",
+      "term": "sars-cov-2",
+      "entity_ids": [
+        "ENT_001213",
+        "ENT_004528"
+      ]
+    },
+    {
+      "type": "PhysiologicalParameter",
+      "term": "cvp",
+      "entity_ids": [
+        "ENT_006263",
+        "ENT_006968"
+      ]
+    },
+    {
+      "type": "PhysiologicalParameter",
+      "term": "fev1",
+      "entity_ids": [
+        "ENT_000032",
+        "ENT_000375",
+        "ENT_003896",
+        "ENT_007336"
+      ]
+    },
+    {
+      "type": "PhysiologicalParameter",
+      "term": "llđ",
+      "entity_ids": [
+        "ENT_002853",
+        "ENT_002892"
+      ]
+    },
+    {
+      "type": "PhysiologicalParameter",
+      "term": "pef",
+      "entity_ids": [
+        "ENT_002853",
+        "ENT_003897"
+      ]
+    },
+    {
+      "type": "PhysiologicalParameter",
+      "term": "spo2",
+      "entity_ids": [
+        "ENT_000459",
+        "ENT_001212"
+      ]
+    },
+    {
+      "type": "Procedure",
+      "term": "ecmo",
+      "entity_ids": [
+        "ENT_001236",
+        "ENT_001527"
+      ]
+    },
+    {
+      "type": "RespiratorySupport",
+      "term": "bipap",
+      "entity_ids": [
+        "ENT_000382",
+        "ENT_000831",
+        "ENT_001227",
+        "ENT_001634",
+        "ENT_002335"
+      ]
+    },
+    {
+      "type": "RespiratorySupport",
+      "term": "cpap",
+      "entity_ids": [
+        "ENT_000381",
+        "ENT_000832",
+        "ENT_001632"
+      ]
+    },
+    {
+      "type": "RespiratorySupport",
+      "term": "hfnc",
+      "entity_ids": [
+        "ENT_001215",
+        "ENT_001795",
+        "ENT_002769"
+      ]
+    },
+    {
+      "type": "RespiratorySupport",
+      "term": "niv",
+      "entity_ids": [
+        "ENT_000015",
+        "ENT_000380",
+        "ENT_007426"
+      ]
+    },
+    {
+      "type": "RespiratorySupport",
+      "term": "thông khí nhân tạo không xâm nhập",
+      "entity_ids": [
+        "ENT_000380",
+        "ENT_007426"
+      ]
+    },
+    {
+      "type": "Syndrome",
+      "term": "ards",
+      "entity_ids": [
+        "ENT_001214",
+        "ENT_001789"
+      ]
+    },
+    {
+      "type": "Treatment",
+      "term": "dots",
+      "entity_ids": [
+        "ENT_004802",
+        "ENT_006056",
+        "ENT_006221"
+      ]
+    },
+    {
+      "type": "Vaccine",
+      "term": "bcg",
+      "entity_ids": [
+        "ENT_004774",
+        "ENT_005954"
+      ]
+    }
+  ],
+  "validation_issues": []
+}

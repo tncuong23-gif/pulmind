@@ -133,6 +133,39 @@ def kg_context(result, registry):
     return context
 
 
+def compact_kg(result, registry, fits):
+    """Pack complete facts or proof groups, rebuilding references for each trial."""
+    raw = result.get('llm_context') or {}
+    facts = raw.get('facts', [])
+    if raw.get('comparison'):
+        return None, registry
+    keys = ('chains', 'paths', 'inferences')
+    groups = [(key, group) for key in keys for group in raw.get(key, []) if group.get('fact_indices')]
+    if not groups and result.get('query', {}).get('mode') in ('path', 'multi_hop', 'inference'):
+        return None, registry
+    if not groups:
+        groups = [(None, {'fact_indices': [index]}) for index in range(len(facts))]
+    accepted = []
+    best = None
+    best_registry = registry
+    for unit in groups:
+        units = [*accepted, unit]
+        indices = sorted({i for _, group in units for i in group['fact_indices']})
+        positions = {old: new for new, old in enumerate(indices)}
+        context = {**raw, 'facts': [facts[i] for i in indices]}
+        for key in keys:
+            context[key] = [
+                {**group, 'fact_indices': [positions[i] for i in group['fact_indices']]}
+                for group_key, group in units if group_key == key
+            ]
+        candidate = copy.deepcopy(registry)
+        packed = kg_context({**result, 'llm_context': context}, candidate)
+        if fits(packed, candidate):
+            accepted = units
+            best, best_registry = packed, candidate
+    return best, best_registry
+
+
 def clinical_context(result,registry):
     data=result.get('data',result) if isinstance(result,dict) else {}
     if not isinstance(data,dict):return {'status':'invalid_result'}
@@ -164,6 +197,10 @@ def prepare_evidence(context, max_bytes=MAX_BYTES):
     for name,result in results.items():
         if not isinstance(result,dict):continue
         if name=='rag':
+            if result.get('retrieval_status') == 'no_active_documents':
+                warnings.append('Không có tài liệu RAG đang hoạt động trong phạm vi truy vấn.')
+            elif result.get('retrieval_status') == 'no_match':
+                warnings.append('RAG không tìm thấy đoạn văn bản phù hợp với truy vấn.')
             accepted=[]
             for row in result.get('results',[]):
                 candidate=copy.deepcopy(registry)
@@ -190,8 +227,22 @@ def prepare_evidence(context, max_bytes=MAX_BYTES):
             if filtered is None:continue
             trial={**base,'module_results':{**modules,name:filtered},'sources':candidate.public()}
             if size(trial)>max_bytes-min(1024,max_bytes//4):
-                warnings.append(f'Bằng chứng {"KG" if name=="kg" else "Clinical IE"} vượt ngân sách; đã bỏ trọn nhóm để không cắt mất điều kiện hoặc chuỗi quan hệ.')
-                continue
+                if name == 'kg':
+                    def fits(context, sources):
+                        trial = {**base, 'module_results': {**modules, name: context},
+                                 'sources': sources.public()}
+                        return size(trial) <= max_bytes - min(1024, max_bytes // 4)
+
+                    filtered, candidate = compact_kg(result, registry, fits)
+                    if filtered is not None:
+                        warnings.append('Đã chọn một phần bằng chứng KG vừa ngân sách, giữ nguyên nguồn và các bước của từng nhóm được chọn.')
+                    else:
+                        warnings.append('Không có nhóm bằng chứng KG hoàn chỉnh vừa ngân sách đầu vào.')
+                else:
+                    warnings.append('Bằng chứng Clinical IE vượt ngân sách đầu vào.')
+                    continue
+                if filtered is None:
+                    continue
             registry=candidate;modules[name]=filtered
     # Leave room for warnings and JSON overhead; do not truncate medical text mid-sentence.
     base['sources']=registry.public();base['warnings']=list(dict.fromkeys(warnings))

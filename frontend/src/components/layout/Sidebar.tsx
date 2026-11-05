@@ -1,7 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  ArrowUpRight,
-  BookOpen,
   ChevronRight,
   Database,
   Info,
@@ -17,7 +15,7 @@ import { API_BASE_URL } from "../../api/client";
 export function Sidebar({ onNavigate }: { onNavigate: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { status, checking } = useApp();
+  const { status } = useApp();
   return (
     <div className="sidebar-inner">
       <Link to="/chat" className="brand" onClick={onNavigate}>
@@ -42,32 +40,6 @@ export function Sidebar({ onNavigate }: { onNavigate: () => void }) {
         <a href={`${API_BASE_URL}/data?return_to=${encodeURIComponent(window.location.origin)}`} className="settings-link" onClick={onNavigate}>
           <Database size={18} /> Quản lý dữ liệu <ChevronRight size={16} />
         </a>
-        <div className="system-card">
-          <div className="system-card-title">
-            <span
-              className={`status-dot ${status.online ? "online" : "offline"}`}
-            />
-            <strong>
-              {checking
-                ? "Đang kết nối…"
-                : status.mode === "mock"
-                  ? "AI System · Demo"
-                  : status.online
-                    ? "AI System Online"
-                    : "Mất kết nối"}
-            </strong>
-          </div>
-          <p>
-            <BookOpen size={13} /> Knowledge Base{" "}
-            {(status.mode === "mock" || (status.online && status.knowledgeBase)) && (
-              <span>{status.mode === "mock" ? "Demo" : status.knowledgeBase}</span>
-            )}
-          </p>
-          <Link to="/settings" onClick={onNavigate}>
-            {vi.systemInfo}
-            <ArrowUpRight size={14} />
-          </Link>
-        </div>
         <Link
           to="/settings"
           onClick={onNavigate}

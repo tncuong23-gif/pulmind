@@ -22,7 +22,7 @@
   let metadata=null,lastPayload=null;
   const extras=el('section','query-extras');extras.id='queryExplanations';$('results').before(extras);
   const confirmations=el('div','query-extras');$('feedback').after(confirmations);
-  function option(select,value,label){const o=el('option',null,label);o.value=value;select.append(o);}
+  function option(select,value,label){const o=el('option',null,label);o.value=value;select.append(o);return o;}
   function addStep(){
     if(!metadata || $('stepRows').children.length>=4)return;
     const row=el('div','step-row'),rel=el('select'),dir=el('select'),type=el('select'),remove=el('button',null,'Xóa bước');
@@ -56,7 +56,13 @@
   fetch('/modules/kg-explorer/api/meta').then(async r=>{if(!r.ok)throw Error('Không tải được cấu hình truy vấn.');return r.json();}).then(meta=>{
     metadata=meta;
     const select=$('intent');for(const i of meta.intents||[]){if(i.id!=='related')option(select,i.id,i.description);}
-    $('chain').replaceChildren();for(const p of meta.preset_details||[])option($('chain'),p.id,p.label);
+    $('chain').replaceChildren();
+    for (const preset of meta.preset_details || []) {
+      const disabled = preset.available === false;
+      const entry = option($('chain'), preset.id, disabled ? preset.label + ' (chưa khả dụng)' : preset.label);
+      entry.disabled = disabled;
+      if (disabled) entry.title = preset.unavailable_reason || '';
+    }
     for(const r of meta.inference_rules||[])if(r.available)option($('inferenceRule'),r.id,r.label);
     for(const t of meta.entity_types||[])option($('targetType'),t,t);
     addStep();addStep();

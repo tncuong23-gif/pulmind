@@ -6,7 +6,7 @@ from app.modules.kg_import.models import parse_import
 from app.modules.kg_import.validation import validate
 from app.modules.kg_import.utils import fold, clean_text, sha256_of
 
-POLICY = 'typed-exact-alias/1'
+POLICY = 'source-scoped-reviewed-identity/2'
 
 class ExactStore(GlobalStore):
     """SQLite registry serializes identity; immutable snapshots isolate live readers.
@@ -18,6 +18,8 @@ class ExactStore(GlobalStore):
         super().__init__(*args)
         self.db.executescript('''
         CREATE TABLE IF NOT EXISTS exact_terms(kind TEXT,term TEXT,gid TEXT NOT NULL,PRIMARY KEY(kind,term));
+        CREATE TABLE IF NOT EXISTS exact_term_candidates(kind TEXT,term TEXT,gid TEXT NOT NULL,PRIMARY KEY(kind,term,gid));
+        CREATE TABLE IF NOT EXISTS alias_decisions(gid TEXT,term TEXT,status TEXT,reason TEXT,PRIMARY KEY(gid,term));
         CREATE TABLE IF NOT EXISTS source_provenance(doc TEXT,version INTEGER,data TEXT NOT NULL,PRIMARY KEY(doc,version));
         CREATE TABLE IF NOT EXISTS direct_jobs(id TEXT PRIMARY KEY,state TEXT,data TEXT NOT NULL);
         ''');self.db.commit()
@@ -48,50 +50,64 @@ class ExactStore(GlobalStore):
         return kg
 
     def _unify(self):
-        rows=list(self.db.execute('SELECT rowid,id,data FROM entities ORDER BY rowid'))
-        ents={r['id']:json.loads(r['data']) for r in rows}
-        rank={r['id']:r['rowid'] for r in rows}
-        parent={i:i for i in ents}
-        def find(i):
-            while parent[i]!=i:
-                parent[i]=parent[parent[i]];i=parent[i]
-            return i
-        terms={}
-        for i,e in ents.items():
-            for name in [e['canonical_name'],*e.get('aliases',[])]:
-                key=(e['type'],fold(name))
-                if not key[1]:continue
-                if key in terms:
-                    a,b=find(i),find(terms[key])
-                    if a!=b:
-                        keep,drop=sorted((a,b),key=lambda x:rank[x]);parent[drop]=keep
-                else:terms[key]=i
-        groups=defaultdict(list)
-        for i in ents:groups[find(i)].append(i)
-        merged=0
-        for target,ids in groups.items():
-            props={};names={}
-            for i in sorted(ids,key=lambda x:rank[x]):
-                e=ents[i]
-                for k,v in e.get('properties',{}).items():
-                    if k in props and props[k]!=v:
-                        raise ValueError(f'ALIAS_PROPERTY_CONFLICT: {e["canonical_name"]}: thuộc tính {k} mâu thuẫn; sửa dữ liệu nguồn.')
-                    props[k]=v
-                for n in [e['canonical_name'],*e.get('aliases',[])]:
-                    if fold(n):names.setdefault(fold(n),clean_text(n))
-            canonical=ents[target]['canonical_name']
-            out={**ents[target],'aliases':[names[k] for k in sorted(names) if k!=fold(canonical)],'properties':props}
-            self.db.execute('UPDATE entities SET data=? WHERE id=?',(dumps(out),target))
-            for i in ids:
-                if i==target:continue
-                # Original mappings stay intact; redirect chains are flattened.
-                self.db.execute('UPDATE redirects SET target=? WHERE target=?',(target,i))
-                self.db.execute('INSERT OR REPLACE INTO redirects VALUES(?,?)',(i,target))
-                self.db.execute('DELETE FROM entities WHERE id=?',(i,));merged+=1
+        """Refresh active declarations, never infer identity from a shared string.
+
+        exact_terms remains a compatibility index of unambiguous terms only.
+        Existing redirects are retained, not silently reversed by this migration.
+        """
+        declarations=defaultdict(list)
+        for row in self.db.execute('SELECT * FROM documents WHERE active=1 ORDER BY doc'):
+            mapping={r['local']:self.resolve_gid(r['gid']) for r in self.db.execute(
+                'SELECT local,gid FROM mappings WHERE doc=? AND version=?',(row['doc'],row['version']))}
+            for e in json.loads(row['payload'])['entities']:
+                declarations[mapping[e['id']]].append((row['doc'],e))
+        terms=defaultdict(set)
+        for gid, sources in declarations.items():
+            stored=json.loads(self.db.execute('SELECT data FROM entities WHERE id=?',(gid,)).fetchone()[0])
+            # Reviewed names survive refresh; otherwise source order determines the name.
+            canonical=stored.get('reviewed_name') or clean_text(sources[0][1]['canonical_name'])
+            names={};props={}
+            for _,e in sources:
+                if e['type']!=stored['type'] and not stored.get('reviewed_name'):
+                    raise ValueError('IDENTITY_TYPE_CONFLICT: '+gid)
+                for key,value in e.get('properties',{}).items():
+                    if key in props and props[key]!=value:
+                        raise ValueError('IDENTITY_PROPERTY_CONFLICT: '+gid+': '+key)
+                    props[key]=value
+                for name in [e['canonical_name'],*e.get('aliases',[])]:
+                    if fold(name):names.setdefault(fold(name),clean_text(name))
+            out={**stored,'canonical_name':canonical,'aliases':[names[k] for k in sorted(names) if k!=fold(canonical)],'properties':props}
+            self.db.execute('UPDATE entities SET data=? WHERE id=?',(dumps(out),gid))
+            for name in [canonical,*out['aliases']]:terms[(out['type'],fold(name))].add(gid)
+        rejected={(self.resolve_gid(r['gid']),r['term']) for r in self.db.execute("SELECT gid,term FROM alias_decisions WHERE status='rejected'")}
+        for (kind,term),ids in terms.items():ids.difference_update({gid for gid in ids if (gid,term) in rejected})
         self.db.execute('DELETE FROM exact_terms')
-        for (kind,term),i in sorted(terms.items()):
-            self.db.execute('INSERT INTO exact_terms VALUES(?,?,?)',(kind,term,find(i)))
-        return merged
+        self.db.execute('DELETE FROM exact_term_candidates')
+        for (kind,term),ids in sorted(terms.items()):
+            for gid in sorted(ids):self.db.execute('INSERT INTO exact_term_candidates VALUES(?,?,?)',(kind,term,gid))
+            if len(ids)==1:self.db.execute('INSERT INTO exact_terms VALUES(?,?,?)',(kind,term,next(iter(ids))))
+        return 0
+
+    def lookup_term(self, term, kind=None):
+        """Return every active candidate; ambiguity is explicit, never an identity decision."""
+        data=self.materialize()
+        ids=sorted({t['entity_id'] for t in data['terms'] if t['term']==fold(term) and (kind is None or t['type']==kind)})
+        return {'ambiguous':len(ids)>1,'candidates':[data['entities'][i] for i in ids]}
+
+    def decide_alias(self,body):
+        with self.write(body['revision']):
+            data=self.materialize();gid=body['entity_id'];term=fold(body['term'])
+            status=body['status'];reason=body.get('reason','').strip()
+            e=data['entities'].get(gid)
+            if not e or not term or status not in ('accepted','rejected') or not reason:
+                raise ValueError('Chọn thực thể, alias, trạng thái và lý do hợp lệ.')
+            if term==fold(e['canonical_name']):raise ValueError('Không đổi trạng thái tên chuẩn qua alias.')
+            if not any(a['entity_id']==gid and fold(a['term'])==term and a['active_source'] for a in data['alias_sources']):
+                raise ValueError('Alias phải có khai báo trong nguồn đang có hiệu lực.')
+            self.db.execute('INSERT OR REPLACE INTO alias_decisions VALUES(?,?,?,?)',(gid,term,status,reason))
+            self._unify()
+            self.changed('alias_decision',body)
+        return self.lookup_term(body['term'],e['type'])
 
     def ingest(self,payload,filename='',provenance=None):
         kg=self.check(payload);doc=kg.document.document_id
@@ -118,12 +134,18 @@ class ExactStore(GlobalStore):
                     if merged:self.changed('exact_alias_migration',{'merged':merged})
                     return {'document_id':doc,'status':'unchanged','version':previous['version'],'merged':merged}
             version=self.db.execute('SELECT COALESCE(MAX(version),0)+1 FROM documents WHERE doc=?',(doc,)).fetchone()[0]
+            oldents={e['id']:e for e in json.loads(previous['payload'])['entities']} if previous else {}
+            oldmap={r['local']:r['gid'] for r in self.db.execute('SELECT local,gid FROM mappings WHERE doc=? AND version=?',(doc,previous['version']))} if previous else {}
             self.db.execute('UPDATE documents SET active=0 WHERE doc=?',(doc,))
             self.db.execute('INSERT INTO documents VALUES(?,?,?,?,1)',(doc,version,h,dumps(payload)))
             # Sort new declarations for deterministic canonical naming within one file.
             for e in sorted(kg.entities,key=lambda e:(e.type,fold(e.canonical_name),e.id)):
-                gid=ident('GE_')
-                self.db.execute('INSERT INTO entities VALUES(?,?)',(gid,dumps({'id':gid,'canonical_name':clean_text(e.canonical_name),'type':e.type,'aliases':list(e.aliases),'properties':e.properties})))
+                old=oldents.get(e.id,{})
+                gid=oldmap.get(e.id) if old.get('type')==e.type and fold(old.get('canonical_name',''))==fold(e.canonical_name) else None
+                if gid:gid=self.resolve_gid(gid)
+                else:
+                    gid=ident('GE_')
+                    self.db.execute('INSERT INTO entities VALUES(?,?)',(gid,dumps({'id':gid,'canonical_name':clean_text(e.canonical_name),'type':e.type,'aliases':list(e.aliases),'properties':e.properties})))
                 self.db.execute('INSERT INTO mappings VALUES(?,?,?,?)',(doc,version,e.id,gid))
             self.db.execute('INSERT INTO source_provenance VALUES(?,?,?)',(doc,version,dumps(provenance)))
             merged=self._unify()
@@ -134,11 +156,41 @@ class ExactStore(GlobalStore):
             return {'document_id':doc,'version':version,'status':'staged','merged':merged}
 
     def materialize(self):
-        data=super().materialize()
         with self.lock:
+            data=super().materialize()
             data['identity_policy']=POLICY
-            data['terms']=[{'key':sha256_of([r['kind'],r['term']]),'type':r['kind'],'term':r['term'],'entity_id':r['gid']}
-                           for r in self.db.execute('SELECT * FROM exact_terms ORDER BY kind,term') if r['gid'] in data['entities']]
+            data['projection_mode']='triples_only'
+            legacy_merges=any(json.loads(r['data']).get('merged',0)>0 and json.loads(r['data']).get('policy')!=POLICY
+                              for r in self.db.execute("SELECT data FROM audit WHERE action IN ('exact_import','exact_alias_migration')"))
+            data['identity_warnings']=['Kho còn định danh đã tự gộp theo chính sách cũ; cần kiểm toán hoặc dựng kho mới từ nguồn gốc.'] if legacy_merges else []
+            # Reconstruct only from active declarations, including after withdrawal/review.
+            decisions={}
+            for r in self.db.execute('SELECT * FROM alias_decisions ORDER BY gid,term'):
+                key=(self.resolve_gid(r['gid']),r['term'])
+                if decisions.get(key,{}).get('status')!='rejected':decisions[key]=dict(r)
+            data['alias_decisions']=list(decisions.values())
+            active_names=defaultdict(dict);active_canonical={};active_props=defaultdict(dict)
+            for doc,d in data['documents'].items():
+                for e in d['payload']['entities']:
+                    gid=data['entity_mapping'][doc]['ids'][e['id']]
+                    active_canonical.setdefault(gid,clean_text(e['canonical_name']))
+                    for key,value in e.get('properties',{}).items():
+                        if key in active_props[gid] and active_props[gid][key]!=value:
+                            raise ValueError('IDENTITY_PROPERTY_CONFLICT: '+gid+': '+key)
+                        active_props[gid][key]=value
+                    for name in [e['canonical_name'],*e.get('aliases',[])]:
+                        if fold(name):active_names[gid].setdefault(fold(name),clean_text(name))
+            for gid,e in data['entities'].items():
+                e['canonical_name']=e.get('reviewed_name') or active_canonical[gid]
+                e['properties']=active_props[gid]
+                e['aliases']=[n for k,n in sorted(active_names[gid].items()) if k!=fold(e['canonical_name']) and decisions.get((gid,k),{}).get('status')!='rejected']
+
+            data['terms']=[{'key':sha256_of([e['type'],fold(n),gid]),'type':e['type'],'term':fold(n),'entity_id':gid}
+                           for gid,e in data['entities'].items() for n in [e['canonical_name'],*e['aliases']]]
+            buckets=defaultdict(set)
+            for term in data['terms']:buckets[(term['type'],term['term'])].add(term['entity_id'])
+            data['ambiguous_terms']=[{'type':kind,'term':term,'entity_ids':sorted(ids)}
+                                     for (kind,term),ids in sorted(buckets.items()) if len(ids)>1]
             data['alias_sources']=[]
             for row in self.db.execute('SELECT * FROM documents ORDER BY doc,version'):
                 raw=json.loads(row['payload']);mapping={r['local']:self.resolve_gid(r['gid']) for r in self.db.execute('SELECT * FROM mappings WHERE doc=? AND version=?',(row['doc'],row['version']))}
@@ -146,7 +198,9 @@ class ExactStore(GlobalStore):
                     for n in [e['canonical_name'],*e.get('aliases',[])]:
                         data['alias_sources'].append({'id':sha256_of([row['doc'],row['version'],e['id'],n]),'document_id':row['doc'],
                             'document_version':row['version'],'original_entity_id':e['id'],'original_name':e['canonical_name'],
-                            'entity_id':mapping[e['id']],'term':n,'type':e['type'],'declaration_only':True,'active_source':bool(row['active'])})
+                            'entity_id':mapping[e['id']],'term':n,'type':e['type'],'declaration_only':True,'active_source':bool(row['active']),
+                            'status':('inactive' if not row['active'] else decisions.get((mapping[e['id']],fold(n)),{}).get('status','declared')),
+                            'decision_reason':decisions.get((mapping[e['id']],fold(n)),{}).get('reason')})
             for history in data['document_history']:
                 row=self.db.execute('SELECT data FROM source_provenance WHERE doc=? AND version=?',(history['document_id'],history['version'])).fetchone()
                 history['provenance']=json.loads(row[0]) if row else {}
@@ -172,6 +226,15 @@ class ExactStore(GlobalStore):
                 titles={x.get('document_id'):x.get('title') for x in p.get('sources',[])}
                 ev['document_title']=titles.get(source_id) or data['documents'][ev['document_id']]['payload']['document']['title']
         return data
+
+    def _restore_metadata(self,data):
+        for doc,d in data['documents'].items():
+            self.db.execute('INSERT OR REPLACE INTO source_provenance VALUES(?,?,?)',(doc,d['version'],dumps(d.get('provenance',{}))))
+        for d in data.get('document_history',[]):
+            self.db.execute('INSERT OR REPLACE INTO source_provenance VALUES(?,?,?)',(d['document_id'],d['version'],dumps(d.get('provenance',{}))))
+        for d in data.get('alias_decisions',[]):
+            self.db.execute('INSERT OR REPLACE INTO alias_decisions VALUES(?,?,?,?)',(d['gid'],d['term'],d['status'],d['reason']))
+        self._unify()
 
     def seal_direct(self):
         with self.write():

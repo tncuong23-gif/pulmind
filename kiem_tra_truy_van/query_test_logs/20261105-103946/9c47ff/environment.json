@@ -1,0 +1,18 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "executable": "D:\\medical_wed\\banmoi\\medical-ai-integrated\\backend\\.venv\\Scripts\\python.exe",
+  "platform": "win32",
+  "packages": {
+    "torch": "2.15.0",
+    "transformers": "4.56.1",
+    "sentence-transformers": "3.3.1",
+    "scikit-learn": "1.6.1",
+    "numpy": "2.5.4",
+    "joblib": "1.6.0",
+    "neo4j": "5.28.8",
+    "pymongo": "4.11.1",
+    "fastapi": "0.115.6",
+    "uvicorn": "0.34.0"
+  },
+  "device_request": "cuda"
+}

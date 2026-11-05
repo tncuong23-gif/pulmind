@@ -1,0 +1,1618 @@
+{
+  "schema_version": "1.3",
+  "query_modes": [
+    "one_hop",
+    "multi_hop",
+    "path",
+    "compare",
+    "common",
+    "difference",
+    "inference"
+  ],
+  "default_mode": "auto",
+  "planner": "dictionary_and_rules_v2",
+  "comparison": {
+    "max_entities": 2,
+    "max_criteria": 6,
+    "scope": "direct_relations",
+    "requires_criterion": true,
+    "absence_is_not_negation": true
+  },
+  "presets": [
+    "drugs_for_disease",
+    "drug_adverse_effects",
+    "drug_contraindications",
+    "regimen_medications",
+    "regimen_adverse_effects",
+    "regimen_dosage",
+    "recommendation_interventions",
+    "recommendation_conditions",
+    "diagnostic_findings",
+    "diagnostic_specimens",
+    "criteria_thresholds",
+    "resistant_medications",
+    "pathogen_resistance",
+    "regimen_monitoring",
+    "treatment_sequence",
+    "prevention_settings",
+    "rehabilitation_goals",
+    "prognostic_outcomes",
+    "guideline_interventions"
+  ],
+  "preset_details": [
+    {
+      "id": "drugs_for_disease",
+      "label": "Bệnh → thuốc/nhóm thuốc → thành phần",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "treatment",
+          "relations": [
+            "TREATS",
+            "INDICATED_FOR",
+            "RECOMMENDS_INTERVENTION",
+            "HAS_TREATMENT_STEP",
+            "HAS_REGIMEN",
+            "USES_MEDICATION"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "membership",
+          "relations": [
+            "HAS_ACTIVE_INGREDIENT",
+            "BELONGS_TO_DRUG_CLASS"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "drug_adverse_effects",
+      "label": "Bệnh → thuốc → tác dụng bất lợi",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "treatment",
+          "relations": [
+            "TREATS",
+            "INDICATED_FOR",
+            "RECOMMENDS_INTERVENTION",
+            "HAS_TREATMENT_STEP",
+            "HAS_REGIMEN",
+            "USES_MEDICATION"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "membership",
+          "relations": [
+            "HAS_ACTIVE_INGREDIENT",
+            "BELONGS_TO_DRUG_CLASS"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": true
+        },
+        {
+          "intent": "adverse_effect",
+          "relations": [
+            "HAS_ADVERSE_EFFECT",
+            "CAUSES_ADVERSE_EVENT"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "AdverseEvent",
+            "Symptom",
+            "ClinicalSign",
+            "LaboratoryFinding",
+            "Disease"
+          ],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "drug_contraindications",
+      "label": "Bệnh → thuốc → chống chỉ định/thận trọng",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "treatment",
+          "relations": [
+            "TREATS",
+            "INDICATED_FOR",
+            "RECOMMENDS_INTERVENTION",
+            "HAS_TREATMENT_STEP",
+            "HAS_REGIMEN",
+            "USES_MEDICATION"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "membership",
+          "relations": [
+            "HAS_ACTIVE_INGREDIENT",
+            "BELONGS_TO_DRUG_CLASS"
+          ],
+          "direction": "auto",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": true
+        },
+        {
+          "intent": "contraindication",
+          "relations": [
+            "CONTRAINDICATED_IN",
+            "REQUIRES_CAUTION_IN"
+          ],
+          "direction": "auto",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "regimen_medications",
+      "label": "Bệnh → phác đồ → thuốc/thành phần",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN"
+          ],
+          "direction": "out",
+          "target_types": [
+            "TreatmentRegimen"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN_COMPONENT",
+            "USES_MEDICATION",
+            "HAS_TREATMENT_COMPONENT"
+          ],
+          "direction": "out",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "regimen_adverse_effects",
+      "label": "Bệnh → phác đồ → thuốc → tác dụng bất lợi",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN"
+          ],
+          "direction": "out",
+          "target_types": [
+            "TreatmentRegimen"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN_COMPONENT",
+            "USES_MEDICATION",
+            "HAS_TREATMENT_COMPONENT"
+          ],
+          "direction": "out",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_ADVERSE_EFFECT",
+            "CAUSES_ADVERSE_EVENT"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "regimen_dosage",
+      "label": "Bệnh → phác đồ → thuốc → liều/đường/tần suất/thời gian",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN"
+          ],
+          "direction": "out",
+          "target_types": [
+            "TreatmentRegimen"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN_COMPONENT",
+            "USES_MEDICATION"
+          ],
+          "direction": "out",
+          "target_types": [
+            "Medication",
+            "DrugClass",
+            "ActiveIngredient"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "recommendation_interventions",
+      "label": "Chủ đề → khuyến nghị → can thiệp",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_RECOMMENDATION"
+          ],
+          "direction": "out",
+          "target_types": [
+            "Recommendation"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "RECOMMENDS_INTERVENTION"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "recommendation_conditions",
+      "label": "Chủ đề → khuyến nghị → điều kiện/đối tượng",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_RECOMMENDATION"
+          ],
+          "direction": "out",
+          "target_types": [
+            "Recommendation"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_CONDITION",
+            "FOR_PATIENT_GROUP"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_findings",
+      "label": "Bệnh → xét nghiệm → phát hiện/đại lượng",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "DIAGNOSED_BY"
+          ],
+          "direction": "out",
+          "target_types": [
+            "LaboratoryTest",
+            "Imaging",
+            "FunctionalTest",
+            "ClinicalAssessment"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "PRODUCES_FINDING",
+            "MEASURES"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "diagnostic_specimens",
+      "label": "Bệnh → xét nghiệm → bệnh phẩm",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "DIAGNOSED_BY"
+          ],
+          "direction": "out",
+          "target_types": [
+            "LaboratoryTest",
+            "Imaging",
+            "FunctionalTest",
+            "ClinicalAssessment"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "USES_SPECIMEN"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "criteria_thresholds",
+      "label": "Bệnh/hướng dẫn → tiêu chuẩn → ngưỡng",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_DIAGNOSTIC_CRITERION"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_THRESHOLD"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "resistant_medications",
+      "label": "Bệnh/tác nhân → hồ sơ kháng → thuốc",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "Pathogen"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_DRUG_RESISTANCE"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "RESISTANT_TO",
+            "CONFERS_RESISTANCE_TO"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "pathogen_resistance",
+      "label": "Bệnh → tác nhân → hồ sơ kháng → thuốc",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "CAUSED_BY"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_DRUG_RESISTANCE"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "RESISTANT_TO",
+            "CONFERS_RESISTANCE_TO"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "regimen_monitoring",
+      "label": "Bệnh → phác đồ → theo dõi",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "MONITORED_BY"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "treatment_sequence",
+      "label": "Bệnh → phác đồ/bước → trình tự",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_REGIMEN",
+            "HAS_TREATMENT_STEP"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_TREATMENT_STEP",
+            "FOLLOWED_BY"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "FOLLOWED_BY"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "prevention_settings",
+      "label": "Bệnh → biện pháp dự phòng → môi trường áp dụng",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "PREVENTS",
+            "REDUCES_TRANSMISSION"
+          ],
+          "direction": "in",
+          "target_types": [
+            "PreventiveMeasure",
+            "InfectionControlMeasure"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "APPLIED_IN"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "rehabilitation_goals",
+      "label": "Bệnh → phục hồi chức năng → mục tiêu",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "TREATS",
+            "INDICATED_FOR"
+          ],
+          "direction": "in",
+          "target_types": [
+            "Rehabilitation"
+          ],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_TREATMENT_GOAL"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "prognostic_outcomes",
+      "label": "Bệnh → yếu tố tiên lượng → kết cục",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_PROGNOSTIC_FACTOR"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "PREDICTS"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "guideline_interventions",
+      "label": "Chủ đề → hướng dẫn → khuyến cáo/can thiệp",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "Symptom",
+        "Treatment",
+        "Procedure",
+        "Pathogen"
+      ],
+      "steps": [
+        {
+          "intent": "related",
+          "relations": [],
+          "direction": "in",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "HAS_RECOMMENDATION"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": false
+        },
+        {
+          "intent": "related",
+          "relations": [
+            "RECOMMENDS_INTERVENTION"
+          ],
+          "direction": "out",
+          "target_types": [],
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "inference_rules": [
+    {
+      "id": "is_a_transitive",
+      "label": "Phân loại bắc cầu: A IS_A B, B IS_A C",
+      "relation": "IS_A",
+      "available": true
+    },
+    {
+      "id": "part_of_transitive",
+      "label": "Bộ phận bắc cầu: A PART_OF B, B PART_OF C",
+      "relation": "PART_OF",
+      "available": true
+    }
+  ],
+  "custom_steps": {
+    "max_steps": 4,
+    "directions": [
+      "auto",
+      "out",
+      "in",
+      "any"
+    ]
+  },
+  "ontology": {
+    "entity_types": [
+      "ActiveIngredient",
+      "AdverseEvent",
+      "AnatomicalStructure",
+      "Biomarker",
+      "ClinicalAssessment",
+      "ClinicalCondition",
+      "ClinicalFinding",
+      "ClinicalScore",
+      "ClinicalSign",
+      "Complication",
+      "DiagnosticCriterion",
+      "Disease",
+      "DiseaseStage",
+      "DiseaseSubtype",
+      "DrugClass",
+      "DrugResistanceProfile",
+      "EpidemiologicalMeasure",
+      "Exacerbation",
+      "FunctionalTest",
+      "Gene",
+      "GeneVariant",
+      "HealthcareSetting",
+      "Imaging",
+      "ImagingFinding",
+      "InfectionControlMeasure",
+      "LaboratoryFinding",
+      "LaboratoryTest",
+      "Medication",
+      "Organ",
+      "Outcome",
+      "Pathogen",
+      "PathologyFinding",
+      "PathophysiologicalMechanism",
+      "PatientGroup",
+      "PhysiologicalParameter",
+      "PreventiveMeasure",
+      "Procedure",
+      "PrognosticFactor",
+      "Recommendation",
+      "Rehabilitation",
+      "RespiratorySupport",
+      "RiskFactor",
+      "Severity",
+      "Specimen",
+      "Symptom",
+      "Syndrome",
+      "TransmissionRoute",
+      "Treatment",
+      "TreatmentCondition",
+      "TreatmentGoal",
+      "TreatmentRegimen",
+      "TreatmentStep",
+      "Vaccine"
+    ],
+    "relations": [
+      "AFFECTS",
+      "APPLIED_IN",
+      "ASSESSED_BY",
+      "BELONGS_TO_DRUG_CLASS",
+      "CAUSED_BY",
+      "CAUSES",
+      "CAUSES_ADVERSE_EVENT",
+      "CONFERS_RESISTANCE_TO",
+      "CONTRAINDICATED_IN",
+      "DETECTS",
+      "DIAGNOSED_BY",
+      "DIFFERENTIAL_DIAGNOSIS_OF",
+      "FOLLOWED_BY",
+      "FOR_PATIENT_GROUP",
+      "HAS_ACTIVE_INGREDIENT",
+      "HAS_ADVERSE_EFFECT",
+      "HAS_BIOMARKER",
+      "HAS_CLINICAL_SIGN",
+      "HAS_COMORBIDITY",
+      "HAS_COMPLICATION",
+      "HAS_CONDITION",
+      "HAS_DIAGNOSTIC_CRITERION",
+      "HAS_DRUG_RESISTANCE",
+      "HAS_EPIDEMIOLOGICAL_MEASURE",
+      "HAS_FINDING",
+      "HAS_IMAGING_FINDING",
+      "HAS_LABORATORY_FINDING",
+      "HAS_MECHANISM",
+      "HAS_MUTATION_IN",
+      "HAS_OUTCOME",
+      "HAS_PATHOLOGY_FINDING",
+      "HAS_PROGNOSTIC_FACTOR",
+      "HAS_RECOMMENDATION",
+      "HAS_REGIMEN",
+      "HAS_REGIMEN_COMPONENT",
+      "HAS_SEVERITY",
+      "HAS_STAGE",
+      "HAS_SYMPTOM",
+      "HAS_THRESHOLD",
+      "HAS_TREATMENT_COMPONENT",
+      "HAS_TREATMENT_GOAL",
+      "HAS_TREATMENT_STEP",
+      "INDICATED_FOR",
+      "INDICATES",
+      "INTERACTS_WITH",
+      "IS_A",
+      "LOCATED_IN",
+      "MEASURES",
+      "MONITORED_BY",
+      "NOT_RECOMMENDED_FOR",
+      "PART_OF",
+      "PREDICTS",
+      "PREVENTS",
+      "PRODUCES_FINDING",
+      "RECOMMENDS_INTERVENTION",
+      "REDUCES_TRANSMISSION",
+      "REQUIRES_CAUTION_IN",
+      "REQUIRES_HOSPITALIZATION",
+      "REQUIRES_ISOLATION",
+      "RESISTANT_TO",
+      "RISK_FACTOR_FOR",
+      "SCREENED_BY",
+      "TARGETS",
+      "TRANSMITTED_VIA",
+      "TREATS",
+      "USES_MEDICATION",
+      "USES_SPECIMEN"
+    ],
+    "uncovered_relations": []
+  },
+  "automatic_intents": [
+    "symptom",
+    "treatment",
+    "membership",
+    "drug_class",
+    "dosage",
+    "adverse_effect",
+    "contraindication",
+    "interaction",
+    "risk_factor",
+    "cause",
+    "prevention",
+    "diagnosis",
+    "differential",
+    "assessment",
+    "classification",
+    "comorbidity",
+    "monitoring",
+    "prognosis",
+    "recommendation",
+    "transmission",
+    "resistance",
+    "rehabilitation",
+    "population",
+    "mechanism",
+    "anatomy",
+    "taxonomy",
+    "screening",
+    "epidemiology",
+    "source_topic",
+    "sequence",
+    "setting",
+    "applicability",
+    "regimen"
+  ],
+  "automatic_presets": [
+    {
+      "preset": "drugs_for_disease",
+      "label": "Bệnh → thuốc/nhóm thuốc → thành phần",
+      "example": "Thuốc nào điều trị TÊN_THỰC_THỂ?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "drug_adverse_effects",
+      "label": "Bệnh → thuốc → tác dụng bất lợi",
+      "example": "Thuốc điều trị TÊN_THỰC_THỂ có tác dụng phụ gì?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "drug_contraindications",
+      "label": "Bệnh → thuốc → chống chỉ định/thận trọng",
+      "example": "Thuốc điều trị TÊN_THỰC_THỂ có chống chỉ định gì?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "regimen_medications",
+      "label": "Bệnh → phác đồ → thuốc/thành phần",
+      "example": "Phác đồ của TÊN_THỰC_THỂ gồm những thuốc nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "regimen_adverse_effects",
+      "label": "Bệnh → phác đồ → thuốc → tác dụng bất lợi",
+      "example": "Thuốc trong phác đồ của TÊN_THỰC_THỂ có tác dụng phụ gì?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "regimen_dosage",
+      "label": "Bệnh → phác đồ → thuốc → liều/đường/tần suất/thời gian",
+      "example": "Thuốc trong phác đồ của TÊN_THỰC_THỂ có liều dùng nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "recommendation_interventions",
+      "label": "Chủ đề → khuyến nghị → can thiệp",
+      "example": "Khuyến cáo cho TÊN_THỰC_THỂ đề xuất can thiệp nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "ClinicalGuideline"
+      ]
+    },
+    {
+      "preset": "recommendation_conditions",
+      "label": "Chủ đề → khuyến nghị → điều kiện/đối tượng",
+      "example": "Khuyến cáo cho TÊN_THỰC_THỂ áp dụng với đối tượng nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "ClinicalGuideline"
+      ]
+    },
+    {
+      "preset": "diagnostic_findings",
+      "label": "Bệnh → xét nghiệm → phát hiện/đại lượng",
+      "example": "Xét nghiệm của TÊN_THỰC_THỂ đo đại lượng nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "diagnostic_specimens",
+      "label": "Bệnh → xét nghiệm → bệnh phẩm",
+      "example": "Xét nghiệm của TÊN_THỰC_THỂ cần bệnh phẩm nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "criteria_thresholds",
+      "label": "Bệnh/hướng dẫn → tiêu chuẩn → ngưỡng",
+      "example": "Tiêu chuẩn của TÊN_THỰC_THỂ có ngưỡng nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "ClinicalGuideline",
+        "ClinicalRule"
+      ]
+    },
+    {
+      "preset": "resistant_medications",
+      "label": "Bệnh/tác nhân → hồ sơ kháng → thuốc",
+      "example": "Hồ sơ kháng của TÊN_THỰC_THỂ liên quan thuốc nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "Pathogen",
+        "Bacterium",
+        "Virus"
+      ]
+    },
+    {
+      "preset": "pathogen_resistance",
+      "label": "Bệnh → tác nhân → hồ sơ kháng → thuốc",
+      "example": "Tác nhân gây TÊN_THỰC_THỂ có hồ sơ kháng thuốc nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "regimen_monitoring",
+      "label": "Bệnh → phác đồ → theo dõi",
+      "example": "Phác đồ của TÊN_THỰC_THỂ cần theo dõi gì?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "treatment_sequence",
+      "label": "Bệnh → phác đồ/bước → trình tự",
+      "example": "Các bước trong phác đồ điều trị TÊN_THỰC_THỂ theo trình tự nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "prevention_settings",
+      "label": "Bệnh → biện pháp dự phòng → môi trường áp dụng",
+      "example": "Biện pháp dự phòng TÊN_THỰC_THỂ áp dụng ở đâu?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "rehabilitation_goals",
+      "label": "Bệnh → phục hồi chức năng → mục tiêu",
+      "example": "Phục hồi chức năng cho TÊN_THỰC_THỂ có mục tiêu gì?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "prognostic_outcomes",
+      "label": "Bệnh → yếu tố tiên lượng → kết cục",
+      "example": "Yếu tố tiên lượng của TÊN_THỰC_THỂ dự báo kết cục nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation"
+      ]
+    },
+    {
+      "preset": "guideline_interventions",
+      "label": "Chủ đề → hướng dẫn → khuyến cáo/can thiệp",
+      "example": "Hướng dẫn về TÊN_THỰC_THỂ khuyến cáo can thiệp nào?",
+      "start_types": [
+        "Disease",
+        "DiseaseSubtype",
+        "Syndrome",
+        "ClinicalCondition",
+        "Complication",
+        "Exacerbation",
+        "Symptom",
+        "Treatment",
+        "Procedure",
+        "DiagnosticTest",
+        "Pathogen"
+      ]
+    }
+  ],
+  "intents": [
+    {
+      "id": "symptom",
+      "description": "Triệu chứng / dấu hiệu của bệnh",
+      "relations": [
+        "HAS_SYMPTOM",
+        "HAS_CLINICAL_SIGN"
+      ]
+    },
+    {
+      "id": "treatment",
+      "description": "Điều trị / thuốc / can thiệp cho bệnh (hoặc thuốc dùng cho bệnh gì)",
+      "relations": [
+        "TREATS",
+        "INDICATED_FOR",
+        "RECOMMENDS_INTERVENTION",
+        "HAS_TREATMENT_STEP",
+        "HAS_REGIMEN",
+        "USES_MEDICATION"
+      ]
+    },
+    {
+      "id": "membership",
+      "description": "Nhóm thuốc gồm những thuốc nào / chế phẩm phối hợp chứa gì (đi xuống)",
+      "relations": [
+        "HAS_ACTIVE_INGREDIENT",
+        "HAS_REGIMEN_COMPONENT",
+        "HAS_TREATMENT_COMPONENT",
+        "USES_MEDICATION"
+      ]
+    },
+    {
+      "id": "drug_class",
+      "description": "Thuốc thuộc nhóm nào",
+      "relations": [
+        "BELONGS_TO_DRUG_CLASS"
+      ]
+    },
+    {
+      "id": "dosage",
+      "description": "Liều dùng, đường dùng, phác đồ, dụng cụ đưa thuốc",
+      "relations": [
+        "HAS_REGIMEN",
+        "HAS_REGIMEN_COMPONENT"
+      ]
+    },
+    {
+      "id": "adverse_effect",
+      "description": "Tác dụng phụ / độc tính của thuốc hoặc can thiệp",
+      "relations": [
+        "HAS_ADVERSE_EFFECT",
+        "CAUSES_ADVERSE_EVENT"
+      ]
+    },
+    {
+      "id": "contraindication",
+      "description": "Chống chỉ định / thận trọng",
+      "relations": [
+        "CONTRAINDICATED_IN",
+        "REQUIRES_CAUTION_IN"
+      ]
+    },
+    {
+      "id": "interaction",
+      "description": "Tương tác thuốc",
+      "relations": [
+        "INTERACTS_WITH"
+      ]
+    },
+    {
+      "id": "risk_factor",
+      "description": "Yếu tố nguy cơ / yếu tố khởi phát / làm nặng bệnh",
+      "relations": [
+        "RISK_FACTOR_FOR"
+      ]
+    },
+    {
+      "id": "cause",
+      "description": "Nguyên nhân / cơ chế bệnh sinh",
+      "relations": [
+        "CAUSES",
+        "CAUSED_BY",
+        "HAS_MECHANISM"
+      ]
+    },
+    {
+      "id": "prevention",
+      "description": "Phòng ngừa / dự phòng / vắc-xin",
+      "relations": [
+        "PREVENTS"
+      ]
+    },
+    {
+      "id": "diagnosis",
+      "description": "Chẩn đoán: xét nghiệm, hình ảnh, tiêu chuẩn, ngưỡng",
+      "relations": [
+        "DIAGNOSED_BY",
+        "HAS_DIAGNOSTIC_CRITERION",
+        "HAS_IMAGING_FINDING",
+        "HAS_PATHOLOGY_FINDING",
+        "HAS_FINDING",
+        "PRODUCES_FINDING",
+        "HAS_BIOMARKER",
+        "DETECTS",
+        "USES_SPECIMEN",
+        "HAS_LABORATORY_FINDING",
+        "INDICATES"
+      ]
+    },
+    {
+      "id": "differential",
+      "description": "Chẩn đoán phân biệt",
+      "relations": [
+        "DIFFERENTIAL_DIAGNOSIS_OF"
+      ]
+    },
+    {
+      "id": "assessment",
+      "description": "Đánh giá bằng thang điểm / phép đo",
+      "relations": [
+        "ASSESSED_BY",
+        "MEASURES",
+        "HAS_THRESHOLD"
+      ]
+    },
+    {
+      "id": "classification",
+      "description": "Phân loại, mức độ nặng, giai đoạn, nhóm",
+      "relations": [
+        "HAS_SEVERITY",
+        "HAS_STAGE"
+      ]
+    },
+    {
+      "id": "comorbidity",
+      "description": "Bệnh đi kèm, biến chứng, đợt cấp, tiến triển",
+      "relations": [
+        "HAS_COMORBIDITY",
+        "HAS_COMPLICATION"
+      ]
+    },
+    {
+      "id": "monitoring",
+      "description": "Theo dõi bệnh / theo dõi điều trị",
+      "relations": [
+        "MONITORED_BY"
+      ]
+    },
+    {
+      "id": "prognosis",
+      "description": "Tiên lượng, kết cục, diễn tiến, đáp ứng điều trị",
+      "relations": [
+        "HAS_OUTCOME",
+        "PREDICTS",
+        "HAS_PROGNOSTIC_FACTOR"
+      ]
+    },
+    {
+      "id": "recommendation",
+      "description": "Khuyến cáo, phác đồ từng bậc, mục tiêu điều trị, khi nào nhập viện",
+      "relations": [
+        "HAS_RECOMMENDATION",
+        "HAS_TREATMENT_GOAL",
+        "REQUIRES_HOSPITALIZATION",
+        "REQUIRES_ISOLATION",
+        "NOT_RECOMMENDED_FOR"
+      ]
+    },
+    {
+      "id": "transmission",
+      "description": "Lây truyền, tính lây nhiễm, ủ bệnh, giảm phơi nhiễm",
+      "relations": [
+        "TRANSMITTED_VIA",
+        "REDUCES_TRANSMISSION"
+      ]
+    },
+    {
+      "id": "resistance",
+      "description": "Kháng thuốc / nhạy cảm thuốc",
+      "relations": [
+        "RESISTANT_TO",
+        "CONFERS_RESISTANCE_TO",
+        "HAS_MUTATION_IN",
+        "HAS_DRUG_RESISTANCE"
+      ]
+    },
+    {
+      "id": "rehabilitation",
+      "description": "Can thiệp phục hồi và mục tiêu (cần lọc loại Rehabilitation)",
+      "relations": [
+        "TREATS",
+        "INDICATED_FOR",
+        "HAS_TREATMENT_GOAL",
+        "HAS_TREATMENT_COMPONENT"
+      ]
+    },
+    {
+      "id": "population",
+      "description": "Nhóm bệnh nhân / đối tượng áp dụng",
+      "relations": [
+        "FOR_PATIENT_GROUP",
+        "HAS_CONDITION"
+      ]
+    },
+    {
+      "id": "mechanism",
+      "description": "Cơ chế sinh học (tế bào, cytokine, thụ thể)",
+      "relations": [
+        "TARGETS"
+      ]
+    },
+    {
+      "id": "anatomy",
+      "description": "Vị trí giải phẫu, cơ quan bị ảnh hưởng",
+      "relations": [
+        "LOCATED_IN",
+        "PART_OF",
+        "AFFECTS"
+      ]
+    },
+    {
+      "id": "taxonomy",
+      "description": "Phân loại cha/con (IS_A)",
+      "relations": [
+        "IS_A"
+      ]
+    },
+    {
+      "id": "screening",
+      "description": "Sàng lọc (tách biệt với chẩn đoán)",
+      "relations": [
+        "SCREENED_BY"
+      ]
+    },
+    {
+      "id": "epidemiology",
+      "description": "Chỉ số dịch tễ và quần thể nghiên cứu",
+      "relations": [
+        "HAS_EPIDEMIOLOGICAL_MEASURE"
+      ]
+    },
+    {
+      "id": "source_topic",
+      "description": "Tài liệu/hướng dẫn đề cập chủ đề",
+      "relations": []
+    },
+    {
+      "id": "sequence",
+      "description": "Trình tự và các bước điều trị",
+      "relations": [
+        "FOLLOWED_BY",
+        "HAS_TREATMENT_STEP"
+      ]
+    },
+    {
+      "id": "setting",
+      "description": "Môi trường áp dụng, cách ly và nhập viện",
+      "relations": [
+        "APPLIED_IN",
+        "REQUIRES_ISOLATION",
+        "REQUIRES_HOSPITALIZATION"
+      ]
+    },
+    {
+      "id": "applicability",
+      "description": "Điều kiện và nhóm đối tượng áp dụng",
+      "relations": [
+        "HAS_CONDITION",
+        "FOR_PATIENT_GROUP"
+      ]
+    },
+    {
+      "id": "regimen",
+      "description": "Phác đồ và các thành phần điều trị",
+      "relations": [
+        "HAS_REGIMEN",
+        "HAS_REGIMEN_COMPONENT",
+        "HAS_TREATMENT_COMPONENT",
+        "USES_MEDICATION"
+      ]
+    },
+    {
+      "id": "related",
+      "description": "Bất kỳ quan hệ nào (dùng khi không xác định được ý định cụ thể)",
+      "relations": [
+        "AFFECTS",
+        "APPLIED_IN",
+        "ASSESSED_BY",
+        "BELONGS_TO_DRUG_CLASS",
+        "CAUSED_BY",
+        "CAUSES",
+        "CAUSES_ADVERSE_EVENT",
+        "CONFERS_RESISTANCE_TO",
+        "CONTRAINDICATED_IN",
+        "DETECTS",
+        "DIAGNOSED_BY",
+        "DIFFERENTIAL_DIAGNOSIS_OF",
+        "FOLLOWED_BY",
+        "FOR_PATIENT_GROUP",
+        "HAS_ACTIVE_INGREDIENT",
+        "HAS_ADVERSE_EFFECT",
+        "HAS_BIOMARKER",
+        "HAS_CLINICAL_SIGN",
+        "HAS_COMORBIDITY",
+        "HAS_COMPLICATION",
+        "HAS_CONDITION",
+        "HAS_DIAGNOSTIC_CRITERION",
+        "HAS_DRUG_RESISTANCE",
+        "HAS_EPIDEMIOLOGICAL_MEASURE",
+        "HAS_FINDING",
+        "HAS_IMAGING_FINDING",
+        "HAS_LABORATORY_FINDING",
+        "HAS_MECHANISM",
+        "HAS_MUTATION_IN",
+        "HAS_OUTCOME",
+        "HAS_PATHOLOGY_FINDING",
+        "HAS_PROGNOSTIC_FACTOR",
+        "HAS_RECOMMENDATION",
+        "HAS_REGIMEN",
+        "HAS_REGIMEN_COMPONENT",
+        "HAS_SEVERITY",
+        "HAS_STAGE",
+        "HAS_SYMPTOM",
+        "HAS_THRESHOLD",
+        "HAS_TREATMENT_COMPONENT",
+        "HAS_TREATMENT_GOAL",
+        "HAS_TREATMENT_STEP",
+        "INDICATED_FOR",
+        "INDICATES",
+        "INTERACTS_WITH",
+        "IS_A",
+        "LOCATED_IN",
+        "MEASURES",
+        "MONITORED_BY",
+        "NOT_RECOMMENDED_FOR",
+        "PART_OF",
+        "PREDICTS",
+        "PREVENTS",
+        "PRODUCES_FINDING",
+        "RECOMMENDS_INTERVENTION",
+        "REDUCES_TRANSMISSION",
+        "REQUIRES_CAUTION_IN",
+        "REQUIRES_HOSPITALIZATION",
+        "REQUIRES_ISOLATION",
+        "RESISTANT_TO",
+        "RISK_FACTOR_FOR",
+        "SCREENED_BY",
+        "TARGETS",
+        "TRANSMITTED_VIA",
+        "TREATS",
+        "USES_MEDICATION",
+        "USES_SPECIMEN"
+      ]
+    }
+  ]
+}

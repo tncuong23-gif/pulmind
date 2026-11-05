@@ -1,0 +1,20 @@
+{
+  "scope": "offline SQLite, snapshot and projection; no live database writes",
+  "source_counts": {
+    "entities": 6194,
+    "relations": 6930,
+    "propositions": 4483
+  },
+  "projection_counts": {
+    "source_entities": 6194,
+    "graph_entities": 5324,
+    "isolated_source_entities": 870,
+    "relations": 6930
+  },
+  "exact_triples_match": true,
+  "same_snapshot_on_repeat": true,
+  "assertions": 6930,
+  "evidence": 4974,
+  "ambiguous_terms": 50,
+  "redirects": 0
+}

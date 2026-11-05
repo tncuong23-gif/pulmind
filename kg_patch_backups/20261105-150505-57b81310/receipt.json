@@ -1,0 +1,75 @@
+{
+  "state": "applied",
+  "project": "D:\\medical_wed\\banmoi\\medical-ai-integrated",
+  "files": [
+    {
+      "path": "backend/app/modules/kg_query/entity_lookup.py",
+      "sha256": "02709918d82f6ccb220e87b23588740fbaee3b6d5f65cd771f178047c8aeb775",
+      "base_sha256": "2ec235dcc8111cb7c6488cf71c123954b79d3affe5534e388070b688c95f797e",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "backend/tests/test_query_review_fixes.py",
+      "sha256": "e3da3886f2a748e31694e96259aa8bd16c2aaffa767e0b4042fe3d74486a5466",
+      "base_sha256": "a0beba45fde1433f6755d417c972f3250312d8509c258ffd69d596b88e31b231",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "frontend/src/types/index.ts",
+      "sha256": "e1fdbb8a76df7794a2b78ee7e8e8ebc1ad312b7f170883011da47d37f6ddd924",
+      "base_sha256": "7fde2dee08b25d0f6858ccf82c49c1339b2338a566908b173132cadf7c89ffcf",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "frontend/tests/kg-empty-panel.test.tsx",
+      "sha256": "4245b11ef4603b2e8b7c2504a65802087c3e89c74033ef7eb4355c5f19951e59",
+      "base_sha256": null,
+      "compatible_base_sha256": [
+        "a80f8ab2b94cf84b6c323a621fa791f14ec8b2d0913af21daebe5204b3380f72",
+        "2190f934055305b3eb4ca491105924107847f02cc3c5297de70933d63265bcfa"
+      ],
+      "existed": false
+    },
+    {
+      "path": "frontend/src/components/chat/ChatContainer.tsx",
+      "sha256": "1431d4dada946da9e27d55986875417ec6ad54917bdcf8b283a2ce4f4f88cc33",
+      "base_sha256": "9a448bbf6f1d11f2204afa6c3456a96572cc803c81371618471d2f2664145af5",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "frontend/src/components/chat/MessageList.tsx",
+      "sha256": "8940c8d6cc75ac2932bf3923f9565e600a1214d4db5797e14c05bceaee31d359",
+      "base_sha256": "ea859a6f34f20c4f479a51ec658948483ccd8efde6bdb1cc3f17cfea8b8db923",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "frontend/src/components/chat/MessageBubble.tsx",
+      "sha256": "f96a9ef69a705abd3689a676ac303194e7993cbd458bee7e31503ec8ab101e52",
+      "base_sha256": "7a735b95d3f6815e0791f5e6b86472eb5b9c1d36a84adef2ed8faeb139a9e595",
+      "compatible_base_sha256": [],
+      "existed": true
+    },
+    {
+      "path": "frontend/src/components/chat/KGQueryDetails.tsx",
+      "sha256": "42a6840e8640994f79d344759cad51fb8083eec6c02e63f25395ef9fa4420f41",
+      "base_sha256": "75f1ef8aaf3dc0d2fb6ad0b1afc1e980a2eb115da2f46718c99a83b730caeb46",
+      "compatible_base_sha256": [
+        "6ec062bfa80e54b4f5fad8f4753ef5582ad6b7f58106e525fc17134df952f7f9",
+        "0a0b267b24f9f5ecc3ef763518d43e3d29e29766c13258d3961edcb6de448641"
+      ],
+      "existed": true
+    },
+    {
+      "path": "frontend/src/components/chat/kg-query.css",
+      "sha256": "9cd6c5ab22888e1873c7cf07ef11af6c187e71e8b6ad0b436cac0b1f6a92b267",
+      "base_sha256": "250f458979c02f5ac70204cd2316e6d6b14bcf2aaa29035394fbd50b45df557d",
+      "compatible_base_sha256": [],
+      "existed": true
+    }
+  ]
+}
