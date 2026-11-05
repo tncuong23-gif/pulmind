@@ -1,0 +1,19 @@
+{
+  "document_id": "DOC_000045",
+  "title": "Tràn dịch màng phổi",
+  "short_title": "Tràn dịch màng phổi (ĐH Y Hà Nội)",
+  "document_type": "textbook_chapter",
+  "language": "vi",
+  "domain": "respiratory_medicine",
+  "specialty": "pulmonology",
+  "disease": "TranDich",
+  "year": null,
+  "authors": [
+    "Nguyễn Thanh Thủy",
+    "Phan Thu Phương"
+  ],
+  "organization": {
+    "name": "Trường Đại học Y Hà Nội",
+    "country": "VN"
+  }
+}

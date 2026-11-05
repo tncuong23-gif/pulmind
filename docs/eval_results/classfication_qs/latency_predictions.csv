@@ -1,0 +1,106 @@
+Model,question,expected,predicted,latency_ms
+E5 + LogisticRegression,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,41.505504400265636
+E5 + LogisticRegression,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,41.87121569921146
+E5 + LogisticRegression,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,32.38567089974822
+E5 + LogisticRegression,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,66.5332396998565
+E5 + LogisticRegression,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,39.17350940027973
+E5 + LogisticRegression,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,34.58782410052663
+E5 + LogisticRegression,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,25.53118750001886
+E5 + LogisticRegression,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,21.735962099774042
+E5 + LogisticRegression,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,CLINICAL_EXPLANATION_MANAGEMENT,22.893777200079057
+E5 + LogisticRegression,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,21.905872200295562
+E5 + LogisticRegression,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,31.524810400151182
+E5 + LogisticRegression,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,15.109967699390836
+E5 + LogisticRegression,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,29.013752000173554
+E5 + LogisticRegression,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,23.18522630048392
+E5 + LogisticRegression,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,18.706399100483395
+E5 + SVM,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,19.67571700006374
+E5 + SVM,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,21.533253999587032
+E5 + SVM,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,19.32807489974948
+E5 + SVM,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,25.905492899619276
+E5 + SVM,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,14.588831099899835
+E5 + SVM,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,17.88762219985074
+E5 + SVM,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,30.028574100288097
+E5 + SVM,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,19.925613599843928
+E5 + SVM,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,RELATIONAL_QUERY,26.084386400543735
+E5 + SVM,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,17.911803599417908
+E5 + SVM,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,26.583639699674677
+E5 + SVM,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,16.087730300569092
+E5 + SVM,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,26.58878289948916
+E5 + SVM,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,15.371255700301845
+E5 + SVM,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,12.02466340000683
+E5 + MLP,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,12.79122859959898
+E5 + MLP,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,14.75801400047203
+E5 + MLP,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,18.675048400109517
+E5 + MLP,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,13.601239000126952
+E5 + MLP,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,RELATIONAL_QUERY,13.573362099486985
+E5 + MLP,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,13.662075299725984
+E5 + MLP,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,18.33854730029998
+E5 + MLP,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,13.61905840021791
+E5 + MLP,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,RELATIONAL_QUERY,14.567467900269548
+E5 + MLP,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,15.493269799844711
+E5 + MLP,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,21.458240800347994
+E5 + MLP,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,13.105020000148215
+E5 + MLP,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,13.272914299523109
+E5 + MLP,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,13.184636898949975
+E5 + MLP,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,15.423679500599974
+BGE-M3 + LogisticRegression,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,23.189888799970504
+BGE-M3 + LogisticRegression,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,46.15528609865578
+BGE-M3 + LogisticRegression,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,48.65754200036463
+BGE-M3 + LogisticRegression,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,56.248171699553495
+BGE-M3 + LogisticRegression,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,51.16357870101638
+BGE-M3 + LogisticRegression,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,RELATIONAL_QUERY,63.383994700416224
+BGE-M3 + LogisticRegression,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,63.39768190009636
+BGE-M3 + LogisticRegression,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,44.18139169974893
+BGE-M3 + LogisticRegression,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,RELATIONAL_QUERY,49.67252560054476
+BGE-M3 + LogisticRegression,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,51.5282215012121
+BGE-M3 + LogisticRegression,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,44.736390999605646
+BGE-M3 + LogisticRegression,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,59.3663778003247
+BGE-M3 + LogisticRegression,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,49.62406859958719
+BGE-M3 + LogisticRegression,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,27.674181400652742
+BGE-M3 + LogisticRegression,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,41.495169500194606
+BGE-M3 + SVM,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,38.95484869972279
+BGE-M3 + SVM,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,31.933547600056045
+BGE-M3 + SVM,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,22.03250399979879
+BGE-M3 + SVM,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,21.137555400127894
+BGE-M3 + SVM,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,24.796614799197414
+BGE-M3 + SVM,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,RELATIONAL_QUERY,26.050390000091284
+BGE-M3 + SVM,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,23.35702740092529
+BGE-M3 + SVM,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,22.17075320040749
+BGE-M3 + SVM,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,RELATIONAL_QUERY,23.822090300382115
+BGE-M3 + SVM,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,23.991324999951757
+BGE-M3 + SVM,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,22.640898400277365
+BGE-M3 + SVM,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,21.572512200509664
+BGE-M3 + SVM,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,21.357420400818228
+BGE-M3 + SVM,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,23.558001500714454
+BGE-M3 + SVM,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,22.945996900307364
+BGE-M3 + MLP,"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,32.362782699783565
+BGE-M3 + MLP,"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,28.9072452000255
+BGE-M3 + MLP,"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,28.89914010083885
+BGE-M3 + MLP,Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,33.01956430041173
+BGE-M3 + MLP,Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,30.958215999999084
+BGE-M3 + MLP,Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,RELATIONAL_QUERY,29.694210800516885
+BGE-M3 + MLP,Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,29.361196600075345
+BGE-M3 + MLP,Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,31.061488700652262
+BGE-M3 + MLP,Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,DIAGNOSTIC_ASSESSMENT,29.161209099038388
+BGE-M3 + MLP,Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,31.80418100018869
+BGE-M3 + MLP,Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,RELATIONAL_QUERY,33.97236690070713
+BGE-M3 + MLP,Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,30.218725700251525
+BGE-M3 + MLP,Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,32.05890299977909
+BGE-M3 + MLP,Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,40.37073990039062
+BGE-M3 + MLP,Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,47.25474049955665
+PhoBERT (fine-tuned),"Tôi bị đau đầu 3 ngày nay kèm sốt nhẹ, buồn nôn. Tình trạng này có thể là bệnh gì?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,9.26642360027472
+PhoBERT (fine-tuned),"Con tôi ho khan kéo dài hai tuần và hay thở khò khè về đêm, có phải hen suyễn không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,9.177167600137182
+PhoBERT (fine-tuned),"Tôi thấy tức ngực, hồi hộp và chóng mặt khi leo cầu thang, liệu có vấn đề về tim không?",DIAGNOSTIC_ASSESSMENT,DIAGNOSTIC_ASSESSMENT,9.060586700434214
+PhoBERT (fine-tuned),Bệnh tiểu đường type 2 là gì?,GENERAL_MEDICAL_QUERY,GENERAL_MEDICAL_QUERY,8.574722199773532
+PhoBERT (fine-tuned),Vitamin D có vai trò gì đối với cơ thể?,GENERAL_MEDICAL_QUERY,OUT_OF_SCOPE,9.06016670014651
+PhoBERT (fine-tuned),Huyết áp bình thường ở người trưởng thành là bao nhiêu?,GENERAL_MEDICAL_QUERY,RELATIONAL_QUERY,9.422267799891415
+PhoBERT (fine-tuned),Hút thuốc lá có liên quan đến ung thư phổi như thế nào?,RELATIONAL_QUERY,RELATIONAL_QUERY,9.233972300353344
+PhoBERT (fine-tuned),Tăng huyết áp và đột quỵ có mối liên hệ gì với nhau?,RELATIONAL_QUERY,RELATIONAL_QUERY,9.205671499876189
+PhoBERT (fine-tuned),Thiếu ngủ kéo dài có làm tăng nguy cơ mắc bệnh tim mạch không?,RELATIONAL_QUERY,CLINICAL_EXPLANATION_MANAGEMENT,10.730616299406392
+PhoBERT (fine-tuned),Vì sao bệnh nhân suy thận mạn cần hạn chế ăn nhiều kali?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,9.213093800281058
+PhoBERT (fine-tuned),Bệnh nhân sau phẫu thuật cắt túi mật nên chăm sóc và theo dõi những gì?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,8.923084698835737
+PhoBERT (fine-tuned),Tại sao người bị hen phế quản cần dùng thuốc xịt dự phòng hằng ngày?,CLINICAL_EXPLANATION_MANAGEMENT,CLINICAL_EXPLANATION_MANAGEMENT,8.932525600175723
+PhoBERT (fine-tuned),Hôm nay giá vàng trong nước là bao nhiêu?,OUT_OF_SCOPE,OUT_OF_SCOPE,10.998239900072804
+PhoBERT (fine-tuned),Cách nấu món phở bò ngon tại nhà?,OUT_OF_SCOPE,OUT_OF_SCOPE,8.562126399556291
+PhoBERT (fine-tuned),Đội tuyển Việt Nam đá trận tiếp theo khi nào?,OUT_OF_SCOPE,OUT_OF_SCOPE,9.208509499876527

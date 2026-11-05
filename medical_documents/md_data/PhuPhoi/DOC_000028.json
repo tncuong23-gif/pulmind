@@ -1,0 +1,19 @@
+{
+  "document_id": "DOC_000028",
+  "title": "Phù phổi",
+  "short_title": "Phù phổi - Cẩm nang MSD",
+  "document_type": "reference_manual",
+  "language": "vi",
+  "domain": "respiratory_medicine",
+  "specialty": "pulmonology",
+  "disease": "PhuPhoi",
+  "year": 2025,
+  "authors": [
+    "Nowell M. Fine",
+    "Jonathan G. Howlett (bình duyệt)"
+  ],
+  "organization": {
+    "name": "Cẩm nang MSD (Merck & Co., Inc.)",
+    "country": "US"
+  }
+}

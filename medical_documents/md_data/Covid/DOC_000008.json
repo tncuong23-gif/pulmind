@@ -1,0 +1,19 @@
+{
+  "document_id": "DOC_000008",
+  "title": "Hướng dẫn chẩn đoán và điều trị COVID-19",
+  "short_title": "Hướng dẫn COVID-19 (2023)",
+  "document_type": "clinical_guideline",
+  "language": "vi",
+  "domain": "respiratory_medicine",
+  "specialty": "pulmonology",
+  "disease": "Covid",
+  "year": 2023,
+  "authors": [
+    "Nguyễn Gia Bình (chủ biên)",
+    "Lương Ngọc Khuê (đồng chủ biên)"
+  ],
+  "organization": {
+    "name": "Bộ Y tế",
+    "country": "VN"
+  }
+}

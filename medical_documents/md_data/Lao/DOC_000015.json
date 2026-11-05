@@ -1,0 +1,19 @@
+{
+  "document_id": "DOC_000015",
+  "title": "Bệnh học lao",
+  "short_title": "Bệnh học lao (ĐH Y Hà Nội)",
+  "document_type": "textbook",
+  "language": "vi",
+  "domain": "respiratory_medicine",
+  "specialty": "pulmonology",
+  "disease": "Lao",
+  "year": 2014,
+  "authors": [
+    "Trần Văn Sáng (chủ biên)",
+    "Lê Ngọc Hưng (chủ biên)"
+  ],
+  "organization": {
+    "name": "Bộ môn Lao và Bệnh phổi, Trường Đại học Y Hà Nội",
+    "country": "VN"
+  }
+}
