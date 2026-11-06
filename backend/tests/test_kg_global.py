@@ -102,12 +102,16 @@ def test_scan_cannot_be_silently_lost_after_decision(s):
  s.decide({'revision':s.revision(),'action':'distinct','ids':pair['ids']})
  with pytest.raises(ValueError,match='đối chiếu'):s.seal(s.revision())
 
-def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
+@pytest.mark.parametrize("multipart_dataset",[False,True])
+def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch,multipart_dataset):
  import sys,types
  from app.kg_global.publish import Publisher
  from app.modules.kg_import.config import Settings
  s.ingest(payload());sid=seal(s)
- calls=[];fail={'graph':True,'drop_edges':False};nodes={};edges={}
+ if multipart_dataset:
+  snapshot=s.snapshot
+  monkeypatch.setattr(s,'snapshot',lambda sid:{**snapshot(sid),'multipart_dataset':'V71B'})
+ calls=[];fail={'graph':True,'drop_edges':False,'mongo':False};nodes={};edges={}
  class Result:
   def __init__(self,rows=()):self.rows=list(rows)
   def consume(self):pass
@@ -133,10 +137,19 @@ def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
   def __exit__(self,*args):pass
   def session(self,**kwargs):return Session()
  class Collection:
+  def __init__(self):self.rows={}
   def create_index(self,*args,**kwargs):pass
-  def bulk_write(self,*args,**kwargs):pass
+  def bulk_write(self,operations,**kwargs):
+   for query,row in operations:self.rows[tuple(query.items())]=row
+  def count_documents(self,query):return sum(r['snapshot']==query['snapshot'] for r in self.rows.values())
+  def find(self,query,projection):
+   key=next(k for k in query if k!='snapshot')
+   for r in self.rows.values():
+    if r['snapshot']==query['snapshot'] and r[key] in query[key]['$in']:
+     yield {**r,'damaged':True} if fail['mongo'] else r
  class DB:
-  def __getitem__(self,name):return Collection()
+  def __init__(self):self.collections={}
+  def __getitem__(self,name):return self.collections.setdefault(name,Collection())
  class Mongo:
   def __init__(self,*args,**kwargs):pass
   def __enter__(self):return self
@@ -145,6 +158,11 @@ def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
  monkeypatch.setitem(sys.modules,'pymongo',types.SimpleNamespace(MongoClient=Mongo,ReplaceOne=lambda *a,**k:a))
  monkeypatch.setitem(sys.modules,'neo4j',types.SimpleNamespace(GraphDatabase=types.SimpleNamespace(driver=lambda *a,**k:Driver())))
  publisher=Publisher(s,Settings())
+ if multipart_dataset:
+  fail['mongo']=True
+  with pytest.raises(ValueError,match='VERIFY_MONGO_CONTENT'):publisher.sync(sid)
+  assert s.active() is None and not calls
+  fail['mongo']=False
  with pytest.raises(RuntimeError):publisher.sync(sid)
  assert s.active() is None
  with pytest.raises(ValueError):s.activate(sid)
@@ -153,6 +171,7 @@ def test_publisher_failure_retry_and_activation_are_separate(s,monkeypatch):
  assert s.active() is None
  with pytest.raises(ValueError):s.activate(sid)
  fail['drop_edges']=False;assert publisher.sync(sid)['state']=='ready';assert s.active() is None
+ if multipart_dataset:assert publisher.sync(sid)['progress']['mongo_verified'] is True
  assert all(':Entity' not in q for q,_ in calls)
  edge_rows=[p['rows'] for q,p in calls if 'SET r.global_assertions' in q];assert edge_rows
  before=len(calls);publisher.sync(sid);assert len(calls)==before

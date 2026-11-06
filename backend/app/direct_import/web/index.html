@@ -5,8 +5,20 @@
 <section class="card"><div class="fields"><div><label for="target">Nơi nhận dữ liệu</label><select id="target"><option value="kg">Knowledge Graph</option><option value="rag">RAG — tìm kiếm tài liệu</option><option value="both">Cả KG và RAG</option></select></div><div><label for="selection">Bản dữ liệu trong ZIP</label><select id="selection"><option value="merged">Bản hợp nhất — kg_merged.json</option><option value="single">Tài liệu riêng — kg_import.json</option></select></div></div>
 <div class="file"><label for="file">Chọn JSON hoặc ZIP</label><input id="file" type="file" accept=".json,.zip"><small>ZIP tối đa 64 MiB; JSON tối đa 20 MiB. Gói hợp nhất cần kèm ánh xạ nguồn. Không tự nhập kg_review.json.</small></div><button id="submit">Kiểm tra và nhập</button><button class="secondary" id="refresh">Làm mới</button><p class="muted">KG không dùng embedding tìm trùng. RAG vẫn tạo embedding cho tìm kiếm. Các câu nguồn và ID gốc được giữ để truy vết.</p>
 <div id="status" class="status" role="status" aria-live="polite">Sẵn sàng nhận dữ liệu.</div><div id="counts" class="result-counts"></div><a id="download" hidden>Tải KG và ánh xạ nguồn sau nhập</a><details id="details" hidden><summary>Chi tiết lượt nhập</summary><pre id="result"></pre></details></section>
+<section class="card"><h2>Nhập hai phần V71B vào kho KG sạch</h2>
+<p>Dùng cùng một mã bộ KG cho cả hai ZIP. Tải từng phần, kiểm tra số liệu xem trước, rồi xác nhận đồng bộ và kích hoạt.</p>
+<div class="fields"><div><label for="v71b-dataset">Mã bộ KG (dataset_id)</label><input id="v71b-dataset" maxlength="80"></div>
+<div><label for="v71b-part">Phần cần tải (tổng cộng 2 phần)</label><select id="v71b-part"><option value="1">Phần 1 · DOC_900001</option><option value="2">Phần 2 · DOC_900002</option></select></div></div>
+<div class="file"><label for="v71b-file">Chọn ZIP V71B</label><input id="v71b-file" type="file" accept=".zip"></div>
+<button id="v71b-stage">Kiểm tra và lưu phần</button><button id="v71b-status" class="secondary">Tải trạng thái</button>
+<button id="v71b-publish" hidden>Xác nhận đồng bộ</button><button id="v71b-activate" hidden>Xác nhận kích hoạt</button>
+<pre id="v71b-result" class="status" role="status" aria-live="polite">Chờ nhập mã bộ KG.</pre></section>
 <section class="card"><h2>Tên và alias cần phân biệt</h2><p class="muted">Tên trùng được giữ riêng. Chỉ hợp nhất khi đã xác nhận cùng khái niệm. Quyết định áp dụng vào bản nháp; nhập lại tệp để kiểm tra và xuất snapshot mới.</p>
 <button id="identity-refresh" class="secondary">Đọc danh sách</button><p id="identity-status" role="status" aria-live="polite"></p>
+<button id="identity-batch-preview" class="secondary">Quét nhóm cùng tên chuẩn</button>
+<button id="identity-batch-confirm" hidden>Xác nhận gộp hàng loạt vào bản nháp</button>
+<p id="identity-batch-status" role="status" aria-live="polite"></p>
+<details id="identity-batch-details" hidden><summary>Xem nhóm đủ điều kiện và nhóm bị chặn</summary><pre id="identity-batch-result"></pre></details>
 <div id="identity-panel" hidden><label for="identity-term">Tên/alias trùng</label><select id="identity-term"></select><div id="identity-candidates"></div>
 <label for="identity-name">Tên chuẩn khi hợp nhất</label><input id="identity-name" maxlength="500"><label for="identity-target">Thực thể đại diện</label><select id="identity-target"></select>
 <button id="identity-merge">Hợp nhất các thực thể đã chọn</button><button id="identity-distinct" class="secondary">Xác nhận khác nhau</button></div></section>

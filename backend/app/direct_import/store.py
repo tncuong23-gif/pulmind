@@ -11,7 +11,8 @@ POLICY = 'source-scoped-reviewed-identity/2'
 class ExactStore(GlobalStore):
     """SQLite registry serializes identity; immutable snapshots isolate live readers.
 
-    Local IDs are scoped by document/version. Historical mappings are immutable;
+    Local IDs are scoped by document/version unless a verified dataset supplies IDs.
+    Historical mappings are immutable;
     redirects resolve their current canonical IDs. No fuzzy/embedding lookup.
     """
     def __init__(self, *args):
@@ -21,6 +22,11 @@ class ExactStore(GlobalStore):
         CREATE TABLE IF NOT EXISTS exact_term_candidates(kind TEXT,term TEXT,gid TEXT NOT NULL,PRIMARY KEY(kind,term,gid));
         CREATE TABLE IF NOT EXISTS alias_decisions(gid TEXT,term TEXT,status TEXT,reason TEXT,PRIMARY KEY(gid,term));
         CREATE TABLE IF NOT EXISTS source_provenance(doc TEXT,version INTEGER,data TEXT NOT NULL,PRIMARY KEY(doc,version));
+        CREATE TABLE IF NOT EXISTS multipart_parts(
+            dataset TEXT, part INTEGER, archive_sha TEXT, payload TEXT, provenance TEXT,
+            PRIMARY KEY(dataset,part));
+        CREATE TABLE IF NOT EXISTS multipart_previews(
+            dataset TEXT PRIMARY KEY, snapshot TEXT NOT NULL, revision INTEGER NOT NULL, summary TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS direct_jobs(id TEXT PRIMARY KEY,state TEXT,data TEXT NOT NULL);
         ''');self.db.commit()
 
@@ -109,7 +115,7 @@ class ExactStore(GlobalStore):
             self.changed('alias_decision',body)
         return self.lookup_term(body['term'],e['type'])
 
-    def ingest(self,payload,filename='',provenance=None):
+    def ingest(self,payload,filename='',provenance=None,*,dataset_entity_ids=None):
         kg=self.check(payload);doc=kg.document.document_id
         provenance=provenance or {};h=sha256_of(payload)
         with self.write():
@@ -142,10 +148,25 @@ class ExactStore(GlobalStore):
             for e in sorted(kg.entities,key=lambda e:(e.type,fold(e.canonical_name),e.id)):
                 old=oldents.get(e.id,{})
                 gid=oldmap.get(e.id) if old.get('type')==e.type and fold(old.get('canonical_name',''))==fold(e.canonical_name) else None
-                if gid:gid=self.resolve_gid(gid)
+                if dataset_entity_ids is not None:
+                    gid=dataset_entity_ids[e.id]
+                elif gid:
+                    gid=self.resolve_gid(gid)
+                    self.db.execute('INSERT INTO mappings VALUES(?,?,?,?)',(doc,version,e.id,gid))
+                    continue
                 else:
                     gid=ident('GE_')
-                    self.db.execute('INSERT INTO entities VALUES(?,?)',(gid,dumps({'id':gid,'canonical_name':clean_text(e.canonical_name),'type':e.type,'aliases':list(e.aliases),'properties':e.properties})))
+                entity={'id':gid,'canonical_name':clean_text(e.canonical_name),'type':e.type,
+                        'aliases':list(e.aliases),'properties':e.properties}
+                existing=self.db.execute('SELECT data FROM entities WHERE id=?',(gid,)).fetchone()
+                if existing:
+                    # A dataset supplies IDs only after comparing the full raw records.
+                    # The stored alias list is already normalized and sorted by _unify().
+                    stored=json.loads(existing[0])
+                    if dataset_entity_ids is None or stored['type']!=e.type:
+                        raise ValueError('DATASET_IDENTITY_CONFLICT: '+e.id)
+                else:
+                    self.db.execute('INSERT INTO entities VALUES(?,?)',(gid,dumps(entity)))
                 self.db.execute('INSERT INTO mappings VALUES(?,?,?,?)',(doc,version,e.id,gid))
             self.db.execute('INSERT INTO source_provenance VALUES(?,?,?)',(doc,version,dumps(provenance)))
             merged=self._unify()

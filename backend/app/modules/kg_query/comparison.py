@@ -40,7 +40,8 @@ def signatures(facts):
 
 
 def compare(service, anchors, intents, mode, *, limit=30, with_evidence=True):
-    entities = [group[0].entity for group in anchors.values()]
+    sides = [[anchor.entity for anchor in group] for group in anchors.values()]
+    entities = [side[0] for side in sides]
     candidates, coverage = [], []
     # Each side and each criterion has its own retrieval budget. Large left-side
     # neighbourhoods cannot starve the right side before the comparison is made.
@@ -48,13 +49,13 @@ def compare(service, anchors, intents, mode, *, limit=30, with_evidence=True):
     for intent_name in intents:
         intent = service.intents[intent_name]
         buckets = {}
-        for side, entity in enumerate(entities):
+        for side, (entity, members) in enumerate(zip(entities, sides)):
             diagnostic = {'query_limited': False}
-            facts = service.neighbors([entity], intent.relations, limit=row_limit, diagnostics=diagnostic)
+            facts = service.neighbors(members, intent.relations, limit=row_limit, diagnostics=diagnostic)
             coverage.append({'entity_id': entity.id, 'criterion': intent_name,
                              'fact_count': len(facts), **diagnostic})
             for fact in facts:
-                direction = 'out' if fact.subject.id == entity.id else 'in'
+                direction = 'out' if fact.subject.id == fact.anchor_id else 'in'
                 far = fact.object if direction == 'out' else fact.subject
                 key = (fact.predicate, direction, far.id)
                 row = buckets.setdefault(key, {'criterion': intent_name, 'criterion_label': intent.description,

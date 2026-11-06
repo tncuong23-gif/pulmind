@@ -26,7 +26,7 @@ export interface ChatMessage {
   metadata?: {
     route?: string; assessment_id?: string; snapshot_id?: string;
     sources?: EvidenceSource[];
-    kg_query?: { mode?: "one_hop" | "multi_hop" | "path" | "compare" | "common" | "difference" | "inference"; preset_label?: string | null; truncated?: boolean; status?: string; warnings?: string[]; fact_count?: number } | null;
+    kg_query?: { mode?: "one_hop" | "multi_hop" | "path" | "compare" | "common" | "difference" | "inference"; preset_label?: string | null; truncated?: boolean; status?: string; warnings?: string[]; fact_count?: number; concept_groups?: { name: string; members: { id: string; type: string; name: string }[] }[] } | null;
     kg_comparison?: KGComparison | null;
     kg_evidence?: KGChatEvidence | null;
     retrieval_routing?: { kg_evidence?: string; effective_route?: string };

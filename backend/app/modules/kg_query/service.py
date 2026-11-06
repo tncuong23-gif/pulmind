@@ -7,6 +7,8 @@ Only `execute_read` is ever used. Nothing here writes to Neo4j or Mongo.
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
+from itertools import zip_longest
 from dataclasses import dataclass
 from typing import Any, Iterable
 
@@ -341,6 +343,11 @@ class KGQueryService:
             else:
                 rels = list(dict.fromkeys(r for i in spec.intents for r in self.intents[i].relations))
                 result.facts = self.neighbors(anchors, rels, target_types=spec.target_types, limit=spec.limit)
+                if any(a.matched_by == 'concept_group' for group in found.values() for a in group):
+                    by_anchor = defaultdict(list)
+                    for fact in result.facts:
+                        by_anchor[fact.anchor_id].append(fact)
+                    result.facts = [fact for batch in zip_longest(*by_anchor.values()) for fact in batch if fact is not None]
             all_facts = result.facts
 
         result.status = "ok" if all_facts else "no_facts"

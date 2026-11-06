@@ -20,6 +20,7 @@ from app.modules.kg_query.models import QuerySpec
 from .entity_lookup import get_lookup, resolved_anchors
 from .question_analysis import RULES, COMPARISON_MODES, comparison_mode, detect_intents, choose_mode, validate_mode, uses_context, has_cue
 from .comparison import compare
+from .concept_groups import expand_groups
 from .intents import PRESET_CHAINS, preset_steps, preset_catalog, uncovered_relations
 from .traversal import RULES as INFERENCE_RULES, rule_catalog
 from .models import Step
@@ -198,6 +199,11 @@ def retrieve(service, payload: QueryRequest):
     if lookup.truncated and not payload.entity_ids:
         issue = 'Kho KG vượt giới hạn bộ nhận diện tự động (20.000 thực thể). Vui lòng dùng KG Explorer để tra cứu.'
         reason = 'dictionary_limit'
+    if not (payload.inference_rule and payload.entity_ids):
+        expand_groups(groups, getattr(service, 'concept_groups', {}))
+    grouped_members = {g['concept_members'][0]['id']: g['concept_members']
+                       for g in groups if g.get('concept_members')}
+    concept_groups = [{'name': members[0]['name'], 'members': members} for members in grouped_members.values()]
     entity_ms = (time.perf_counter() - started) * 1000
     mentions = [g['mention'] for g in groups]
     intents = payload.intents or detect_intents(payload.question, mentions)
@@ -222,16 +228,20 @@ def retrieve(service, payload: QueryRequest):
         if missing:
             issue = 'Chưa nhận diện được ' + ', '.join(f'“{name}”' for name in missing) + '. Hãy dùng tên đầy đủ của thực thể này.'
             reason = 'missing_entity'
-    if not issue and any(len(g['candidates']) != 1 or g['candidates'][0]['matched_by'] == 'fuzzy' for g in groups):
+    if not issue and any(g['mention'] not in anchors for g in groups):
         issue, reason = 'Tôi chưa xác định chắc tên bệnh/thuốc. Bạn hãy xác nhận thực thể bên dưới hoặc viết lại câu hỏi với tên đầy đủ.', 'ambiguous_entity'
-        if any(len({(c['name'].casefold(), c['type']) for c in g['candidates']}) < len(g['candidates']) for g in groups):
+        if any(len({(c['name'].casefold(), c['type']) for c in g['candidates']}) < len(g['candidates']) for g in groups if g['mention'] not in anchors):
             issue, reason = 'KG có nhiều thực thể trùng tên và loại. Hãy chọn ID cụ thể hoặc kiểm tra dữ liệu định danh nguồn.', 'duplicate_entities'
     if not issue and not groups:
         issue = 'Bạn vui lòng nêu rõ tên bệnh, thuốc hoặc thực thể cần tra cứu trong KG.'
         reason = 'missing_entity'
     if not issue:
         issue = plan_issue or (None if payload.steps or mode=='inference' else validate_mode(mode, preset, intents, anchors, service))
-        if mode=='inference' and len(anchors)!=1:issue='Chọn một thực thể bắt đầu để suy luận.'
+        if mode=='inference' and (len(anchors)!=1 or any(len(group)!=1 for group in anchors.values())):
+            issue='Suy luận cần một nút vật lý làm điểm bắt đầu. Hãy chọn ID cụ thể trong KG Explorer.'
+        if mode=='path' and len(anchors)==2:
+            left,right=({a.entity.id for a in group} for group in anchors.values())
+            if left & right:issue='Hai đầu mút cùng trỏ đến một khái niệm. Hãy chọn hai khái niệm khác nhau.'
         reason = 'query_scope' if issue else None
     planning_ms = (time.perf_counter() - started) * 1000 - entity_ms
     result = {'anchors': {}, 'facts': [], 'chains': [], 'paths': [], 'notes': []}
@@ -276,6 +286,8 @@ def retrieve(service, payload: QueryRequest):
         warnings.append('Đường liên kết mô tả các quan hệ đã lưu, không tự chứng minh quan hệ nhân quả giữa hai đầu.')
     if context['facts'] and any(not f.get('evidence') for f in context['facts']):
         warnings.append('Một số quan hệ chưa có văn bản bằng chứng; cần kiểm tra tài liệu nguồn trước khi sử dụng.')
+    if concept_groups:
+        context['concept_groups'] = concept_groups
     context['interpretation'] = {
         'missing_facts_mean': 'not_found_in_retrieved_data_not_absence',
         'path_semantics': 'stored_relations_not_inferred_causation',
@@ -288,6 +300,7 @@ def retrieve(service, payload: QueryRequest):
                'preset': preset, 'max_hops': payload.max_hops if mode in ('path','inference') else None,
                'steps':[x.model_dump() for x in (payload.steps or [])], 'inference_rule':inference_rule,
                'evidence_scope':payload.evidence_scope,'rel_types':payload.rel_types,'target_types':payload.target_types,'direction':payload.direction,
+               **({'concept_groups': concept_groups} if concept_groups else {}),
                'entity_resolution': 'user_confirmed' if payload.entity_ids else 'dictionary',
                'analysis': 'explicit_plan' if not auto_plan else 'dictionary_and_rules_v2'},
         retrieval={'anchors': result.get('anchors', {}), 'fact_count': len(context['facts']),

@@ -70,6 +70,8 @@ export function KGQueryDetails({ message, busy, onConfirm, onSendQuestion }: {
   }
   return <section className="kg-query-details" aria-label="Thông tin truy xuất và bằng chứng">
     {data?.kg_query?.mode && !clarification && <p className="kg-query-mode">KG · {modes[data.kg_query.mode]}</p>}
+    {!clarification && data?.kg_query?.concept_groups?.map(group =>
+      <p key={group.members[0]?.id ?? group.name}>KG · {group.name} · truy vấn từ {group.members.length} nút ({group.members.map(member => types[member.type] ?? member.type).join(", ")})</p>)}
     {data?.kg_query?.preset_label && !clarification && <p>{data.kg_query.preset_label}</p>}
     {data?.retrieval_routing?.kg_evidence === "empty" && !clarification && <p>KG chưa đủ bằng chứng cho truy vấn này. Phần trả lời từ tài liệu bổ sung không phải kết luận đã được KG chứng minh.</p>}
     {data?.kg_query?.truncated && <p>Kết quả đã chạm giới hạn; các chuỗi hiển thị có thể chưa đầy đủ.</p>}

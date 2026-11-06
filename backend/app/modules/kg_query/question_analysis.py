@@ -99,7 +99,7 @@ def comparison_mode(question: str) -> str | None:
     if has_cue(question, ('không so sánh', 'không cần so sánh', 'đừng so sánh')):
         return None
     common = has_cue(question, ('điểm chung', 'giống nhau', 'tương đồng', 'triệu chứng chung',
-                                'dấu hiệu chung', 'cùng có', 'chung nào'))
+                                'dấu hiệu chung', 'cùng có'))
     different = has_cue(question, ('điểm khác', 'khác nhau', 'khác biệt', 'khác gì'))
     if common and different:
         return 'compare'
@@ -141,7 +141,8 @@ def validate_mode(mode, preset, intents, anchors, service):
         if len(anchors) != 2:
             return 'Bạn vui lòng nêu rõ hai bệnh hoặc hai thuốc cần so sánh.'
         entities = [a.entity for group in anchors.values() for a in group]
-        if len({e.id for e in entities}) != 2:
+        left,right=({a.entity.id for a in group} for group in anchors.values())
+        if left & right:
             return 'Hai tên đang trỏ đến cùng một thực thể. Vui lòng chọn hai thực thể khác nhau.'
         if not (all(e.type in DISEASE_TYPES for e in entities) or all(e.type in DRUG_TYPES for e in entities)):
             return 'Hãy chọn hai bệnh hoặc hai thuốc/nhóm thuốc để so sánh cùng loại.'

@@ -79,6 +79,33 @@
     if (changed) render();
     if (capped) status('Đã đạt giới hạn hiển thị (150 nút, 250 cạnh). Đặt lại đồ thị để tải vùng khác.');
   }
+  function renderSourceIds(rows) {
+    const box = make('details');
+    box.open = true;
+    const ids = new Map();
+    for (const row of rows) {
+      if (!ids.has(row.id)) ids.set(row.id, new Set());
+      ids.get(row.id).add(row.document_id);
+    }
+    box.append(make('summary', `ID nguồn trong tệp nhập (${ids.size})`));
+    if (!ids.size) box.append(make('p', 'Snapshot này chưa có ánh xạ ID nguồn cho thực thể.'));
+    for (const [id, docs] of ids) {
+      const row = make('p');
+      const copy = button('Sao chép', async () => {
+        try {
+          await navigator.clipboard.writeText(id);
+          copy.textContent = 'Đã sao chép';
+        } catch {
+          copy.textContent = 'Hãy bôi đen ID để sao chép';
+        }
+      });
+      copy.setAttribute('aria-label', 'Sao chép ID nguồn ' + id);
+      row.append(make('code', id), document.createTextNode(' '), copy,
+        make('br'), make('small', [...docs].join(', ')));
+      box.append(row);
+    }
+    return box;
+  }
   async function showNode(id, offset = 0, expand = false, replace = false) {
     const version = ++detailVersion;
     const detail = $('detail');
@@ -92,7 +119,8 @@
       if (!full) addNeighborhood(data, expand || replace);
       if (!full) graph?.selectNode(id);
       highlightNode();
-      detail.replaceChildren(make('span', data.node.type, 'pill'), make('h3', data.node.name), make('small', data.node.id));
+      detail.replaceChildren(make('span', data.node.type, 'pill'), make('h3', data.node.name), make('small', 'ID đồ thị: ' + data.node.id));
+      if (!full) detail.append(renderSourceIds(data.source_ids || []));
       const aliases = make('details'), aliasList = make('div');
       aliases.append(make('summary', `Tên khác (${data.aliases?.length || 0})`), aliasList);
       for (const alias of data.aliases || []) aliasList.append(make('span', alias, 'pill'));

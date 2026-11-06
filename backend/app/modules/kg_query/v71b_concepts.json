@@ -1,0 +1,702 @@
+{
+  "documents": {
+    "DOC_900001": "ad2ff6527641fd9718b2b0500129f32bcefaa19f68d60ad3b8a3fb7b6c6301ac",
+    "DOC_900002": "a57ed956b106f693947bb60802a505689726108fb491e3ab527765fe6d716cea"
+  },
+  "groups": [
+    {
+      "name": "Buồng cách ly có nhà vệ sinh riêng",
+      "members": {
+        "ENT_004385": "InfectionControlMeasure",
+        "ENT_004520": "Recommendation"
+      }
+    },
+    {
+      "name": "Buồng khám lao thông khí tốt",
+      "members": {
+        "ENT_004194": "InfectionControlMeasure",
+        "ENT_004400": "Recommendation"
+      }
+    },
+    {
+      "name": "Bảo vệ hô hấp cho nhân viên xét nghiệm lao",
+      "members": {
+        "ENT_004251": "InfectionControlMeasure",
+        "ENT_004432": "Recommendation"
+      }
+    },
+    {
+      "name": "Bảo đảm nguồn lực cho kế hoạch kiểm soát lao",
+      "members": {
+        "ENT_004349": "InfectionControlMeasure",
+        "ENT_004486": "Recommendation"
+      }
+    },
+    {
+      "name": "Bịt kín khe hở duy trì áp suất âm",
+      "members": {
+        "ENT_004228": "InfectionControlMeasure",
+        "ENT_004419": "Recommendation"
+      }
+    },
+    {
+      "name": "Bỏ khăn giấy ho hắt hơi vào thùng rác",
+      "members": {
+        "ENT_004379": "InfectionControlMeasure",
+        "ENT_004514": "Recommendation"
+      }
+    },
+    {
+      "name": "Bố trí kinh phí duy trì hiệu suất thông khí",
+      "members": {
+        "ENT_004364": "InfectionControlMeasure",
+        "ENT_004501": "Recommendation"
+      }
+    },
+    {
+      "name": "Che miệng bằng khuỷu tay khi không có khăn",
+      "members": {
+        "ENT_004381": "InfectionControlMeasure",
+        "ENT_004516": "Recommendation"
+      }
+    },
+    {
+      "name": "Che miệng và mũi khi ho hoặc hắt hơi",
+      "members": {
+        "ENT_004343": "InfectionControlMeasure",
+        "ENT_004482": "Recommendation"
+      }
+    },
+    {
+      "name": "Che mũi miệng khi ho",
+      "members": {
+        "ENT_004268": "InfectionControlMeasure",
+        "ENT_004444": "Recommendation"
+      }
+    },
+    {
+      "name": "Chuẩn bị phòng cách ly lao",
+      "members": {
+        "ENT_004195": "InfectionControlMeasure",
+        "ENT_004401": "Recommendation"
+      }
+    },
+    {
+      "name": "Chính sách xử lý phơi nhiễm lao nghề nghiệp",
+      "members": {
+        "ENT_004200": "InfectionControlMeasure",
+        "ENT_004406": "Recommendation"
+      }
+    },
+    {
+      "name": "Cung cấp dụng cụ xử lý đờm an toàn",
+      "members": {
+        "ENT_004376": "InfectionControlMeasure",
+        "ENT_004511": "Recommendation"
+      }
+    },
+    {
+      "name": "Cung cấp đủ phương tiện bảo vệ hô hấp",
+      "members": {
+        "ENT_004247": "InfectionControlMeasure",
+        "ENT_004428": "Recommendation"
+      }
+    },
+    {
+      "name": "Cách ly người bệnh nghi lao",
+      "members": {
+        "ENT_004192": "InfectionControlMeasure",
+        "ENT_004398": "Recommendation"
+      }
+    },
+    {
+      "name": "Cách ly sớm bệnh nhân lao",
+      "members": {
+        "ENT_004178": "InfectionControlMeasure",
+        "ENT_004390": "Recommendation"
+      }
+    },
+    {
+      "name": "Cửa tự đóng cho phòng cách ly hô hấp",
+      "members": {
+        "ENT_004305": "InfectionControlMeasure",
+        "ENT_004474": "Recommendation"
+      }
+    },
+    {
+      "name": "Giám sát và bảo trì phòng cách ly hô hấp",
+      "members": {
+        "ENT_004306": "InfectionControlMeasure",
+        "ENT_004475": "Recommendation"
+      }
+    },
+    {
+      "name": "Giáo dục gia đình phát hiện triệu chứng lao sớm",
+      "members": {
+        "ENT_004383": "InfectionControlMeasure",
+        "ENT_004518": "Recommendation"
+      }
+    },
+    {
+      "name": "Giáo dục tuân thủ và hoàn thành điều trị lao",
+      "members": {
+        "ENT_004302": "InfectionControlMeasure",
+        "ENT_004471": "Recommendation"
+      }
+    },
+    {
+      "name": "Giảm thời gian chờ xét nghiệm người bệnh nghi lao",
+      "members": {
+        "ENT_004193": "InfectionControlMeasure",
+        "ENT_004399": "Recommendation"
+      }
+    },
+    {
+      "name": "Hướng dòng khí từ sạch đến kém sạch",
+      "members": {
+        "ENT_004223": "InfectionControlMeasure",
+        "ENT_004415": "Recommendation"
+      }
+    },
+    {
+      "name": "Hạn chế khách thăm bệnh nhân lao kháng thuốc",
+      "members": {
+        "ENT_004293": "InfectionControlMeasure",
+        "ENT_004462": "Recommendation"
+      }
+    },
+    {
+      "name": "Hạn chế mở cửa phòng phẫu thuật người mắc lao",
+      "members": {
+        "ENT_004287": "InfectionControlMeasure",
+        "ENT_004456": "Recommendation"
+      }
+    },
+    {
+      "name": "Hấp tiệt trùng chất thải nuôi cấy vi khuẩn lao",
+      "members": {
+        "ENT_004284": "InfectionControlMeasure",
+        "ENT_004453": "Recommendation"
+      }
+    },
+    {
+      "name": "Hỗ trợ tuân thủ uống thuốc lao tại nhà",
+      "members": {
+        "ENT_004303": "InfectionControlMeasure",
+        "ENT_004472": "Recommendation"
+      }
+    },
+    {
+      "name": "Khử khuẩn dụng cụ sau thủ thuật",
+      "members": {
+        "ENT_004196": "InfectionControlMeasure",
+        "ENT_004402": "Recommendation"
+      }
+    },
+    {
+      "name": "Khử khuẩn không khí bằng đèn GUV tầng trên",
+      "members": {
+        "ENT_004232": "InfectionControlMeasure",
+        "ENT_004420": "Recommendation"
+      }
+    },
+    {
+      "name": "Kiểm soát chênh áp phòng bệnh để hướng dòng khí",
+      "members": {
+        "ENT_004339": "InfectionControlMeasure",
+        "ENT_004478": "Recommendation"
+      }
+    },
+    {
+      "name": "Kiểm soát lây truyền lao ở sự kiện đông người",
+      "members": {
+        "ENT_004298": "InfectionControlMeasure",
+        "ENT_004467": "Recommendation"
+      }
+    },
+    {
+      "name": "Kiểm soát độ ẩm khi dùng GUV",
+      "members": {
+        "ENT_004238": "InfectionControlMeasure",
+        "ENT_004424": "Recommendation"
+      }
+    },
+    {
+      "name": "Kiểm tra kín khẩu trang trước sử dụng",
+      "members": {
+        "ENT_004253": "InfectionControlMeasure",
+        "ENT_004433": "Recommendation"
+      }
+    },
+    {
+      "name": "Kiểm tra kỹ năng dùng phương tiện phòng hộ",
+      "members": {
+        "ENT_004246": "InfectionControlMeasure",
+        "ENT_004427": "Recommendation"
+      }
+    },
+    {
+      "name": "Kế hoạch kiểm soát lây nhiễm lao bằng văn bản",
+      "members": {
+        "ENT_004187": "InfectionControlMeasure",
+        "ENT_004391": "Recommendation"
+      }
+    },
+    {
+      "name": "Lao hạch bạch huyết",
+      "members": {
+        "ENT_004539": "DiseaseSubtype",
+        "ENT_004590": "Disease"
+      }
+    },
+    {
+      "name": "Lao phổi",
+      "members": {
+        "ENT_000086": "Disease",
+        "ENT_004175": "DiseaseSubtype"
+      }
+    },
+    {
+      "name": "Lao xương khớp",
+      "members": {
+        "ENT_004540": "DiseaseSubtype",
+        "ENT_004591": "Disease"
+      }
+    },
+    {
+      "name": "Luồng khí từ vùng sạch sang vùng kém sạch",
+      "members": {
+        "ENT_004213": "InfectionControlMeasure",
+        "ENT_004409": "Recommendation"
+      }
+    },
+    {
+      "name": "Lấy mẫu đờm ngoài trời hoặc nơi thông khí tốt",
+      "members": {
+        "ENT_004294": "InfectionControlMeasure",
+        "ENT_004463": "Recommendation"
+      }
+    },
+    {
+      "name": "Lắp HEPA vào mạch máy gây mê người bệnh lao",
+      "members": {
+        "ENT_004288": "InfectionControlMeasure",
+        "ENT_004457": "Recommendation"
+      }
+    },
+    {
+      "name": "Lọc không khí hồi lưu bằng HEPA",
+      "members": {
+        "ENT_004219": "InfectionControlMeasure",
+        "ENT_004412": "Recommendation"
+      }
+    },
+    {
+      "name": "Mở cửa và dùng quạt thông thoáng nơi ở",
+      "members": {
+        "ENT_004270": "InfectionControlMeasure",
+        "ENT_004445": "Recommendation"
+      }
+    },
+    {
+      "name": "Phân luồng bệnh nhân nghi lao",
+      "members": {
+        "ENT_004185": "InfectionControlMeasure",
+        "ENT_004389": "Recommendation"
+      }
+    },
+    {
+      "name": "Phân phối không khí ngoài trời đều trong phòng",
+      "members": {
+        "ENT_004215": "InfectionControlMeasure",
+        "ENT_004410": "Recommendation"
+      }
+    },
+    {
+      "name": "Phòng ngừa lây truyền qua không khí",
+      "members": {
+        "ENT_004127": "InfectionControlMeasure",
+        "ENT_004388": "Recommendation"
+      }
+    },
+    {
+      "name": "Phòng ngừa phơi nhiễm lao ở người nhiễm HIV",
+      "members": {
+        "ENT_004375": "InfectionControlMeasure",
+        "ENT_004510": "Recommendation"
+      }
+    },
+    {
+      "name": "Poster hướng dẫn vệ sinh khi ho",
+      "members": {
+        "ENT_004299": "InfectionControlMeasure",
+        "ENT_004468": "Recommendation"
+      }
+    },
+    {
+      "name": "Rửa tay bằng xà phòng sau khi ho",
+      "members": {
+        "ENT_004380": "InfectionControlMeasure",
+        "ENT_004515": "Recommendation"
+      }
+    },
+    {
+      "name": "Sàng lọc lao cho người nhiễm HIV",
+      "members": {
+        "ENT_004297": "InfectionControlMeasure",
+        "ENT_004466": "Recommendation"
+      }
+    },
+    {
+      "name": "Sàng lọc lao định kỳ ở nhân viên y tế",
+      "members": {
+        "ENT_004199": "InfectionControlMeasure",
+        "ENT_004405": "Recommendation"
+      }
+    },
+    {
+      "name": "Sàng lọc người bệnh có ho",
+      "members": {
+        "ENT_004191": "InfectionControlMeasure",
+        "ENT_004397": "Recommendation"
+      }
+    },
+    {
+      "name": "Sử dụng tủ an toàn sinh học",
+      "members": {
+        "ENT_004278": "InfectionControlMeasure",
+        "ENT_004447": "Recommendation"
+      }
+    },
+    {
+      "name": "Theo dõi dữ liệu sàng lọc và cách ly lao",
+      "members": {
+        "ENT_004198": "InfectionControlMeasure",
+        "ENT_004404": "Recommendation"
+      }
+    },
+    {
+      "name": "Theo dõi tuân thủ liệu trình điều trị lao",
+      "members": {
+        "ENT_004358": "InfectionControlMeasure",
+        "ENT_004495": "Recommendation"
+      }
+    },
+    {
+      "name": "Thu gom và xử lý dụng cụ sau phẫu thuật",
+      "members": {
+        "ENT_004373": "InfectionControlMeasure",
+        "ENT_004508": "Recommendation"
+      }
+    },
+    {
+      "name": "Thu thập và lưu trữ dữ liệu bệnh lao",
+      "members": {
+        "ENT_004359": "InfectionControlMeasure",
+        "ENT_004496": "Recommendation"
+      }
+    },
+    {
+      "name": "Tháo khẩu trang không chạm mặt trước",
+      "members": {
+        "ENT_004254": "InfectionControlMeasure",
+        "ENT_004434": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí buồng cách ly đạt yêu cầu",
+      "members": {
+        "ENT_004211": "InfectionControlMeasure",
+        "ENT_004407": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí buồng thủ thuật tạo khí dung",
+      "members": {
+        "ENT_004220": "InfectionControlMeasure",
+        "ENT_004413": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí buồng điều trị lao đủ lưu lượng",
+      "members": {
+        "ENT_004224": "InfectionControlMeasure",
+        "ENT_004416": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí cơ học áp suất âm",
+      "members": {
+        "ENT_004342": "InfectionControlMeasure",
+        "ENT_004481": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí kết hợp cơ học và tự nhiên",
+      "members": {
+        "ENT_004341": "InfectionControlMeasure",
+        "ENT_004480": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí môi trường kiểm soát lao",
+      "members": {
+        "ENT_004212": "InfectionControlMeasure",
+        "ENT_004408": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí phòng bệnh bằng lưu lượng khí phù hợp",
+      "members": {
+        "ENT_004222": "InfectionControlMeasure",
+        "ENT_004414": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí phẫu thuật với áp suất âm ưu tiên",
+      "members": {
+        "ENT_004291": "InfectionControlMeasure",
+        "ENT_004460": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí tốt tại nơi đông người",
+      "members": {
+        "ENT_004300": "InfectionControlMeasure",
+        "ENT_004469": "Recommendation"
+      }
+    },
+    {
+      "name": "Thông khí định hướng phòng xét nghiệm",
+      "members": {
+        "ENT_004282": "InfectionControlMeasure",
+        "ENT_004451": "Recommendation"
+      }
+    },
+    {
+      "name": "Thử độ khít khẩu trang theo từng người",
+      "members": {
+        "ENT_004256": "InfectionControlMeasure",
+        "ENT_004436": "Recommendation"
+      }
+    },
+    {
+      "name": "Thử độ khít khẩu trang để tránh rò khí",
+      "members": {
+        "ENT_004344": "InfectionControlMeasure",
+        "ENT_004483": "Recommendation"
+      }
+    },
+    {
+      "name": "Thực hành vi sinh hạn chế khí dung",
+      "members": {
+        "ENT_004277": "InfectionControlMeasure",
+        "ENT_004446": "Recommendation"
+      }
+    },
+    {
+      "name": "Tách người bệnh HIV khỏi nguồn lây lao",
+      "members": {
+        "ENT_004296": "InfectionControlMeasure",
+        "ENT_004465": "Recommendation"
+      }
+    },
+    {
+      "name": "Tăng thông khí khu vực phòng chờ và buồng bệnh",
+      "members": {
+        "ENT_004295": "InfectionControlMeasure",
+        "ENT_004464": "Recommendation"
+      }
+    },
+    {
+      "name": "Tăng thông khí tự nhiên khu vực đông người",
+      "members": {
+        "ENT_004301": "InfectionControlMeasure",
+        "ENT_004470": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh bề mặt bệnh viện",
+      "members": {
+        "ENT_004239": "InfectionControlMeasure",
+        "ENT_004425": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh khử khuẩn phòng mổ ngay sau ca lao",
+      "members": {
+        "ENT_004290": "InfectionControlMeasure",
+        "ENT_004459": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh nhà ở của người bệnh lao",
+      "members": {
+        "ENT_004378": "InfectionControlMeasure",
+        "ENT_004513": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh tay sau tháo khẩu trang",
+      "members": {
+        "ENT_004255": "InfectionControlMeasure",
+        "ENT_004435": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh đèn GUV định kỳ",
+      "members": {
+        "ENT_004235": "InfectionControlMeasure",
+        "ENT_004421": "Recommendation"
+      }
+    },
+    {
+      "name": "Vệ sinh định kỳ khu vực công cộng",
+      "members": {
+        "ENT_004377": "InfectionControlMeasure",
+        "ENT_004512": "Recommendation"
+      }
+    },
+    {
+      "name": "Xả khí phòng cách ly ra khu vực an toàn",
+      "members": {
+        "ENT_004227": "InfectionControlMeasure",
+        "ENT_004418": "Recommendation"
+      }
+    },
+    {
+      "name": "Xử lý và tiêu hủy chất thải lây nhiễm",
+      "members": {
+        "ENT_004279": "InfectionControlMeasure",
+        "ENT_004448": "Recommendation"
+      }
+    },
+    {
+      "name": "Đeo khẩu trang khi rời nhà ở người bệnh lao",
+      "members": {
+        "ENT_004266": "InfectionControlMeasure",
+        "ENT_004443": "Recommendation"
+      }
+    },
+    {
+      "name": "Điều trị lao kịp thời sau khi chẩn đoán",
+      "members": {
+        "ENT_004197": "InfectionControlMeasure",
+        "ENT_004403": "Recommendation"
+      }
+    },
+    {
+      "name": "Đo bức xạ UV-C sau lắp đặt và bảo trì",
+      "members": {
+        "ENT_004237": "InfectionControlMeasure",
+        "ENT_004423": "Recommendation"
+      }
+    },
+    {
+      "name": "Đo hiệu suất UV-C bằng máy đo bức xạ",
+      "members": {
+        "ENT_004366": "InfectionControlMeasure",
+        "ENT_004503": "Recommendation"
+      }
+    },
+    {
+      "name": "Đo hiệu suất thiết bị GUV định kỳ",
+      "members": {
+        "ENT_004236": "InfectionControlMeasure",
+        "ENT_004422": "Recommendation"
+      }
+    },
+    {
+      "name": "Đào tạo kỹ thuật dùng phương tiện phòng hộ",
+      "members": {
+        "ENT_004245": "InfectionControlMeasure",
+        "ENT_004426": "Recommendation"
+      }
+    },
+    {
+      "name": "Đào tạo nhân viên y tế về phòng ngừa lao",
+      "members": {
+        "ENT_004133": "InfectionControlMeasure",
+        "ENT_004395": "Recommendation"
+      }
+    },
+    {
+      "name": "Đào tạo đeo khẩu trang và đánh giá thông khí",
+      "members": {
+        "ENT_004351": "InfectionControlMeasure",
+        "ENT_004488": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá kế hoạch phòng ngừa lao hằng năm",
+      "members": {
+        "ENT_004189": "InfectionControlMeasure",
+        "ENT_004393": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá lại định kỳ chương trình kiểm soát lao",
+      "members": {
+        "ENT_004360": "InfectionControlMeasure",
+        "ENT_004497": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá nguy cơ lao ở nhân viên y tế",
+      "members": {
+        "ENT_004188": "InfectionControlMeasure",
+        "ENT_004392": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá nguy cơ lây nhiễm lao",
+      "members": {
+        "ENT_004131": "InfectionControlMeasure",
+        "ENT_004394": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá số lần trao đổi không khí ACH",
+      "members": {
+        "ENT_004216": "InfectionControlMeasure",
+        "ENT_004411": "Recommendation"
+      }
+    },
+    {
+      "name": "Đánh giá độ khít khẩu trang hiệu suất lọc cao",
+      "members": {
+        "ENT_004257": "InfectionControlMeasure",
+        "ENT_004437": "Recommendation"
+      }
+    },
+    {
+      "name": "Đóng gói chất thải lây nhiễm sau phẫu thuật",
+      "members": {
+        "ENT_004289": "InfectionControlMeasure",
+        "ENT_004458": "Recommendation"
+      }
+    },
+    {
+      "name": "Đẩy nhanh quy trình xét nghiệm cho người nghi lao",
+      "members": {
+        "ENT_004354": "InfectionControlMeasure",
+        "ENT_004491": "Recommendation"
+      }
+    },
+    {
+      "name": "Định kỳ đo ACH và hiệu suất lọc HEPA",
+      "members": {
+        "ENT_004307": "InfectionControlMeasure",
+        "ENT_004476": "Recommendation"
+      }
+    },
+    {
+      "name": "Viêm phổi",
+      "members": {
+        "ENT_007484": "Complication",
+        "ENT_000189": "AdverseEvent",
+        "ENT_000282": "Disease"
+      }
+    }
+  ]
+}

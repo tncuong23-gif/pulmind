@@ -36,6 +36,18 @@ class Publisher:
                     for start in range(0,len(rows),500):
                         ops=[ReplaceOne({'snapshot':sid,key:r[key]},{**r,'snapshot':sid},upsert=True) for r in rows[start:start+500]]
                         if ops:db[collection].bulk_write(ops,ordered=True)
+                    if data.get('multipart_dataset'):
+                        coll=db[collection]
+                        if coll.count_documents({'snapshot':sid})!=len(rows):
+                            raise ValueError('VERIFY_MONGO_COUNT: '+collection)
+                        for start in range(0,len(rows),500):
+                            expected={r[key]:{**r,'snapshot':sid} for r in rows[start:start+500]}
+                            actual={r[key]:r for r in coll.find(
+                                {'snapshot':sid,key:{'$in':list(expected)}},{'_id':0})}
+                            if actual!=expected:
+                                raise ValueError('VERIFY_MONGO_CONTENT: '+collection)
+                if data.get('multipart_dataset'):
+                    progress['mongo_verified']=True
                 progress['mongo']='ready';self.store.progress(sid,'syncing',progress)
                 # Each snapshot has its own label; legacy :Entity graph is untouched.
                 with driver.session(database=settings.neo4j_database) as session:

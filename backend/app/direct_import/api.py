@@ -1,10 +1,12 @@
-import json, logging, uuid, threading
+import hashlib, json, logging, uuid, threading
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
+from starlette.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from .service import configured_store, process, operation_lock
+from . import identity_batch, multipart
 from .package import load_package, MAX_ZIP
 from app.kg_global.store import dumps
 WEB=Path(__file__).parent/'web';POOL=ThreadPoolExecutor(max_workers=1);LOCK=threading.Lock();PENDING=set();log=logging.getLogger(__name__)
@@ -48,6 +50,27 @@ class LegacyImportGuard:
             if old and (method not in ('GET','HEAD','OPTIONS') or '/api/review/' in path):
                 return await JSONResponse({'detail':'Luồng duyệt/import KG cũ đã tắt. Dùng /direct-import hoặc /api/v1/direct-import.'},status_code=410)(scope,receive,send)
         await self.app(scope,receive,send)
+
+async def upload_content(request):
+    content=bytearray()
+    async for chunk in request.stream():
+        content.extend(chunk)
+        if len(content)>MAX_ZIP:raise HTTPException(413,'File tối đa 64 MiB.')
+    return bytes(content)
+
+
+def registry_operation(operation, *args):
+    store=configured_store()
+    try:
+        return operation(store,*args)
+    except (ValueError,KeyError,TypeError) as exc:
+        raise HTTPException(409,str(exc))
+    except Exception:
+        log.exception('Direct Import registry operation failed')
+        raise HTTPException(503,'Thao tác Direct Import thất bại. Xem log backend và tải lại trạng thái.')
+    finally:
+        store.db.close()
+
 
 def create_router():
     api=APIRouter()
@@ -104,14 +127,42 @@ def create_router():
                 return s.decide(body)
         except (ValueError,KeyError,TypeError) as exc:raise HTTPException(409,str(exc))
         finally:s.db.close()
+    @api.get('/api/v1/direct-import/identity/batch')
+    def batch_preview():
+        return registry_operation(identity_batch.preview)
+
+    @api.post('/api/v1/direct-import/identity/batch')
+    def batch_confirm(body:dict):
+        if (body.get('confirmed') is not True or type(body.get('revision')) is not int
+                or not isinstance(body.get('token'),str)):
+            raise HTTPException(422,'Cần xác nhận bản xem trước hợp lệ.')
+        def apply(store):
+            with operation_lock():
+                return identity_batch.confirm(store,body['revision'],body['token'])
+        return registry_operation(apply)
+
+    @api.get('/api/v1/direct-import/v71b/{dataset}')
+    def v71b_status(dataset:str):
+        return registry_operation(multipart.status,dataset)
+
+    @api.put('/api/v1/direct-import/v71b/{dataset}/parts/{part}')
+    async def v71b_stage(dataset:str,part:int,total_parts:int,filename:str,request:Request):
+        content=await upload_content(request)
+        return await run_in_threadpool(registry_operation,multipart.stage,dataset,part,total_parts,content,filename)
+
+    @api.post('/api/v1/direct-import/v71b/{dataset}/{action}')
+    def v71b_confirm(dataset:str,action:str,body:dict):
+        if body.get('confirmed') is not True or not isinstance(body.get('snapshot_id'),str):
+            raise HTTPException(422,'Cần xác nhận và cung cấp ID bản xem trước.')
+        return registry_operation(multipart.confirm,dataset,body['snapshot_id'],action)
+
     @api.post('/api/v1/direct-import',status_code=202)
     async def upload(request:Request,filename:str,target:str='kg',selection:str='merged'):
         if target not in ('kg','rag','both'):raise HTTPException(422,'Đích nhập không hợp lệ.')
-        content=bytearray()
-        async for chunk in request.stream():
-            content.extend(chunk)
-            if len(content)>MAX_ZIP:raise HTTPException(413,'File tối đa 64 MiB.')
-        try:raw,provenance=load_package(bytes(content),filename,selection)
+        content=await upload_content(request)
+        if target in ('kg','both') and hashlib.sha256(content).hexdigest() in multipart.ARCHIVE_HASHES:
+            raise HTTPException(422,'Hai ZIP V71B cần nhập bằng mục Nhập hai phần V71B để giữ chung ID.')
+        try:raw,provenance=load_package(content,filename,selection)
         except (ValueError,KeyError,TypeError) as exc:raise HTTPException(422,str(exc))
         jid=uuid.uuid4().hex
         with LOCK:

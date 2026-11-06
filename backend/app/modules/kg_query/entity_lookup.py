@@ -165,6 +165,7 @@ def get_lookup(service):
 
 
 def resolved_anchors(groups):
-    return {g['mention']: [Anchor(EntityRef(r['id'], r['name'], r['type']), r['matched_by'])
-                            for r in g['candidates']]
-            for g in groups if len(g['candidates']) == 1 and g['candidates'][0]['matched_by'] != 'fuzzy'}
+    return {g['mention']: [Anchor(EntityRef(r['id'], r['name'], r['type']), r.get('matched_by', 'concept_group'))
+                            for r in (g.get('concept_members') or g['candidates'])]
+            for g in groups if g.get('concept_members') or
+            (len(g['candidates']) == 1 and g['candidates'][0]['matched_by'] != 'fuzzy')}

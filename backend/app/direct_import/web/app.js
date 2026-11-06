@@ -85,3 +85,93 @@ function identityChoose(action){
 $('identity-refresh').onclick=identityLoad;$('identity-term').onchange=identityCandidates;
 $('identity-target').onchange=()=>{$('identity-name').value=identityData.entities[$('identity-target').value].canonical_name;};
 $('identity-merge').onclick=()=>identityChoose('merge');$('identity-distinct').onclick=()=>identityChoose('distinct');
+
+let v71bPreview=null;
+const v71bLabels={
+  staged:'Chờ đủ hai phần',preview_pending:'Đã lưu hai phần. Tải lại một phần để thử dựng bản xem trước.',sealed:'Đã có bản xem trước',syncing:'Đang đồng bộ',
+  ready:'Đã xác minh, chờ kích hoạt',active:'Đang phục vụ truy vấn',failed:'Đồng bộ lỗi, có thể thử lại'
+};
+function renderV71b(data){
+  v71bPreview=data;
+  $('v71b-publish').hidden=!['sealed','failed','syncing'].includes(data?.state);
+  $('v71b-activate').hidden=data?.state!=='ready';
+  if(!data)return;
+  const lines=[v71bLabels[data.state]||data.state,'Mã bộ KG: '+data.dataset_id];
+  for(const part of data.parts)lines.push('Phần '+part.part_number+' · '+part.document_id+' · SHA-256 '+part.archive_sha256);
+  if(data.counts){
+    const counts=data.counts;
+    lines.push('Thực thể trong registry: '+counts.source_entities,'Node có cạnh: '+counts.graph_entities,
+      'Cạnh logic: '+counts.relations,'Khẳng định quan hệ: '+counts.assertions,
+      'Mệnh đề: '+counts.propositions,'Câu nguồn: '+counts.sentences,
+      'Thực thể dùng chung: '+counts.shared_entities,'Quan hệ dùng chung: '+counts.shared_relations,
+      'Snapshot: '+data.snapshot_id);
+  }
+  $('v71b-result').textContent=lines.join('\n');
+}
+async function v71bOperation(action){
+  const dataset=$('v71b-dataset').value;
+  const output=$('v71b-result');
+  if(!/^[A-Za-z0-9_-]{1,80}$/.test(dataset)){output.textContent='Nhập mã bộ KG hợp lệ.';return;}
+  const path='/api/v1/direct-import/v71b/'+encodeURIComponent(dataset);
+  const controls=['dataset','part','file','stage','status','publish','activate'].map(id=>$('v71b-'+id));
+  controls.forEach(node=>node.disabled=true);
+  try{
+    let data;
+    if(action==='stage'){
+      const file=$('v71b-file').files[0];
+      if(!file||!file.name.toLowerCase().endsWith('.zip')||file.size>64*1024*1024)throw Error('Chọn tệp ZIP V71B tối đa 64 MiB.');
+      output.textContent='Đang kiểm tra và lưu phần…';
+      const query=new URLSearchParams({total_parts:'2',filename:file.name});
+      data=await request(path+'/parts/'+$('v71b-part').value+'?'+query,
+        {method:'PUT',headers:{'Content-Type':'application/octet-stream'},body:file});
+    }else if(action==='status'){
+      data=await request(path);
+    }else{
+      if(v71bPreview?.dataset_id!==dataset||!v71bPreview.snapshot_id)throw Error('Tải lại bản xem trước.');
+      output.textContent=action==='publish'?'Đang đồng bộ và xác minh…':'Đang kích hoạt snapshot…';
+      data=await request(path+'/'+action,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({confirmed:true,snapshot_id:v71bPreview.snapshot_id})});
+    }
+    renderV71b(data);
+  }catch(error){output.textContent=error.message+' Tải trạng thái để kiểm tra trước khi thử lại.';}
+  finally{controls.forEach(node=>node.disabled=false);}
+}
+$('v71b-dataset').oninput=()=>{renderV71b(null);$('v71b-result').textContent='Tải trạng thái hoặc chọn phần cần nhập.';};
+for(const action of ['stage','status','publish','activate'])$('v71b-'+action).onclick=()=>v71bOperation(action);
+
+let identityBatch=null;
+const batchPath='/api/v1/direct-import/identity/batch';
+$('identity-batch-preview').onclick=async()=>{
+  const scan=$('identity-batch-preview'), confirm=$('identity-batch-confirm'), status=$('identity-batch-status');
+  scan.disabled=true;
+  confirm.hidden=true;
+  identityBatch=null;
+  $('identity-batch-details').hidden=true;
+  status.textContent='Đang quét các nhóm cùng tên chuẩn và cùng loại…';
+  try{
+    identityBatch=await request(batchPath);
+    const {eligible,blocked}=identityBatch;
+    status.textContent=eligible.length+' nhóm đủ điều kiện, '+blocked.length+' nhóm bị chặn. Quyết định áp dụng vào bản nháp.';
+    $('identity-batch-result').textContent=[
+      ...eligible.map(row=>'Đủ điều kiện · '+row.name+' ('+row.type+') · Giữ '+row.target_id+' · ID: '+row.ids.join(', ')),
+      ...blocked.map(row=>'Bị chặn · '+row.name+' ('+row.type+') · '+row.reason+' · ID: '+row.ids.join(', '))
+    ].join('\n');
+    $('identity-batch-details').hidden=!(eligible.length||blocked.length);
+    confirm.hidden=!eligible.length;
+  }catch(error){status.textContent=error.message;}
+  finally{scan.disabled=false;}
+};
+$('identity-batch-confirm').onclick=async()=>{
+  if(!identityBatch?.eligible.length||working)return;
+  const scan=$('identity-batch-preview'), confirm=$('identity-batch-confirm'), status=$('identity-batch-status');
+  scan.disabled=true;
+  confirm.disabled=true;
+  try{
+    const {revision,token}=identityBatch;
+    const result=await request(batchPath,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({confirmed:true,revision,token})});
+    status.textContent='Đã gộp '+result.merged_groups+' nhóm vào bản nháp. '+result.blocked_groups+' nhóm bị chặn.';
+    await identityLoad();
+  }catch(error){status.textContent=error.message+' Quét lại để tiếp tục.';}
+  finally{scan.disabled=false;confirm.disabled=false;confirm.hidden=true;identityBatch=null;$('identity-batch-details').hidden=true;}
+};

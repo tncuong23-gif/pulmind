@@ -62,6 +62,27 @@ class Registry:
     def public(self):return [pick(row,['number','title','section','text','kind']) for row in self.rows]
 
 
+def group_direct_facts(facts, raw_facts, groups):
+    """Combine equal direct claims for presentation while keeping the source assertions."""
+    members = {row['id']: group['members'][0]['id'] for group in groups for row in group['members']}
+    merged = {}
+    for index, (fact, raw) in enumerate(zip(facts, raw_facts)):
+        source, target = raw['subject']['id'], raw['object']['id']
+        assertions = fact['assertions']
+        if (not ({source, target} & members.keys()) or not assertions
+                or any(a.get('properties_valid') is not True for a in assertions)):
+            merged[index] = fact
+            continue
+        properties = tuple(sorted({json.dumps(a.get('properties'), ensure_ascii=False, sort_keys=True)
+                                   for a in assertions}))
+        key = (members.get(source, source), fact['predicate'], members.get(target, target), properties)
+        previous = merged.setdefault(key, fact)
+        if previous is not fact:
+            for field in ('assertions', 'source_refs'):
+                previous[field].extend(value for value in fact[field] if value not in previous[field])
+    return list(merged.values())
+
+
 def kg_context(result, registry):
     raw=result.get('llm_context') or {}
     facts=[]
@@ -88,6 +109,15 @@ def kg_context(result, registry):
              'paths':[{'nodes':[pick(n,['name','type']) for n in p.get('nodes',[])],
                        'fact_indices':p.get('fact_indices',[])} for p in raw.get('paths',[])],
              'interpretation':raw.get('interpretation',{}),'warnings':result.get('warnings',[])}
+    if raw.get('concept_groups'):
+        context['concept_groups'] = [
+            {'name': group['name'], 'member_types': [row['type'] for row in group['members']]}
+            for group in raw['concept_groups']
+        ]
+    if (raw.get('concept_groups') and not (raw.get('chains') or raw.get('paths') or raw.get('inferences')
+                                           or raw.get('comparison') is not None)
+            and len(facts) == len(raw.get('facts', []))):
+        context['facts'] = group_direct_facts(facts, raw['facts'], raw['concept_groups'])
     context['inferences']=[]
     for proof in raw.get('inferences',[]):
         indices=proof.get('fact_indices')

@@ -175,42 +175,49 @@ class GlobalStore:
                     for b in ids[j+1:]:self.db.execute('INSERT OR IGNORE INTO distinct_pairs VALUES(?)',(self.pairkey(a,b),))
             elif body['action']=='merge':
                 tid=body.get('target_id');kind=body.get('type');name=body.get('name','').strip()
-                if tid not in ids or kind not in self.ontology.entity_types or not name or len(name)>500:raise ValueError('ID, loại hoặc tên chuẩn không hợp lệ.')
                 distinct={r[0] for r in self.db.execute('SELECT pair FROM distinct_pairs')}
-                if any(self.pairkey(a,b) in distinct for j,a in enumerate(ids) for b in ids[j+1:]):
-                    raise ValueError('Nhóm chứa thực thể đã được xác nhận khác nhau.')
-                # Check every affected active relation before saving the group.
-                for r in data['relations'].values():
-                    if r['source'] not in ids and r['target'] not in ids:continue
-                    s=tid if r['source'] in ids else r['source'];t=tid if r['target'] in ids else r['target']
-                    st=kind if s==tid else data['entities'][s]['type'];tt=kind if t==tid else data['entities'][t]['type']
-                    msg=self.ontology.domain_range_error(r['type'],st,tt)
-                    if s==t or msg:raise ValueError(r['id']+': '+(msg or 'Gộp tạo quan hệ tự nối'))
-                props={};aliases=[]
-                for i in ids:
-                    e=data['entities'][i];aliases.extend([e['canonical_name'],*e['aliases']])
-                    for k,v in e['properties'].items():
-                        if k in props and props[k]!=v:raise ValueError('Thuộc tính mâu thuẫn: '+k)
-                        props[k]=v
-                result={'reviewed_name':name,'id':tid,'canonical_name':name,'type':kind,'aliases':sorted(set(a for a in aliases if a!=name)),'properties':props}
-                self.db.execute('UPDATE entities SET data=? WHERE id=?',(dumps(result),tid))
-                for i in ids:
-                    if i==tid:continue
-                    self.db.execute('UPDATE redirects SET target=? WHERE target=?',(tid,i))
-                    self.db.execute('INSERT OR REPLACE INTO redirects VALUES(?,?)',(i,tid))
-                    self.db.execute('DELETE FROM entities WHERE id=?',(i,))
-                # Preserve distinct decisions through a reviewed merge: A != B and
-                # merge(A,C) must still prohibit merging the resulting identity with B.
-                for row in self.db.execute('SELECT pair FROM distinct_pairs').fetchall():
-                    a,b=row[0].split('|')
-                    if a in ids or b in ids:
-                        self.db.execute('DELETE FROM distinct_pairs WHERE pair=?',(row[0],))
-                        self.db.execute('INSERT OR IGNORE INTO distinct_pairs VALUES(?)',
-                                        (self.pairkey(tid if a in ids else a,tid if b in ids else b),))
+                result=self.validate_merge(data,ids,tid,kind,name,data['relations'].values(),distinct)
+                self.apply_merge(ids,result)
             else:raise ValueError('Thao tác không hợp lệ.')
             if hasattr(self,'_unify'):self._unify()
             self.changed(body['action'],body)
         return self.review()
+    def validate_merge(self,data,ids,tid,kind,name,relations,distinct):
+        if tid not in ids or kind not in self.ontology.entity_types or not name or len(name)>500:raise ValueError('ID, loại hoặc tên chuẩn không hợp lệ.')
+        if any(self.pairkey(a,b) in distinct for j,a in enumerate(ids) for b in ids[j+1:]):
+            raise ValueError('Nhóm chứa thực thể đã được xác nhận khác nhau.')
+        # Check every affected active relation before saving the group.
+        for r in relations:
+            if r['source'] not in ids and r['target'] not in ids:continue
+            s=tid if r['source'] in ids else r['source'];t=tid if r['target'] in ids else r['target']
+            st=kind if s==tid else data['entities'][s]['type'];tt=kind if t==tid else data['entities'][t]['type']
+            msg=self.ontology.domain_range_error(r['type'],st,tt)
+            if s==t or msg:raise ValueError(r['id']+': '+(msg or 'Gộp tạo quan hệ tự nối'))
+        props={};aliases=[]
+        for i in ids:
+            e=data['entities'][i];aliases.extend([e['canonical_name'],*e['aliases']])
+            for k,v in e['properties'].items():
+                if k in props and props[k]!=v:raise ValueError('Thuộc tính mâu thuẫn: '+k)
+                props[k]=v
+        result={'reviewed_name':name,'id':tid,'canonical_name':name,'type':kind,'aliases':sorted(set(a for a in aliases if a!=name)),'properties':props}
+        return result
+
+    def apply_merge(self,ids,result):
+        tid=result['id']
+        self.db.execute('UPDATE entities SET data=? WHERE id=?',(dumps(result),tid))
+        for i in ids:
+            if i==tid:continue
+            self.db.execute('UPDATE redirects SET target=? WHERE target=?',(tid,i))
+            self.db.execute('INSERT OR REPLACE INTO redirects VALUES(?,?)',(i,tid))
+            self.db.execute('DELETE FROM entities WHERE id=?',(i,))
+        # Preserve distinct decisions through a reviewed merge: A != B and
+        # merge(A,C) must still prohibit merging the resulting identity with B.
+        for row in self.db.execute('SELECT pair FROM distinct_pairs').fetchall():
+            a,b=row[0].split('|')
+            if a in ids or b in ids:
+                self.db.execute('DELETE FROM distinct_pairs WHERE pair=?',(row[0],))
+                self.db.execute('INSERT OR IGNORE INTO distinct_pairs VALUES(?)',
+                                (self.pairkey(tid if a in ids else a,tid if b in ids else b),))
     def withdraw(self,doc,revision):
         with self.write(revision):
             self.db.execute('UPDATE documents SET active=0 WHERE doc=?',(doc,))
@@ -258,21 +265,31 @@ class GlobalStore:
     def progress(self,sid,state,progress):
         with self.write():self.db.execute('UPDATE snapshots SET state=?,progress=? WHERE id=?',(state,dumps(progress),sid))
     def activate(self,sid):
-        with self.write():
-            row=self.db.execute('SELECT state,progress FROM snapshots WHERE id=?',(sid,)).fetchone()
-            if not row or row[0]!='ready':raise ValueError('Phiên bản chưa đồng bộ đầy đủ.')
-            data=self.snapshot(sid)
-            if data.get('projection_mode')=='triples_only':
-                from .projection import build_projection, PROJECTION_VERSION
-                verification=json.loads(row['progress']).get('verification',{})
-                expected=build_projection(data)['counts']
-                if not verification.get('verified') or verification.get('version')!=PROJECTION_VERSION or any(verification.get(k)!=v for k,v in expected.items()):
-                    raise ValueError('Phiên bản chưa xác minh projection bộ ba đầy đủ.')
-            self.db.execute("INSERT OR REPLACE INTO meta VALUES('active',?)",(dumps({'id':sid}),))
-    def restore(self,data):
+        with self.write():self._activate(sid)
+
+    def _activate(self,sid):
+        row=self.db.execute('SELECT state,progress,revision FROM snapshots WHERE id=?',(sid,)).fetchone()
+        if not row or row[0]!='ready':raise ValueError('Phiên bản chưa đồng bộ đầy đủ.')
+        data=self.snapshot(sid)
+        progress=json.loads(row['progress'])
+        if data.get('multipart_dataset'):
+            if row['revision']<0:
+                raise ValueError('Cần kích hoạt V71B qua luồng nhập hai phần.')
+            if not progress.get('mongo_verified'):
+                raise ValueError('Phiên bản V71B chưa xác minh MongoDB.')
+        if data.get('projection_mode')=='triples_only':
+            from .projection import build_projection, PROJECTION_VERSION
+            verification=progress.get('verification',{})
+            expected=build_projection(data)['counts']
+            if not verification.get('verified') or verification.get('version')!=PROJECTION_VERSION or any(verification.get(k)!=v for k,v in expected.items()):
+                raise ValueError('Phiên bản chưa xác minh projection bộ ba đầy đủ.')
+        self.db.execute("INSERT OR REPLACE INTO meta VALUES('active',?)",(dumps({'id':sid}),))
+    def restore(self,data,*,activate_snapshot=None,expected_revision=None):
         # Restore into an empty workspace only; preserve IDs and the immutable snapshot.
         if data.get('schema_version')!=SCHEMA:raise ValueError('Sai phiên bản global JSON.')
-        with self.write():
+        with self.write(expected_revision):
+            if activate_snapshot and self.active():
+                raise ValueError('Kho KG đã có snapshot active.')
             if self.db.execute('SELECT 1 FROM documents LIMIT 1').fetchone():raise ValueError('Chỉ phục hồi vào kho global trống.')
             for doc,d in data['documents'].items():
                 kg,issues=parse_import(d['payload'])
@@ -303,3 +320,6 @@ class GlobalStore:
             for key in ('relations','assertions','evidence'):
                 if rebuilt[key]!=data[key]:raise ValueError('Dữ liệu global không nhất quán: '+key)
             self.changed('restore',{'source_revision':data.get('revision')})
+            if activate_snapshot:
+                self.db.execute('UPDATE snapshots SET revision=? WHERE id=?',(self.revision(),activate_snapshot))
+                self._activate(activate_snapshot)

@@ -93,7 +93,8 @@ def register_browse(app, get_service):
             ORDER BY edge.relation_id, edge.id
             SKIP $offset LIMIT $limit
         """, id=id, relation=relation, kind=kind, offset=offset, limit=PAGE + 1)
-        return {**details[0], **page(rows)}
+        source_ids = getattr(svc, 'source_entity_ids', {}).get(details[0]['node']['id'], [])
+        return {**details[0], 'source_ids': source_ids, **page(rows)}
 
     @app.get("/api/browse/edge")
     def edge(id: str = Query(..., max_length=200), snapshot: str = Query(..., max_length=80),
