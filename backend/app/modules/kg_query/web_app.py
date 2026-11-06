@@ -70,6 +70,13 @@ def create_app(service: Any | None = None, *, review_service: Any | None = None,
 
     app.state.get_query_service = get_service
 
+    from app.modules.kg_query.browse import register_browse
+    register_browse(app, get_service)
+
+    @app.get("/browse")
+    def browse():
+        return FileResponse(WEB / "browse.html")
+
     def get_import_service():
         with IMPORT_LOCK:
             if app.state.import_service is None:

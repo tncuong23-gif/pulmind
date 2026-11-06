@@ -42,6 +42,22 @@
     const view = element("g"), edgeLayer = element("g"), nodeLayer = element("g");
     view.append(edgeLayer, nodeLayer); svg.append(view);
     const edgeParts = [], groups = new Map();
+    const bundles = new Map();
+    if (options.separateParallelEdges) {
+      edges.forEach((edge, index) => {
+        const key = JSON.stringify([edge.source, edge.target].sort());
+        if (!bundles.has(key)) bundles.set(key, []);
+        bundles.get(key).push(index);
+      });
+    }
+    const bends = new Map();
+    for (const indexes of bundles.values()) {
+      indexes.forEach((index, slot) => {
+        const edge = edges[index];
+        const direction = edge.source < edge.target ? 1 : -1;
+        bends.set(index, direction * (slot - (indexes.length - 1) / 2) * 44);
+      });
+    }
     let scale = 1, tx = 0, ty = 0, selected = -1;
     const applyView = () => view.setAttribute("transform", `translate(${tx},${ty}) scale(${scale})`);
     function bounds() {
@@ -96,12 +112,12 @@
         const end = Math.min(item.edge.target === layout.centerId ? 60 : 52, d / 3);
         const x1 = a.x + ux * start, y1 = a.y + uy * start;
         const x2 = b.x - ux * end, y2 = b.y - uy * end;
-        for (const line of [item.line, item.hit]) {
-          line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-          line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-        }
-        item.label.setAttribute("x", (x1 + x2) / 2);
-        item.label.setAttribute("y", (y1 + y2) / 2 - 8);
+        const bend = bends.get(item.index) || 0;
+        const midX = (x1 + x2) / 2, midY = (y1 + y2) / 2;
+        const path = `M ${x1} ${y1} Q ${midX - uy * bend} ${midY + ux * bend} ${x2} ${y2}`;
+        for (const line of [item.line, item.hit]) line.setAttribute("d", path);
+        item.label.setAttribute("x", midX - uy * bend / 2);
+        item.label.setAttribute("y", midY + ux * bend / 2 - 8);
       }
       for (const [id, group] of groups) {
         const p = positions.get(id);
@@ -127,8 +143,8 @@
       if (!positions.has(edge.source) || !positions.has(edge.target)) return;
       const group = element("g", { class: "neo-edge", "data-edge-index": index, tabindex: 0, role: "button",
         "aria-label": `${names.get(edge.source).name} ${edge.type} ${names.get(edge.target).name}` });
-      const line = element("line", { class: "neo-line", "marker-end": `url(#arrow-${svg.id})` });
-      const hit = element("line", { class: "neo-edge-hit" });
+      const line = element("path", { fill: "none", class: "neo-line", "marker-end": `url(#arrow-${svg.id})` });
+      const hit = element("path", { fill: "none", class: "neo-edge-hit" });
       const label = element("text", { class: "neo-relation", "text-anchor": "middle" });
       label.textContent = edge.type;
       // Labels appear on selection for large graphs, avoiding text collisions.

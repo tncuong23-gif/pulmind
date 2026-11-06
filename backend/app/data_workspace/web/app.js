@@ -5,7 +5,7 @@
   const groups = {
     overview: {title: 'Tổng quan dữ liệu'},
     rag: {title: 'Kho tri thức RAG', tabs: [['import', 'Nạp dữ liệu'], ['search', 'Tra cứu tri thức'], ['documents', 'Kho tài liệu']]},
-    kg: {title: 'Knowledge Graph', tabs: [['global', 'Nhập KG'], ['explore', 'Khám phá đồ thị']]},
+    kg: {title: 'Knowledge Graph', tabs: [['import', 'Nhập KG'], ['explore', 'Khám phá đồ thị'], ['query', 'Truy vấn']]},
     context: {title: 'Context & Patient', tabs: [['import', 'Nạp dữ liệu'], ['history', 'Lịch sử & dữ kiện'], ['tools', 'Kiểm tra ngữ cảnh']]},
     reports: {title: 'Lịch sử & báo cáo'}
   };
@@ -36,17 +36,24 @@
     const [path, query = ''] = location.hash.replace(/^#/, '').split('?');
     let [group, view] = path.split('/');
     if (!Object.hasOwn(groups, group)) group = 'overview';
+    if (group === 'kg' && view === 'global') view = 'import';
     const tabs = groups[group].tabs;
     if (tabs && !tabs.some(([id]) => id === view)) view = tabs[0][0];
     const job = new URLSearchParams(query).get('job');
     return {group, view: tabs ? view : '', job: validJob(job) ? job : null};
   }
   function frameSpec() {
-    if(route.group === 'kg' && route.view === 'global') return {key:'kg-global',path:'/kg-global',view:'global'};
+    if (route.group === 'kg') {
+      const views = {
+        import: {path: '/direct-import', module: 'kg'},
+        explore: {path: '/modules/kg-explorer/browse'},
+        query: {path: '/modules/kg-explorer/'},
+      };
+      return {key: 'kg-' + route.view, view: route.view, ...views[route.view]};
+    }
     if (route.group === 'rag' && route.view === 'import') return {key:'rag-import-direct',path:'/direct-import',module:'rag',view:'import'};
     if (route.group === 'rag') return {key: 'rag', path: '/modules/rag/', view: route.view};
     if (route.view === 'import') return {key: route.group + '-import', path: '/imports', module: route.group, view: 'import'};
-    if (route.group === 'kg') return route.view === 'explore' ? {key: 'kg-explore', path: '/modules/kg-explorer/', view: 'explore'} : {key: 'kg-review', path: '/modules/kg-explorer/duplicates', view: route.view === 'file' ? 'file' : 'graph'};
     return {key: 'context', path: '/modules/context/ui', view: route.view};
   }
   function send(entry) {

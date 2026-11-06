@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khám phá đồ thị KG</title>
+<script src="/data-assets/embed.js"></script>
+<link rel="stylesheet" href="/modules/kg-explorer/static/neo4j_graph.css">
+<link rel="stylesheet" href="/modules/kg-explorer/static/browse.css">
+<script defer src="/modules/kg-explorer/static/graph_layout.js"></script>
+<script defer src="/modules/kg-explorer/static/neo4j_graph.js"></script>
+<script defer src="/modules/kg-explorer/static/overview_graph.js"></script>
+<script defer src="/modules/kg-explorer/static/browse.js"></script>
+</head>
+<body><main>
+<header><div><span class="eyebrow">KHO TRI THỨC Y KHOA</span><h1>Khám phá đồ thị</h1><p id="snapshot">Đang xác định snapshot…</p></div><div class="modes" role="group" aria-label="Chế độ đồ thị"><button id="localMode" aria-pressed="true">Lân cận</button><button id="allMode" aria-pressed="false">Toàn bộ đồ thị</button></div></header>
+<form id="search">
+<label>Tìm thực thể<input id="term" maxlength="200" placeholder="Tên, alias hoặc ID"></label>
+<label>Loại thực thể<select id="kind"><option value="">Tất cả</option></select></label>
+<label>Quan hệ lân cận<select id="relation"><option value="">Tất cả</option></select></label>
+<button class="primary">Tìm kiếm</button>
+</form>
+<p id="status" role="status"></p>
+<div class="workspace">
+<section class="card results"><h2>Thực thể</h2><p class="panel-description">Chọn kết quả để mở vùng lân cận.</p><div id="matches"></div><button id="moreMatches" hidden>Tải thêm</button></section>
+<section class="card graph-card" id="graphCard">
+<div class="toolbar"><div><h2>Đồ thị quan hệ</h2><small id="counts">0 nút · 0 cạnh</small></div><div class="controls">
+<button id="zoomIn" aria-label="Phóng to">+</button><button id="zoomOut" aria-label="Thu nhỏ">−</button>
+<button id="fit">Vừa khung</button><button id="fullscreen">Toàn màn hình</button><button id="reset">Đặt lại</button>
+</div></div>
+<div id="canvas"><canvas id="overviewGraph" hidden tabindex="0" aria-label="Toàn bộ đồ thị KG. Dùng phím mũi tên để di chuyển, cộng hoặc trừ để thu phóng."></canvas><canvas id="browseGraph" tabindex="0" aria-label="Đồ thị thực thể và quan hệ tương tác"></canvas><p id="empty">Chọn một thực thể để bắt đầu khám phá.</p></div>
+<div id="legend"></div><small class="hint">Kéo nút để sắp xếp · Kéo nền để di chuyển · Nhấp đúp để xem vùng liên kết · Chuột phải để mở thao tác</small>
+</section>
+<aside class="card details" aria-label="Chi tiết nút và cạnh"><h2>Chi tiết & bằng chứng</h2><div id="detail"><p class="detail-empty">Chọn một nút hoặc cạnh trên đồ thị để xem thông tin và nguồn bằng chứng.</p></div></aside>
+</div>
+</main></body></html>
